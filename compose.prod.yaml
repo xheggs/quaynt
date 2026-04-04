@@ -1,0 +1,74 @@
+# Quaynt — Production Docker Compose
+# Requires Docker Compose v2.20+
+#
+# Usage:
+#   docker compose -f compose.prod.yaml up -d         — start production stack
+#   docker compose -f compose.prod.yaml down           — stop, preserve data
+#   docker compose -f compose.prod.yaml logs -f        — follow logs
+#
+# For CI/CD: build and push the image to a registry, then replace the
+# `build:` directives with `image: ghcr.io/xheggs/quaynt:latest` (or your
+# registry). This avoids building on the deployment host.
+
+x-app: &app
+  build:
+    context: .
+    dockerfile: Dockerfile
+    target: runner
+  env_file: .env
+  depends_on:
+    db:
+      condition: service_healthy
+  init: true
+  restart: always
+
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: quaynt-db
+    env_file: .env
+    environment:
+      PGDATA: /var/lib/postgresql/18/docker
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  web:
+    <<: *app
+    container_name: quaynt-web
+    ports:
+      - "${PORT:-3000}:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/api/v1/health/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    stop_grace_period: 15s
+
+  worker:
+    <<: *app
+    container_name: quaynt-worker
+    command: ["node", "dist/worker.cjs"]
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    stop_grace_period: 30s
+
+volumes:
+  pgdata:

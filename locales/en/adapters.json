@@ -1,0 +1,63 @@
+{
+  "adapters": {
+    "errors": {
+      "notFound": "Adapter configuration not found",
+      "platformNotRegistered": "Unknown platform: {platformId}",
+      "alreadyExists": "An adapter for this platform already exists in this workspace",
+      "createFailed": "Failed to create adapter configuration",
+      "updateFailed": "Failed to update adapter configuration",
+      "deleteFailed": "Failed to delete adapter configuration",
+      "healthCheckFailed": "Health check failed for adapter",
+      "encryptionKeyMissing": "Adapter encryption key is not configured"
+    },
+    "fields": {
+      "platformId": "Platform",
+      "displayName": "Display Name",
+      "enabled": "Enabled",
+      "credentials": "API Credentials",
+      "timeoutMs": "Timeout (ms)",
+      "maxRetries": "Max Retries"
+    },
+    "labels": {
+      "adapter": "Adapter",
+      "adapters": "Adapters",
+      "platforms": "Available Platforms"
+    },
+    "health": {
+      "healthy": "Healthy",
+      "degraded": "Degraded",
+      "unhealthy": "Unhealthy",
+      "unchecked": "Not checked yet"
+    },
+    "chatgpt": {
+      "name": "ChatGPT",
+      "description": "OpenAI ChatGPT with web search for citation extraction",
+      "errors": {
+        "invalidApiKey": "Invalid OpenAI API key",
+        "modelNotSupported": "Model {model} does not support web search",
+        "queryFailed": "ChatGPT query failed: {message}",
+        "citationExtractionFailed": "Failed to extract citations from ChatGPT response"
+      },
+      "config": {
+        "model": "Model",
+        "searchContextSize": "Search Context Size"
+      }
+    },
+    "perplexity": {
+      "name": "Perplexity",
+      "description": "Perplexity AI search with native citation extraction",
+      "errors": {
+        "invalidApiKey": "Invalid Perplexity API key",
+        "queryFailed": "Perplexity query failed: {message}",
+        "citationExtractionFailed": "Failed to extract citations from Perplexity response"
+      },
+      "config": {
+        "model": "Model",
+        "searchRecencyFilter": "Search Recency Filter",
+        "searchLanguageFilter": "Search Language Filter",
+        "temperature": "Temperature",
+        "maxTokens": "Max Tokens"
+      }
+    }
+  }
+}

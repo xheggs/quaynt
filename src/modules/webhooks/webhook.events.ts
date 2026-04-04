@@ -1,0 +1,297 @@
+export const WEBHOOK_EVENT_TYPES = [
+  'citation.new',
+  'citation.updated',
+  'alert.triggered',
+  'report.generated',
+  'model_run.completed',
+  'model_run.partial',
+  'model_run.failed',
+  'brand.created',
+  'brand.updated',
+  'brand.deleted',
+  'prompt_set.created',
+  'prompt_set.updated',
+  'prompt_set.deleted',
+  'adapter.health_changed',
+  'visibility.recommendation_share_updated',
+  'visibility.sentiment_aggregate_updated',
+  'visibility.citation_sources_updated',
+  'visibility.opportunities_updated',
+  'visibility.position_aggregate_updated',
+  'visibility.trend_anomaly_detected',
+  'webhook.test',
+] as const;
+
+export type WebhookEventType = (typeof WEBHOOK_EVENT_TYPES)[number];
+
+export const WEBHOOK_SAMPLE_PAYLOADS: Record<WebhookEventType, object> = {
+  'citation.new': {
+    citations: [
+      {
+        id: 'cit_sample123',
+        modelRunId: 'run_sample456',
+        modelRunResultId: 'runres_sample789',
+        brandId: 'brand_sample1',
+        platformId: 'chatgpt',
+        citationType: 'owned',
+        position: 1,
+        sourceUrl: 'https://acme.example.com',
+        title: 'Acme Corp - Project Management',
+        contextSnippet:
+          'Acme Corp offers a comprehensive project management solution with AI-powered features.',
+        relevanceSignal: 'domain_match',
+      },
+    ],
+  },
+  'citation.updated': {
+    citation: {
+      id: 'cit_sample123',
+      brand: 'Acme Corp',
+      query: 'best project management tools',
+      source: 'chatgpt',
+      model: 'gpt-4o',
+      previousPosition: 1,
+      position: 3,
+      snippet: 'Acme Corp provides project management tools with collaborative features.',
+      url: 'https://acme.example.com',
+      detectedAt: '2026-04-02T14:00:00.000Z',
+    },
+  },
+  'alert.triggered': {
+    alert: {
+      ruleId: 'alert_sample456',
+      ruleName: 'Recommendation share drop',
+      eventId: 'alertevt_sample789',
+      metric: 'recommendation_share',
+      condition: 'drops_below',
+      threshold: 20,
+      severity: 'warning',
+      currentValue: 15.5,
+      previousValue: 22.3,
+      scope: {
+        brandId: 'brand_sample1',
+        brandName: 'Acme Corp',
+        platformId: 'chatgpt',
+        locale: 'en-US',
+      },
+      promptSetId: 'ps_sample456',
+      triggeredAt: '2026-04-02T14:05:00.000Z',
+      summary: 'Warning: Acme Corp — Recommendation share drops below threshold (15.5, was 22.3)',
+      url: 'https://app.quaynt.com/api/v1/alerts/events/alertevt_sample789/view',
+    },
+  },
+  'report.generated': {
+    report: {
+      id: 'rpt_sample789',
+      name: 'Weekly AI Visibility Report',
+      type: 'weekly_summary',
+      period: {
+        from: '2026-03-26T00:00:00.000Z',
+        to: '2026-04-02T00:00:00.000Z',
+      },
+      generatedAt: '2026-04-02T06:00:00.000Z',
+      downloadUrl: '/api/v1/reports/rpt_sample789/download',
+    },
+  },
+  'model_run.completed': {
+    modelRun: {
+      id: 'run_sampleabc',
+      status: 'completed',
+      promptSetId: 'ps_sample123',
+      brandId: 'brand_sample123',
+      platforms: ['chatgpt', 'perplexity'],
+      locale: 'en-US',
+      totalResults: 20,
+      completedResults: 20,
+      failedResults: 0,
+      skippedResults: 0,
+      duration: 45000,
+      startedAt: '2026-04-02T12:29:15.000Z',
+      completedAt: '2026-04-02T12:30:00.000Z',
+    },
+  },
+  'model_run.partial': {
+    modelRun: {
+      id: 'run_sampleghi',
+      status: 'partial',
+      promptSetId: 'ps_sample123',
+      brandId: 'brand_sample123',
+      platforms: ['chatgpt', 'perplexity'],
+      locale: 'en-US',
+      totalResults: 20,
+      completedResults: 15,
+      failedResults: 5,
+      skippedResults: 0,
+      errorSummary: '5 queries failed: perplexity rate limit exceeded',
+      duration: 52000,
+      startedAt: '2026-04-02T12:29:15.000Z',
+      completedAt: '2026-04-02T12:30:07.000Z',
+    },
+  },
+  'model_run.failed': {
+    modelRun: {
+      id: 'run_sampledef',
+      status: 'failed',
+      promptSetId: 'ps_sample123',
+      brandId: 'brand_sample123',
+      platforms: ['chatgpt'],
+      locale: 'en-US',
+      totalResults: 10,
+      completedResults: 0,
+      failedResults: 10,
+      skippedResults: 0,
+      errorSummary: 'All adapter queries failed: rate limit exceeded',
+      startedAt: '2026-04-02T12:29:15.000Z',
+      completedAt: '2026-04-02T12:30:00.000Z',
+    },
+  },
+  'brand.created': {
+    brand: {
+      id: 'brand_sample123',
+      name: 'Acme Corp',
+      slug: 'acme-corp-abc123',
+      domain: 'acme.example.com',
+      aliases: ['Acme', 'Acme Corporation'],
+      createdAt: '2026-04-02T12:00:00.000Z',
+    },
+  },
+  'brand.updated': {
+    brand: {
+      id: 'brand_sample123',
+      name: 'Acme Corp',
+      slug: 'acme-corp-abc123',
+      domain: 'acme.example.com',
+      aliases: ['Acme', 'Acme Corporation', 'ACME'],
+      updatedAt: '2026-04-02T14:00:00.000Z',
+    },
+  },
+  'brand.deleted': {
+    brand: {
+      id: 'brand_sample123',
+      name: 'Acme Corp',
+      deletedAt: '2026-04-02T16:00:00.000Z',
+    },
+  },
+  'prompt_set.created': {
+    promptSet: {
+      id: 'ps_sample123',
+      name: 'Competitor Analysis Prompts',
+      description: 'Track brand mentions in competitor comparisons',
+      tags: ['competitor-analysis', 'product-comparison'],
+      createdAt: '2026-04-02T12:00:00.000Z',
+    },
+  },
+  'prompt_set.updated': {
+    promptSet: {
+      id: 'ps_sample123',
+      name: 'Competitor Analysis Prompts',
+      description: 'Updated description for tracking',
+      tags: ['competitor-analysis', 'product-comparison', 'weekly'],
+      updatedAt: '2026-04-02T14:00:00.000Z',
+    },
+  },
+  'prompt_set.deleted': {
+    promptSet: {
+      id: 'ps_sample123',
+      name: 'Competitor Analysis Prompts',
+      deletedAt: '2026-04-02T16:00:00.000Z',
+    },
+  },
+  'adapter.health_changed': {
+    adapter: {
+      id: 'adapter_sample123',
+      platformId: 'chatgpt',
+      displayName: 'Our ChatGPT API',
+    },
+    previousStatus: 'healthy',
+    currentStatus: 'unhealthy',
+  },
+  'visibility.recommendation_share_updated': {
+    recommendationShare: {
+      workspaceId: 'ws_sample123',
+      promptSetId: 'ps_sample456',
+      date: '2026-04-03',
+      brands: [
+        {
+          brandId: 'brand_sample1',
+          platformId: '_all',
+          locale: '_all',
+          sharePercentage: '42.50',
+          citationCount: 17,
+          totalCitations: 40,
+          modelRunCount: 3,
+        },
+        {
+          brandId: 'brand_sample2',
+          platformId: '_all',
+          locale: '_all',
+          sharePercentage: '57.50',
+          citationCount: 23,
+          totalCitations: 40,
+          modelRunCount: 3,
+        },
+      ],
+    },
+  },
+  'visibility.sentiment_aggregate_updated': {
+    sentimentAggregate: {
+      workspaceId: 'ws_sample123',
+      promptSetId: 'ps_sample456',
+      date: '2026-04-03',
+    },
+  },
+  'visibility.citation_sources_updated': {
+    citationSources: {
+      brandId: 'brand_sample1',
+      promptSetId: 'ps_sample456',
+      periodStart: '2026-04-03',
+      domainsUpdated: 12,
+      totalFrequency: 156,
+    },
+  },
+  'visibility.opportunities_updated': {
+    opportunities: {
+      workspaceId: 'ws_sample123',
+      promptSetId: 'ps_sample456',
+      date: '2026-04-03',
+      totalOpportunities: 23,
+      byType: {
+        missing: 15,
+        weak: 8,
+      },
+    },
+  },
+  'visibility.position_aggregate_updated': {
+    positionAggregate: {
+      workspaceId: 'ws_sample123',
+      promptSetId: 'ps_sample456',
+      date: '2026-04-03',
+      brands: [
+        {
+          brandId: 'brand_sample789',
+          platformId: '_all',
+          locale: '_all',
+          averagePosition: '2.35',
+          firstMentionRate: '45.00',
+          citationCount: 42,
+          modelRunCount: 3,
+        },
+      ],
+    },
+  },
+  'visibility.trend_anomaly_detected': {
+    trendAnomaly: {
+      workspaceId: 'ws_sample123',
+      brandId: 'brand_sample789',
+      promptSetId: 'ps_sample456',
+      metric: 'recommendation_share',
+      period: 'weekly',
+      anomalyCount: 1,
+    },
+  },
+  'webhook.test': {
+    test: true,
+    message: 'This is a test webhook event from Quaynt.',
+    timestamp: '2026-04-02T12:00:00.000Z',
+  },
+};

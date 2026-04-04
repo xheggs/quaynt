@@ -1,0 +1,88 @@
+# Quaynt — Development Docker Compose
+# Requires Docker Compose v2.20+
+#
+# Usage:
+#   docker compose up              — PostgreSQL only (hybrid dev, recommended)
+#   docker compose --profile dev up — all services (full-Docker dev)
+#   docker compose down            — stop containers, preserve data
+#   docker compose down -v         — stop containers, delete all data
+
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: quaynt-db
+    environment:
+      POSTGRES_USER: quaynt
+      POSTGRES_PASSWORD: quaynt
+      POSTGRES_DB: quaynt
+      PGDATA: /var/lib/postgresql/18/docker
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quaynt -d quaynt"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: quaynt-web
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./next.config.ts:/app/next.config.ts
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./package.json:/app/package.json:ro
+      - /app/node_modules
+      - /app/.next
+    environment:
+      DATABASE_URL: postgresql://quaynt:quaynt@db:5432/quaynt
+      BETTER_AUTH_SECRET: docker-dev-secret-at-least-thirty-two-chars
+      BETTER_AUTH_URL: http://localhost:3000
+      NODE_ENV: development
+      QUAYNT_EDITION: community
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles:
+      - dev
+    init: true
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: quaynt-worker
+    command: npx tsx --watch src/worker.ts
+    volumes:
+      - ./src:/app/src
+      - ./package.json:/app/package.json:ro
+      - /app/node_modules
+    environment:
+      DATABASE_URL: postgresql://quaynt:quaynt@db:5432/quaynt
+      BETTER_AUTH_SECRET: docker-dev-secret-at-least-thirty-two-chars
+      BETTER_AUTH_URL: http://localhost:3000
+      NODE_ENV: development
+      QUAYNT_EDITION: community
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles:
+      - dev
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 30s
+
+volumes:
+  pgdata:

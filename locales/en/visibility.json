@@ -1,0 +1,135 @@
+{
+  "recommendationShare": {
+    "title": "Recommendation Share",
+    "description": "Share of AI recommendations mentioning this brand",
+    "noData": "No recommendation share data available",
+    "periodLabel": "Period",
+    "shareLabel": "Share",
+    "citationCountLabel": "Citations",
+    "totalCitationsLabel": "Total Citations",
+    "modelRunCountLabel": "Model Runs",
+    "allPlatforms": "All Platforms",
+    "allLocales": "All Locales"
+  },
+  "benchmarks": {
+    "title": "Competitor Benchmarking",
+    "description": "Side-by-side brand comparison within a market",
+    "noData": "No benchmark data available for this market",
+    "presence": {
+      "title": "Brand Presence Matrix",
+      "noData": "No presence data available"
+    }
+  },
+  "sentiment": {
+    "title": "Sentiment",
+    "description": "Sentiment distribution of AI citations",
+    "positive": "Positive",
+    "neutral": "Neutral",
+    "negative": "Negative",
+    "netSentimentScore": "Net Sentiment Score",
+    "averageScore": "Average Score",
+    "noData": "No sentiment data available",
+    "totalCitations": "Total Citations",
+    "modelRuns": "Model Runs",
+    "allPlatforms": "All Platforms",
+    "allLocales": "All Locales"
+  },
+  "citationSources": {
+    "title": "Citation Sources",
+    "description": "External websites cited by AI platforms alongside this brand",
+    "noData": "No citation source data available",
+    "domainLabel": "Domain",
+    "frequencyLabel": "Frequency",
+    "firstSeenLabel": "First Seen",
+    "lastSeenLabel": "Last Seen",
+    "allPlatforms": "All Platforms",
+    "allLocales": "All Locales"
+  },
+  "opportunities": {
+    "title": "Opportunity Discovery",
+    "description": "Prompts where your brand should appear but currently doesn't or is underrepresented",
+    "noData": "No opportunities found for this brand in this market",
+    "types": {
+      "missing": "Missing",
+      "weak": "Weak",
+      "missingDescription": "Your brand does not appear in this prompt but competitors do",
+      "weakDescription": "Your brand appears but with fewer citations than the typical competitor"
+    },
+    "scoreLabel": "Opportunity Score",
+    "competitorCountLabel": "Competitors Present",
+    "platformCountLabel": "Platforms Affected",
+    "brandCitationCountLabel": "Your Citations",
+    "allPlatforms": "All Platforms"
+  },
+  "positions": {
+    "title": "Position Tracking",
+    "description": "Track where your brand appears in AI responses and monitor position changes over time",
+    "noData": "No position data available for this market",
+    "averagePosition": "Average Position",
+    "medianPosition": "Median Position",
+    "bestPosition": "Best Position",
+    "worstPosition": "Worst Position",
+    "firstMentionRate": "First Mention Rate",
+    "firstMentionRateDescription": "Percentage of responses where your brand is mentioned first",
+    "topThreeRate": "Top 3 Rate",
+    "topThreeRateDescription": "Percentage of responses where your brand appears in the top 3",
+    "distribution": "Position Distribution",
+    "distributionDescription": "How often your brand appears at each position",
+    "citationCount": "Citations Analysed",
+    "allPlatforms": "All Platforms",
+    "allLocales": "All Locales"
+  },
+  "trends": {
+    "title": "Trend Analysis",
+    "description": "Period-over-period trend analysis for AI visibility metrics",
+    "metric": {
+      "recommendationShare": "Recommendation Share",
+      "sentiment": "Net Sentiment",
+      "averagePosition": "Average Position",
+      "firstMentionRate": "First Mention Rate",
+      "citationCount": "Citation Count",
+      "opportunityCount": "Opportunity Count"
+    },
+    "period": {
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "direction": {
+      "up": "Up",
+      "down": "Down",
+      "stable": "Stable"
+    },
+    "movingAverage": "Moving Average (EWMA)",
+    "changeRate": "Change Rate",
+    "noData": "No trend data available for this selection",
+    "insufficientData": "Not enough data to compute trends",
+    "anomaly": {
+      "detected": "Anomaly detected",
+      "above": "Unusually high",
+      "below": "Unusually low"
+    },
+    "significance": {
+      "significant": "Statistically significant change",
+      "notSignificant": "Change is within normal variance"
+    },
+    "summary": {
+      "overallUp": "Overall trend is upward",
+      "overallDown": "Overall trend is downward",
+      "overallStable": "Overall trend is stable"
+    }
+  },
+  "errors": {
+    "promptSetRequired": "A prompt set (market) is required to view recommendation share",
+    "benchmarkPromptSetRequired": "A prompt set (market) is required to view competitor benchmarks",
+    "sentimentPromptSetRequired": "A prompt set (market) is required to view sentiment data",
+    "sourcesPromptSetRequired": "A prompt set (market) is required to view citation sources",
+    "opportunityPromptSetRequired": "A prompt set (market) is required to view opportunities",
+    "opportunityBrandRequired": "A brand is required to view opportunities",
+    "positionPromptSetRequired": "A prompt set (market) is required to view position data",
+    "trendsInvalidMetric": "Invalid metric. Must be one of: recommendation_share, sentiment, average_position, first_mention_rate, citation_count, opportunity_count",
+    "trendsInvalidPeriod": "Period must be 'weekly' or 'monthly'",
+    "trendsBrandNotFound": "Brand was not found in this workspace",
+    "trendsPromptSetNotFound": "Prompt set was not found in this workspace",
+    "trendsInsufficientData": "Not enough data to compute trend statistics"
+  }
+}

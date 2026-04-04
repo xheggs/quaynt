@@ -1,0 +1,22 @@
+{
+  "brands": {
+    "errors": {
+      "notFound": "Brand not found",
+      "nameAlreadyExists": "A brand with this name already exists in this workspace",
+      "createFailed": "Failed to create brand",
+      "updateFailed": "Failed to update brand",
+      "deleteFailed": "Failed to delete brand"
+    },
+    "fields": {
+      "name": "Brand Name",
+      "domain": "Website Domain",
+      "aliases": "Aliases",
+      "description": "Description"
+    },
+    "labels": {
+      "brand": "Brand",
+      "brands": "Brands",
+      "count": "{count, plural, =0 {no brands} one {# brand} other {# brands}}"
+    }
+  }
+}

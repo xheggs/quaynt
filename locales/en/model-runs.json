@@ -1,0 +1,44 @@
+{
+  "errors": {
+    "notFound": "Model run not found",
+    "promptSetNotFound": "Prompt set not found",
+    "brandNotFound": "Brand not found",
+    "adapterNotFound": "Adapter configuration not found: {adapterId}",
+    "adapterDisabled": "Adapter configuration is disabled: {adapterId}",
+    "alreadyTerminal": "Model run is already {status}",
+    "cannotCancel": "Cannot cancel a model run with status {status}",
+    "tooManyAdapters": "Maximum {max} adapter configurations per run",
+    "noAdapters": "At least one adapter configuration is required",
+    "executionFailed": "Model run execution failed"
+  },
+  "status": {
+    "pending": "Pending",
+    "running": "Running",
+    "completed": "Completed",
+    "partial": "Partially completed",
+    "failed": "Failed",
+    "cancelled": "Cancelled"
+  },
+  "resultStatus": {
+    "pending": "Pending",
+    "running": "Running",
+    "completed": "Completed",
+    "failed": "Failed",
+    "skipped": "Skipped"
+  },
+  "labels": {
+    "create": "Create model run",
+    "cancel": "Cancel model run",
+    "results": "Results",
+    "totalResults": "Total results",
+    "errorSummary": "Error summary",
+    "locale": "Locale",
+    "localePlaceholder": "Select a locale",
+    "localeHelp": "Geographic region for AI platform queries",
+    "localeGroupAmericas": "Americas",
+    "localeGroupEurope": "Europe",
+    "localeGroupAsiaPacific": "Asia Pacific",
+    "localeGroupMena": "Middle East & Africa",
+    "localeAll": "All locales"
+  }
+}

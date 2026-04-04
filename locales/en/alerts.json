@@ -1,0 +1,53 @@
+{
+  "title": "Alerts",
+  "description": "Monitor your brand visibility with automated alerts",
+  "rule": {
+    "created": "Alert rule created",
+    "updated": "Alert rule updated",
+    "deleted": "Alert rule deleted",
+    "enabled": "Alert rule enabled",
+    "disabled": "Alert rule disabled"
+  },
+  "metric": {
+    "recommendationShare": "Recommendation share",
+    "citationCount": "Citation count",
+    "sentimentScore": "Sentiment score",
+    "positionAverage": "Average position"
+  },
+  "condition": {
+    "dropsBelow": "Drops below",
+    "exceeds": "Exceeds",
+    "changesByPercent": "Changes by percentage",
+    "changesByAbsolute": "Changes by absolute value"
+  },
+  "direction": {
+    "any": "Any direction",
+    "increase": "Increase only",
+    "decrease": "Decrease only"
+  },
+  "severity": {
+    "info": "Info",
+    "warning": "Warning",
+    "critical": "Critical"
+  },
+  "evaluation": {
+    "triggered": "Alert triggered: {metric} {condition} {threshold}",
+    "cooldownActive": "Alert evaluation skipped — cooldown active",
+    "conditionNotMet": "Alert condition not met",
+    "insufficientData": "Insufficient data for alert evaluation"
+  },
+  "event": {
+    "triggered": "Alert triggered",
+    "acknowledged": "Alert acknowledged",
+    "snoozed": "Alert snoozed",
+    "resolved": "Alert resolved"
+  },
+  "limit": {
+    "reached": "Workspace alert rule limit reached (maximum {max, number})"
+  },
+  "notifications": {
+    "webhook": {
+      "summary": "{severity}: {brandName} — {metricLabel} {conditionLabel} threshold ({currentValue}, was {previousValue})"
+    }
+  }
+}

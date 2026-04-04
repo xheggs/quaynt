@@ -1,0 +1,14 @@
+{
+  "label": {
+    "positive": "Positive",
+    "neutral": "Neutral",
+    "negative": "Negative"
+  },
+  "confidence": {
+    "high": "High confidence",
+    "low": "Low confidence"
+  },
+  "errors": {
+    "analysisFailure": "Sentiment analysis could not be performed"
+  }
+}

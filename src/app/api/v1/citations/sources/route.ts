@@ -1,0 +1,65 @@
+import { z } from 'zod';
+import { NextResponse } from 'next/server';
+import { withAuth, withScope, getAuthContext } from '@/lib/api/middleware';
+import { withRateLimit } from '@/lib/api/rate-limit';
+import { withRequestId } from '@/lib/api/request-id';
+import { withRequestLog } from '@/lib/api/request-log';
+import { parsePagination, formatPaginatedResponse } from '@/lib/api/pagination';
+import { apiSuccess, badRequest } from '@/lib/api/response';
+import {
+  getCitationSources,
+  CITATION_SOURCE_ALLOWED_SORTS,
+} from '@/modules/visibility/citation-source-aggregate.service';
+
+const granularityEnum = z.enum(['day', 'week', 'month']);
+
+export const GET = withRequestId(
+  withRequestLog(
+    withAuth(
+      withRateLimit(
+        withScope(async (req) => {
+          const pagination = parsePagination(
+            req.nextUrl.searchParams,
+            CITATION_SOURCE_ALLOWED_SORTS
+          );
+          if (pagination instanceof NextResponse) return pagination;
+
+          const auth = getAuthContext(req);
+          const params = req.nextUrl.searchParams;
+
+          // promptSetId is required
+          const promptSetId = params.get('promptSetId');
+          if (!promptSetId) {
+            return badRequest('A prompt set (market) is required to view citation sources');
+          }
+
+          // Validate optional granularity
+          const rawGranularity = params.get('granularity');
+          if (rawGranularity) {
+            const parsed = granularityEnum.safeParse(rawGranularity);
+            if (!parsed.success) {
+              return badRequest("Granularity must be 'day', 'week', or 'month'");
+            }
+          }
+
+          const filters = {
+            promptSetId,
+            brandId: params.get('brandId') ?? undefined,
+            platformId: params.get('platformId') ?? undefined,
+            locale: params.get('locale') ?? undefined,
+            domain: params.get('domain') ?? undefined,
+            from: params.get('from') ?? undefined,
+            to: params.get('to') ?? undefined,
+            granularity: (rawGranularity as 'day' | 'week' | 'month') ?? undefined,
+          };
+
+          const { items, total } = await getCitationSources(auth.workspaceId, filters, pagination);
+
+          return apiSuccess(
+            formatPaginatedResponse(items, total, pagination.page, pagination.limit)
+          );
+        }, 'read')
+      )
+    )
+  )
+);

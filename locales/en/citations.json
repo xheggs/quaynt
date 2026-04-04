@@ -1,0 +1,22 @@
+{
+  "errors": {
+    "notFound": "Citation not found",
+    "invalidType": "Citation type must be 'owned' or 'earned'",
+    "invalidDateRange": "Invalid date range: 'from' must be before 'to'"
+  },
+  "types": {
+    "owned": "Owned",
+    "earned": "Earned"
+  },
+  "labels": {
+    "citation": "Citation",
+    "citations": "Citations",
+    "position": "Position",
+    "sourceUrl": "Source URL",
+    "contextSnippet": "Context snippet",
+    "citationType": "Citation type",
+    "extractedFrom": "Extracted from",
+    "locale": "Locale",
+    "localeAll": "All locales"
+  }
+}

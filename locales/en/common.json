@@ -1,0 +1,38 @@
+{
+  "common": {
+    "apiKey": {
+      "create": "Create API Key",
+      "revoke": "Revoke",
+      "scopes": {
+        "admin": "Admin",
+        "read": "Read only",
+        "readWrite": "Read and write"
+      },
+      "title": "API Keys"
+    },
+    "appDescription": "AI visibility platform",
+    "appName": "Quaynt",
+    "auth": {
+      "email": "Email",
+      "name": "Name",
+      "password": "Password",
+      "signIn": "Sign in",
+      "signOut": "Sign out",
+      "signUp": "Sign up"
+    },
+    "webhook": {
+      "create": "Create webhook",
+      "delete": "Delete webhook",
+      "deliveries": "Deliveries",
+      "events": "Events",
+      "rotateSecret": "Rotate secret",
+      "status": {
+        "failed": "Failed",
+        "pending": "Pending",
+        "success": "Success"
+      },
+      "test": "Send test event",
+      "title": "Webhooks"
+    }
+  }
+}

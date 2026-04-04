@@ -1,0 +1,50 @@
+{
+  "errors": {
+    "api": {
+      "badRequest": "The request could not be processed",
+      "forbidden": "You do not have permission to perform this action",
+      "internalError": "An unexpected error occurred. Please try again later.",
+      "notFound": "The requested resource was not found",
+      "unauthorized": "Authentication is required"
+    },
+    "apiKey": {
+      "invalidScope": "Invalid API key scope",
+      "nameRequired": "API key name is required",
+      "nameTooLong": "API key name must be 100 characters or fewer"
+    },
+    "auth": {
+      "emailAlreadyExists": "An account with this email already exists",
+      "insufficientScope": "This API key does not have permission for this action",
+      "invalidCredentials": "Invalid email or password",
+      "notWorkspaceMember": "You are not a member of this workspace",
+      "sessionExpired": "Your session has expired, please sign in again",
+      "workspaceRequired": "A workspace context is required for this request"
+    },
+    "webhook": {
+      "endpointDisabled": "This webhook endpoint is disabled",
+      "eventInvalid": "{event} is not a valid event type",
+      "eventsRequired": "At least one event type is required",
+      "maxEndpointsReached": "Maximum number of webhook endpoints ({max}) reached",
+      "notFound": "Webhook endpoint not found",
+      "urlInvalid": "Webhook URL must be a valid HTTPS URL",
+      "urlPrivate": "Webhook URL must not point to a private or reserved IP address",
+      "urlRequired": "Webhook URL is required"
+    },
+    "alerts": {
+      "invalidMetric": "Invalid alert metric. Allowed: recommendation_share, citation_count, sentiment_score, position_average",
+      "invalidCondition": "Invalid alert condition. Allowed: drops_below, exceeds, changes_by_percent, changes_by_absolute",
+      "invalidSeverity": "Invalid alert severity. Allowed: info, warning, critical",
+      "invalidDirection": "Invalid alert direction. Allowed: any, increase, decrease",
+      "brandNotFound": "Brand not found in this workspace",
+      "promptSetNotFound": "Prompt set not found in this workspace",
+      "ruleNotFound": "Alert rule not found",
+      "limitReached": "Workspace alert rule limit reached (maximum {max, number})",
+      "immutableField": "Cannot change {field} after rule creation"
+    },
+    "validation": {
+      "invalidLocale": "Invalid locale format. Expected BCP 47 tag with region (e.g., {example})",
+      "required": "{field} is required",
+      "tooLong": "{field} must be at most {max, plural, one {# character} other {# characters}}"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "promptSets": {
+    "errors": {
+      "notFound": "Prompt set not found",
+      "promptNotFound": "Prompt not found",
+      "nameAlreadyExists": "A prompt set with this name already exists in this workspace",
+      "createFailed": "Failed to create prompt set",
+      "updateFailed": "Failed to update prompt set",
+      "deleteFailed": "Failed to delete prompt set",
+      "addPromptFailed": "Failed to add prompt",
+      "reorderFailed": "Prompt IDs do not match the prompts in this set",
+      "maxPromptsReached": "Prompt set has reached the maximum of 500 prompts"
+    },
+    "fields": {
+      "name": "Prompt Set Name",
+      "description": "Description",
+      "tags": "Tags",
+      "template": "Prompt Template",
+      "order": "Order"
+    },
+    "labels": {
+      "promptSet": "Prompt Set",
+      "promptSets": "Prompt Sets",
+      "prompt": "Prompt",
+      "prompts": "Prompts",
+      "count": "{count, plural, =0 {no prompt sets} one {# prompt set} other {# prompt sets}}",
+      "promptCount": "{count, plural, =0 {no prompts} one {# prompt} other {# prompts}}"
+    }
+  }
+}

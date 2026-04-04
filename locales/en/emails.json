@@ -1,0 +1,40 @@
+{
+  "alert": {
+    "subject": "{severity}: {brandName} — {metricLabel} {conditionLabel} ({currentValue})",
+    "preview": "{brandName} {metricLabel} is now {currentValue} (was {previousValue})",
+    "greeting": "Alert for {brandName}",
+    "metricSummary": "{metricLabel} {conditionLabel} {threshold}",
+    "currentValue": "Current value: {currentValue}",
+    "previousValue": "Previous value: {previousValue}",
+    "change": "Change: {delta} ({changeRate})",
+    "scope": "Scope: {platformName}, {locale}",
+    "ruleName": "Rule: {ruleName}",
+    "viewButton": "View in Quaynt",
+    "triggeredAt": "Triggered at {timestamp}"
+  },
+  "digest": {
+    "subject": "{count, plural, one {# alert} other {# alerts}} in the past {period}",
+    "preview": "You have {count, plural, one {# alert} other {# alerts}} to review",
+    "heading": "Alert digest — {period}",
+    "alertCount": "{count, plural, one {# alert triggered} other {# alerts triggered}}",
+    "viewAllButton": "View all alerts",
+    "brandSection": "{brandName} — {count, plural, one {# alert} other {# alerts}}",
+    "noAlerts": "No alerts in this period"
+  },
+  "footer": {
+    "managePreferences": "Manage notification preferences",
+    "unsubscribe": "Unsubscribe from these emails",
+    "privacy": "Privacy policy",
+    "whyReceived": "You received this because you have alert notifications enabled for {workspaceName}."
+  },
+  "severity": {
+    "info": "Info",
+    "warning": "Warning",
+    "critical": "Critical"
+  },
+  "period": {
+    "hourly": "hour",
+    "daily": "day",
+    "weekly": "week"
+  }
+}
