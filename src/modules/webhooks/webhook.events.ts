@@ -2,6 +2,7 @@ export const WEBHOOK_EVENT_TYPES = [
   'citation.new',
   'citation.updated',
   'alert.triggered',
+  'alert.acknowledged',
   'report.generated',
   'model_run.completed',
   'model_run.partial',
@@ -79,6 +80,13 @@ export const WEBHOOK_SAMPLE_PAYLOADS: Record<WebhookEventType, object> = {
       summary: 'Warning: Acme Corp — Recommendation share drops below threshold (15.5, was 22.3)',
       url: 'https://app.quaynt.com/api/v1/alerts/events/alertevt_sample789/view',
     },
+  },
+  'alert.acknowledged': {
+    alertEventId: 'alertevt_sample789',
+    alertRuleId: 'alertRule_sample456',
+    ruleName: 'Recommendation share drop',
+    severity: 'warning',
+    acknowledgedAt: '2026-04-04T12:00:00.000Z',
   },
   'report.generated': {
     report: {

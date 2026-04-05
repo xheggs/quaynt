@@ -42,6 +42,46 @@
     "snoozed": "Alert snoozed",
     "resolved": "Alert resolved"
   },
+  "management": {
+    "title": "Alert Events",
+    "description": "View and manage alert events",
+    "noEvents": "No alert events found",
+    "filter": {
+      "severity": "Filter by severity",
+      "status": "Filter by status",
+      "rule": "Filter by rule",
+      "dateRange": "Filter by date range"
+    },
+    "status": {
+      "active": "Active",
+      "acknowledged": "Acknowledged",
+      "snoozed": "Snoozed"
+    },
+    "action": {
+      "acknowledge": "Acknowledge",
+      "snooze": "Snooze",
+      "viewDetails": "View details"
+    }
+  },
+  "snooze": {
+    "duration": "Snooze for {duration}",
+    "until": "Snoozed until {time}",
+    "expired": "Snooze expired",
+    "maxExceeded": "Snooze duration cannot exceed {max, number} days",
+    "mustBeFuture": "Snooze time must be in the future",
+    "exactlyOne": "Provide exactly one of duration or snoozedUntil"
+  },
+  "summary": {
+    "title": "Alert Summary",
+    "total": "{count, plural, =0 {No alerts} one {# alert} other {# alerts}}",
+    "active": "{count, plural, =0 {No active alerts} one {# active alert} other {# active alerts}}",
+    "topRules": "Top triggering rules"
+  },
+  "error": {
+    "eventNotFound": "Alert event not found",
+    "invalidSeverity": "Invalid severity filter. Allowed: info, warning, critical",
+    "invalidStatus": "Invalid status filter. Allowed: active, acknowledged, snoozed"
+  },
   "limit": {
     "reached": "Workspace alert rule limit reached (maximum {max, number})"
   },

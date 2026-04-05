@@ -70,10 +70,18 @@ export const alertEvent = pgTable(
       .$type<AlertScope & { brandName?: string; platformName?: string }>()
       .notNull(),
     triggeredAt: timestamp({ withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+    acknowledgedAt: timestamp({ withTimezone: true, mode: 'date' }),
+    snoozedUntil: timestamp({ withTimezone: true, mode: 'date' }),
     ...timestamps,
   },
   (table) => [
     index('alert_event_rule_idx').on(table.alertRuleId, table.triggeredAt),
     index('alert_event_workspace_idx').on(table.workspaceId, table.triggeredAt),
+    index('alert_event_workspace_severity_ack_idx').on(
+      table.workspaceId,
+      table.severity,
+      table.acknowledgedAt
+    ),
+    index('alert_event_workspace_snoozed_idx').on(table.workspaceId, table.snoozedUntil),
   ]
 );

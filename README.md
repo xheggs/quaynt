@@ -353,4 +353,4 @@ See [SECURITY.md](SECURITY.md) for our security policy and how to report vulnera
 
 ## License
 
-See [LICENSE](LICENSE) for details.
+Quaynt is licensed under the [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0-or-later). See the [LICENSE](LICENSE) file for details.

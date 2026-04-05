@@ -39,7 +39,7 @@
     "type": "git",
     "url": "git+https://github.com/xheggs/quaynt.git"
   },
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "AGPL-3.0-or-later",
   "bugs": {
     "url": "https://github.com/xheggs/quaynt/issues"
   },

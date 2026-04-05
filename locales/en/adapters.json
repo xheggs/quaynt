@@ -58,6 +58,82 @@
         "temperature": "Temperature",
         "maxTokens": "Max Tokens"
       }
+    },
+    "claude": {
+      "name": "Claude",
+      "description": "Anthropic Claude with web search for citation extraction",
+      "errors": {
+        "invalidApiKey": "Invalid Anthropic API key",
+        "queryFailed": "Claude query failed: {message}",
+        "citationExtractionFailed": "Failed to extract citations from Claude response",
+        "webSearchNotEnabled": "Web search is not enabled for this Anthropic organization. Enable it in the Anthropic Console.",
+        "webSearchFailed": "Claude web search failed: {errorCode}",
+        "billingError": "Anthropic billing error: check your account balance and plan",
+        "overloaded": "Anthropic API is temporarily overloaded, retrying"
+      },
+      "config": {
+        "model": "Model",
+        "maxTokens": "Max Tokens",
+        "maxSearchUses": "Max Web Searches Per Query",
+        "temperature": "Temperature",
+        "systemInstruction": "System Instruction"
+      }
+    },
+    "gemini": {
+      "name": "Gemini",
+      "description": "Google Gemini with grounding for Google Search citation extraction",
+      "errors": {
+        "invalidApiKey": "Invalid Google Gemini API key",
+        "modelNotSupported": "Model {model} does not support grounding with Google Search",
+        "queryFailed": "Gemini query failed: {message}",
+        "citationExtractionFailed": "Failed to extract citations from Gemini response",
+        "safetyBlocked": "Gemini blocked the response due to safety settings",
+        "recitationBlocked": "Gemini blocked the response due to recitation filter",
+        "noGroundingData": "Gemini response did not include grounding metadata"
+      },
+      "config": {
+        "model": "Model",
+        "apiVersion": "API Version",
+        "safetyThreshold": "Safety Threshold",
+        "temperature": "Temperature",
+        "maxOutputTokens": "Max Output Tokens",
+        "systemInstruction": "System Instruction"
+      }
+    },
+    "aio": {
+      "name": "AI Overviews",
+      "description": "Google AI Overviews extracted from search results via SERP API",
+      "errors": {
+        "invalidApiKey": "Invalid SERP API key for {provider}",
+        "invalidCredentials": "Invalid credentials for {provider}. Required: {fields}",
+        "unknownProvider": "Unknown SERP provider: {provider}. Supported providers: {supported}",
+        "queryFailed": "AI Overviews query failed: {message}",
+        "citationExtractionFailed": "Failed to extract citations from AI Overviews response",
+        "providerError": "SERP provider error: {message}",
+        "pageTokenExpired": "AI Overview page token expired before retrieval",
+        "taskError": "SERP API task failed: {message}"
+      },
+      "config": {
+        "serpProvider": "SERP Provider",
+        "serpProviderDescription": "Third-party SERP API used to access Google AI Overviews (searchapi or dataforseo)"
+      }
+    },
+    "copilot": {
+      "name": "Microsoft Copilot",
+      "description": "Microsoft Copilot with Bing Search for citation extraction via third-party SERP APIs",
+      "errors": {
+        "invalidApiKey": "Invalid SerpAPI API key for Copilot adapter",
+        "invalidCredentials": "Invalid DataForSEO credentials for Copilot adapter",
+        "queryFailed": "Copilot query failed: {message}",
+        "citationExtractionFailed": "Failed to extract citations from Copilot response",
+        "unsupportedProvider": "Unsupported SERP provider: {provider}",
+        "taskError": "DataForSEO task error: {message}",
+        "unexpectedResponseShape": "Unexpected SERP provider response structure from {provider}"
+      },
+      "config": {
+        "serpProvider": "SERP Provider",
+        "noCache": "Bypass Cache"
+      }
     }
   }
 }

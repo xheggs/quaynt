@@ -53,6 +53,31 @@ export interface AlertEvaluateJobData {
   date: string;
 }
 
+export type AlertEventStatus = 'active' | 'acknowledged' | 'snoozed';
+
+export interface AlertEventFilters {
+  alertRuleId?: string;
+  severity?: AlertSeverity;
+  status?: AlertEventStatus;
+  from?: string;
+  to?: string;
+}
+
+export interface AlertSnoozeInput {
+  duration?: number;
+  snoozedUntil?: string;
+}
+
+export interface AlertSummary {
+  total: number;
+  active: number;
+  acknowledged: number;
+  snoozed: number;
+  bySeverity: { info: number; warning: number; critical: number };
+  topRules: Array<{ ruleId: string; ruleName: string | null; count: number }>;
+  period: { from: string; to: string };
+}
+
 export interface AlertEvaluationResult {
   ruleId: string;
   conditionMet: boolean;
