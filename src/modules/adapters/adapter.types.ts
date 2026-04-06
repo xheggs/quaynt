@@ -82,6 +82,7 @@ export interface AdapterMetadata {
   credentialSchema: AdapterCredentialSchema;
   healthCheckStrategy: HealthCheckStrategy;
   supportedLocales?: string[];
+  dataJurisdiction?: string;
 }
 
 // -- Adapter configuration (matches DB record shape) ------------------------

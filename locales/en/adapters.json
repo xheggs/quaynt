@@ -118,6 +118,45 @@
         "serpProviderDescription": "Third-party SERP API used to access Google AI Overviews (searchapi or dataforseo)"
       }
     },
+    "grok": {
+      "name": "Grok",
+      "description": "xAI Grok with web search and X search for citation extraction",
+      "errors": {
+        "invalidApiKey": "Invalid xAI API key",
+        "queryFailed": "Grok query failed: {message}",
+        "citationExtractionFailed": "Failed to extract citations from Grok response",
+        "rateLimited": "xAI API rate limited, retrying",
+        "serverError": "xAI API server error, retrying"
+      },
+      "config": {
+        "model": "Model",
+        "enableXSearch": "Enable X Search",
+        "enableXSearchDescription": "Include X (Twitter) posts in search results for social media citation tracking",
+        "temperature": "Temperature",
+        "maxOutputTokens": "Max Output Tokens",
+        "systemInstruction": "System Instruction"
+      }
+    },
+    "deepseek": {
+      "name": "DeepSeek",
+      "description": "DeepSeek AI (China-hosted) for training-data-based brand visibility analysis",
+      "errors": {
+        "invalidApiKey": "Invalid DeepSeek API key",
+        "insufficientBalance": "DeepSeek API balance depleted. Top up at platform.deepseek.com",
+        "queryFailed": "DeepSeek query failed: {message}",
+        "citationExtractionFailed": "Failed to process DeepSeek response",
+        "rateLimited": "DeepSeek API rate limited, retrying",
+        "serverError": "DeepSeek API server error, retrying",
+        "insufficientResource": "DeepSeek ran out of compute resources, retrying"
+      },
+      "config": {
+        "model": "Model",
+        "temperature": "Temperature",
+        "maxTokens": "Max Tokens",
+        "systemInstruction": "System Instruction"
+      },
+      "noCitations": "DeepSeek does not provide web search or citations. Brand visibility is analyzed from response text content."
+    },
     "copilot": {
       "name": "Microsoft Copilot",
       "description": "Microsoft Copilot with Bing Search for citation extraction via third-party SERP APIs",

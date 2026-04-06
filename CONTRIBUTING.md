@@ -17,14 +17,92 @@ Use descriptive branch names: `feature/citation-tracking`, `fix/api-pagination`,
 
 ### Commit Messages
 
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
+Follow [Conventional Commits](https://www.conventionalcommits.org/). Commit messages are enforced by commitlint via a Git hook and in CI.
 
-- `feat:` new feature
-- `fix:` bug fix
+#### Format
+
+```
+<type>[(scope)]: <description>
+
+[body]
+
+[footer(s)]
+```
+
+#### Types
+
+- `feat:` new feature (SemVer MINOR)
+- `fix:` bug fix (SemVer PATCH)
 - `docs:` documentation only
 - `refactor:` code change that neither fixes a bug nor adds a feature
 - `test:` adding or correcting tests
 - `chore:` maintenance tasks
+- `perf:` performance improvement
+- `ci:` CI/CD changes
+- `build:` build system or dependency changes
+- `style:` formatting, whitespace (not CSS)
+
+#### Scopes
+
+Scopes are optional but recommended when the change is contained to a single area. Use the module or library name from the source tree:
+
+- **Domain** (`src/modules/`): `adapters`, `alerts`, `auth`, `brands`, `citations`, `model-runs`, `notifications`, `prompt-sets`, `visibility`, `webhooks`, `workspace`
+- **Infrastructure** (`src/lib/`): `api`, `db`, `i18n`, `jobs`, `worker`, `config`
+
+Omit the scope when a change spans multiple modules.
+
+#### Subject Line
+
+- Max 72 characters
+- Imperative mood — "add feature" not "added feature"
+- Test: _"If applied, this commit will \_\_\_"_
+- Lowercase after the colon
+- No trailing period
+
+#### Body
+
+Required for non-trivial changes. Explain _what_ changed and _why_, not _how_ (the diff shows how). Wrap at 72 characters. Separate from the subject with a blank line.
+
+#### Footers
+
+- `Fixes #123` or `Closes #123` — link to a GitHub Issue
+- `BREAKING CHANGE: <description>` — breaking changes (also signal with `!` after type/scope, e.g. `feat(api)!:`)
+- `Co-Authored-By:` — for AI-assisted commits
+
+#### What NOT to reference
+
+Do not include internal tracking IDs (PRP numbers, Linear tickets, Jira IDs, etc.) in commit messages. These are meaningless to the public and clutter the history. Use GitHub Issues as the public record of work.
+
+#### Examples
+
+Good:
+
+```
+feat(citations): add source attribution for Perplexity responses
+
+Perplexity includes inline citations that differ from other engines.
+Parse citation metadata from the response payload and store source
+URLs alongside the visibility score.
+
+Closes #42
+```
+
+```
+fix(api): return 429 instead of 500 on rate limit exceeded
+```
+
+```
+refactor(adapters): extract shared retry logic into base adapter
+```
+
+Bad:
+
+```
+fix stuff                                # no context
+feat: complete PRPs 3.4-3.8             # references private tracking
+Updated the parser                       # past tense, no type prefix
+feat(citations): add new citation ...    # subject too long (>72 chars)
+```
 
 ### Pull Requests
 

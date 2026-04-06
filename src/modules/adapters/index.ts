@@ -11,7 +11,9 @@ import { registerAioAdapter } from './aio';
 import { registerChatGPTAdapter } from './chatgpt';
 import { registerClaudeAdapter } from './claude';
 import { registerCopilotAdapter } from './copilot';
+import { registerDeepSeekAdapter } from './deepseek';
 import { registerGeminiAdapter } from './gemini';
+import { registerGrokAdapter } from './grok';
 import { registerPerplexityAdapter } from './perplexity';
 
 let registry: AdapterRegistry | null = null;
@@ -25,6 +27,8 @@ export function getAdapterRegistry(): AdapterRegistry {
     registerClaudeAdapter(registry);
     registerAioAdapter(registry);
     registerCopilotAdapter(registry);
+    registerDeepSeekAdapter(registry);
+    registerGrokAdapter(registry);
   }
   return registry;
 }

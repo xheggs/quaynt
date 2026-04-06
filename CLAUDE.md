@@ -28,7 +28,7 @@ You are working on **Quaynt**, an open-source AI visibility platform that tracks
 
 - Fail fast with typed errors and meaningful messages.
 - Every new feature includes unit tests.
-- Follow [Conventional Commits](https://www.conventionalcommits.org/) for commit messages.
+- Follow [Conventional Commits](https://www.conventionalcommits.org/) for commit messages — see `CONTRIBUTING.md` for the full guideline.
 - NEVER hardcode user-facing strings — use localization keys.
 - NEVER concatenate strings to build messages — use interpolation placeholders.
 - Use locale-aware formatting for dates, numbers, and currencies.
