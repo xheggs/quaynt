@@ -267,7 +267,7 @@ describe('alert event service', () => {
       selectResults[0] = [sampleEvent];
       updateResults.push([]);
 
-      const mockBoss = {} as unknown as import('pg-boss').default;
+      const mockBoss = {} as unknown as import('pg-boss').PgBoss;
       const { acknowledgeAlertEvent } = await import('./alert.service');
       await acknowledgeAlertEvent('alertevt_test123', 'ws_test', mockBoss);
 

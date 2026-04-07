@@ -7,7 +7,7 @@ const eslintConfig = [
   ...nextTypescript,
   eslintConfigPrettier,
   {
-    ignores: ['.next/', 'out/', 'build/', 'drizzle/', 'node_modules/'],
+    ignores: ['.next/', 'out/', 'build/', 'dist/', 'drizzle/', 'node_modules/'],
   },
 ];
 

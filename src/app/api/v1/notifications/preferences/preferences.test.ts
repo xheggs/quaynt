@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { NextRequest } from 'next/server';
 
 vi.mock('@/lib/db', () => ({
   db: {
@@ -99,10 +100,7 @@ describe('notification preferences API', () => {
     it('returns preferences for the current user', async () => {
       const { GET } = await import('./route');
 
-      const req = new Request(
-        'http://localhost:3000/api/v1/notifications/preferences'
-      ) as unknown as { nextUrl: URL };
-      req.nextUrl = new URL('http://localhost:3000/api/v1/notifications/preferences');
+      const req = new NextRequest('http://localhost:3000/api/v1/notifications/preferences');
 
       const res = await GET(req, { params: Promise.resolve({}) });
       expect(res.status).toBe(200);
@@ -119,14 +117,13 @@ describe('notification preferences API', () => {
     it('updates preferences with valid input', async () => {
       const { PATCH } = await import('./route');
 
-      const req = new Request('http://localhost:3000/api/v1/notifications/preferences', {
+      const req = new NextRequest('http://localhost:3000/api/v1/notifications/preferences', {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           email: { enabled: false, digestFrequency: 'daily' },
         }),
-      }) as unknown as { nextUrl: URL };
-      req.nextUrl = new URL('http://localhost:3000/api/v1/notifications/preferences');
+      });
 
       const res = await PATCH(req, { params: Promise.resolve({}) });
       expect(res.status).toBe(200);

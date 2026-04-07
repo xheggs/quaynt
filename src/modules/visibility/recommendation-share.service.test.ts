@@ -92,7 +92,7 @@ describe('recommendation share service', () => {
       );
 
       expect(result.items).toHaveLength(1);
-      expect(result.items[0].id).toBe('recshare_test1');
+      expect(result.items[0]).toHaveProperty('id', 'recshare_test1');
       expect(result.total).toBe(1);
     });
 

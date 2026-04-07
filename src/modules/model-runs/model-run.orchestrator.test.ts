@@ -209,7 +209,7 @@ describe('model-run orchestrator', () => {
       await executeModelRun(
         'run_test1',
         'ws_test',
-        mockBoss as unknown as import('pg-boss').default
+        mockBoss as unknown as import('pg-boss').PgBoss
       );
 
       expect(mockInsert).toHaveBeenCalled();
@@ -243,7 +243,7 @@ describe('model-run orchestrator', () => {
       await executeModelRun(
         'run_test1',
         'ws_test',
-        mockBoss as unknown as import('pg-boss').default
+        mockBoss as unknown as import('pg-boss').PgBoss
       );
 
       expect(mockBoss.insert).not.toHaveBeenCalled();
@@ -268,7 +268,7 @@ describe('model-run orchestrator', () => {
       await executeModelRun(
         'run_test1',
         'ws_test',
-        mockBoss as unknown as import('pg-boss').default
+        mockBoss as unknown as import('pg-boss').PgBoss
       );
 
       // Should update to failed
@@ -494,7 +494,7 @@ describe('model-run orchestrator', () => {
       await finalizeModelRun(
         'run_test1',
         'ws_test',
-        mockBoss as unknown as import('pg-boss').default
+        mockBoss as unknown as import('pg-boss').PgBoss
       );
 
       expect(mockSet).toHaveBeenCalledWith(
@@ -527,7 +527,7 @@ describe('model-run orchestrator', () => {
       await finalizeModelRun(
         'run_test1',
         'ws_test',
-        mockBoss as unknown as import('pg-boss').default
+        mockBoss as unknown as import('pg-boss').PgBoss
       );
 
       expect(mockSet).toHaveBeenCalledWith(expect.objectContaining({ status: 'failed' }));
@@ -561,7 +561,7 @@ describe('model-run orchestrator', () => {
       await finalizeModelRun(
         'run_test1',
         'ws_test',
-        mockBoss as unknown as import('pg-boss').default
+        mockBoss as unknown as import('pg-boss').PgBoss
       );
 
       expect(mockSet).toHaveBeenCalledWith(expect.objectContaining({ status: 'partial' }));
@@ -596,7 +596,7 @@ describe('model-run orchestrator', () => {
       await finalizeModelRun(
         'run_test1',
         'ws_test',
-        mockBoss as unknown as import('pg-boss').default
+        mockBoss as unknown as import('pg-boss').PgBoss
       );
 
       expect(mockSet).toHaveBeenCalledWith(

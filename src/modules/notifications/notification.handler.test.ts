@@ -116,17 +116,18 @@ describe('notification.handler', () => {
       const { registerNotificationHandlers } = await import('./notification.handler');
       const { db } = await import('@/lib/db');
 
+      const mockWork = vi.fn().mockResolvedValue(undefined);
       const boss = {
-        work: vi.fn().mockResolvedValue(undefined),
+        work: mockWork,
         schedule: vi.fn().mockResolvedValue(undefined),
       } as unknown as Parameters<typeof registerNotificationHandlers>[0];
 
       await registerNotificationHandlers(boss);
 
       // Get the email-send handler
-      const emailSendCall = boss.work.mock.calls.find(
+      const emailSendCall = mockWork.mock.calls.find(
         (call: unknown[]) => call[0] === 'email-send'
-      );
+      )!;
       const handler = emailSendCall[2];
 
       // Call the handler with a job
@@ -165,16 +166,17 @@ describe('notification.handler', () => {
 
       const { registerNotificationHandlers } = await import('./notification.handler');
 
+      const mockWork = vi.fn().mockResolvedValue(undefined);
       const boss = {
-        work: vi.fn().mockResolvedValue(undefined),
+        work: mockWork,
         schedule: vi.fn().mockResolvedValue(undefined),
       } as unknown as Parameters<typeof registerNotificationHandlers>[0];
 
       await registerNotificationHandlers(boss);
 
-      const emailSendCall = boss.work.mock.calls.find(
+      const emailSendCall = mockWork.mock.calls.find(
         (call: unknown[]) => call[0] === 'email-send'
-      );
+      )!;
       const handler = emailSendCall[2];
 
       // Should not throw for permanent failures
@@ -203,16 +205,17 @@ describe('notification.handler', () => {
 
       const { registerNotificationHandlers } = await import('./notification.handler');
 
+      const mockWork = vi.fn().mockResolvedValue(undefined);
       const boss = {
-        work: vi.fn().mockResolvedValue(undefined),
+        work: mockWork,
         schedule: vi.fn().mockResolvedValue(undefined),
       } as unknown as Parameters<typeof registerNotificationHandlers>[0];
 
       await registerNotificationHandlers(boss);
 
-      const emailSendCall = boss.work.mock.calls.find(
+      const emailSendCall = mockWork.mock.calls.find(
         (call: unknown[]) => call[0] === 'email-send'
-      );
+      )!;
       const handler = emailSendCall[2];
 
       await expect(

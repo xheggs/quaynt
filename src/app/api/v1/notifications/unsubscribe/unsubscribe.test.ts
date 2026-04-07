@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { NextRequest } from 'next/server';
 
 vi.mock('@/lib/db', () => ({
   db: {
@@ -54,10 +55,7 @@ describe('unsubscribe endpoint', () => {
   describe('GET', () => {
     it('returns 400 when no token provided', async () => {
       const { GET } = await import('./route');
-      const req = new Request(
-        'http://localhost:3000/api/v1/notifications/unsubscribe'
-      ) as unknown as { nextUrl: URL };
-      req.nextUrl = new URL('http://localhost:3000/api/v1/notifications/unsubscribe');
+      const req = new NextRequest('http://localhost:3000/api/v1/notifications/unsubscribe');
 
       const res = await GET(req, { params: Promise.resolve({}) });
       expect(res.status).toBe(400);
@@ -73,8 +71,7 @@ describe('unsubscribe endpoint', () => {
 
       const { GET } = await import('./route');
       const url = 'http://localhost:3000/api/v1/notifications/unsubscribe?token=valid';
-      const req = new Request(url) as unknown as { nextUrl: URL };
-      req.nextUrl = new URL(url);
+      const req = new NextRequest(url);
 
       const res = await GET(req, { params: Promise.resolve({}) });
       expect(res.status).toBe(200);
@@ -91,8 +88,7 @@ describe('unsubscribe endpoint', () => {
 
       const { GET } = await import('./route');
       const url = 'http://localhost:3000/api/v1/notifications/unsubscribe?token=bad';
-      const req = new Request(url) as unknown as { nextUrl: URL };
-      req.nextUrl = new URL(url);
+      const req = new NextRequest(url);
 
       const res = await GET(req, { params: Promise.resolve({}) });
       expect(res.status).toBe(400);
@@ -110,8 +106,7 @@ describe('unsubscribe endpoint', () => {
 
       const { POST } = await import('./route');
       const url = 'http://localhost:3000/api/v1/notifications/unsubscribe?token=valid';
-      const req = new Request(url, { method: 'POST' }) as unknown as { nextUrl: URL };
-      req.nextUrl = new URL(url);
+      const req = new NextRequest(url, { method: 'POST' });
 
       const res = await POST(req, { params: Promise.resolve({}) });
       expect(res.status).toBe(200);

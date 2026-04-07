@@ -14,10 +14,10 @@ function createChain(): Record<string, unknown> {
     chain[method] = vi.fn(() => chain);
   }
   // Make the chain thenable so await resolves to the next result
-  chain.then = (resolve: (v: unknown) => void) => {
+  (chain as Record<string, unknown>).then = (resolve?: (v: unknown) => unknown) => {
     const result = queryResults[queryIndex] ?? [];
     queryIndex++;
-    resolve(result);
+    resolve?.(result);
     return chain;
   };
   return chain;

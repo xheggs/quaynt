@@ -134,7 +134,7 @@ describe('position aggregate service', () => {
       );
 
       expect(result.items).toHaveLength(1);
-      expect(result.items[0].id).toBe('posagg_test1');
+      expect(result.items[0]).toHaveProperty('id', 'posagg_test1');
       expect(result.total).toBe(1);
       expect(result.summary.totalCitations).toBe(10);
       expect(result.summary.overallAveragePosition).toBe('2.35');

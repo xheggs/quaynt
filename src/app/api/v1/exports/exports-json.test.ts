@@ -116,7 +116,7 @@ async function responseText(res: Response): Promise<string> {
 
 const basePath = '/api/v1/exports';
 
-describe('GET /api/v1/exports — CSV format', () => {
+describe('GET /api/v1/exports — JSON/JSONL format', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockFetchExportData.mockReset();
@@ -127,117 +127,178 @@ describe('GET /api/v1/exports — CSV format', () => {
     });
   });
 
-  it('returns 200 with valid CSV for report export', async () => {
-    mockFetchExportData.mockResolvedValueOnce({
-      rows: sampleRows(),
-    });
+  it('returns 200 with valid JSON for report export (format=json)', async () => {
+    mockFetchExportData.mockResolvedValueOnce({ rows: sampleRows() });
 
     const { GET } = await import('./route');
     const req = createAuthedRequest(
-      `${basePath}?format=csv&type=report&promptSetId=ps_1&brandId=brand_1`
+      `${basePath}?format=json&type=report&promptSetId=ps_1&brandId=brand_1`
     );
     const res = await GET(req, { params: Promise.resolve({}) });
 
     expect(res.status).toBe(200);
     const text = await responseText(res);
-    const lines = text.split('\r\n').filter((l) => l.length > 0);
-    expect(lines.length).toBeGreaterThanOrEqual(2);
-    expect(lines[0]).toContain('Brand');
+    const parsed = JSON.parse(text);
+    expect(parsed.meta).toBeDefined();
+    expect(parsed.data).toBeDefined();
+    expect(parsed.data).toHaveLength(1);
+    expect(parsed.data[0].brandName).toBe('Acme');
   });
 
-  it('returns correct Content-Type header', async () => {
+  it('returns correct Content-Type for JSON format', async () => {
     mockFetchExportData.mockResolvedValueOnce({ rows: emptyAsyncIterable() });
 
     const { GET } = await import('./route');
-    const req = createAuthedRequest(
-      `${basePath}?format=csv&type=report&promptSetId=ps_1&brandId=brand_1`
-    );
+    const req = createAuthedRequest(`${basePath}?format=json&type=report&promptSetId=ps_1`);
     const res = await GET(req, { params: Promise.resolve({}) });
 
-    expect(res.headers.get('Content-Type')).toBe('text/csv; charset=utf-8');
+    expect(res.headers.get('Content-Type')).toBe('application/json; charset=utf-8');
   });
 
-  it('returns correct Content-Disposition header', async () => {
+  it('returns correct Content-Disposition for JSON format', async () => {
     mockFetchExportData.mockResolvedValueOnce({ rows: emptyAsyncIterable() });
 
     const { GET } = await import('./route');
     const req = createAuthedRequest(
-      `${basePath}?format=csv&type=citations&from=2026-03-01&to=2026-03-31`
+      `${basePath}?format=json&type=citations&from=2026-03-01&to=2026-03-31`
     );
     const res = await GET(req, { params: Promise.resolve({}) });
 
     expect(res.headers.get('Content-Disposition')).toBe(
-      'attachment; filename="citations_2026-03-01_2026-03-31.csv"'
+      'attachment; filename="citations_2026-03-01_2026-03-31.json"'
     );
   });
 
-  it('returns Cache-Control no-store', async () => {
+  it('JSON meta.columns includes translated labels', async () => {
     mockFetchExportData.mockResolvedValueOnce({ rows: emptyAsyncIterable() });
 
     const { GET } = await import('./route');
-    const req = createAuthedRequest(`${basePath}?format=csv&type=citations`);
+    const req = createAuthedRequest(`${basePath}?format=json&type=citations`);
     const res = await GET(req, { params: Promise.resolve({}) });
 
-    expect(res.headers.get('Cache-Control')).toBe('no-store');
+    const text = await responseText(res);
+    const parsed = JSON.parse(text);
+    expect(parsed.meta.columns).toBeDefined();
+    expect(parsed.meta.columns.length).toBeGreaterThan(0);
+    const brandCol = parsed.meta.columns.find((c: { key: string }) => c.key === 'brandId');
+    expect(brandCol).toBeDefined();
+    expect(brandCol.label).toBe('Brand ID');
   });
 
-  it('returns 400 for missing format param', async () => {
+  it('JSON empty result returns valid JSON with empty data array', async () => {
+    mockFetchExportData.mockResolvedValueOnce({ rows: emptyAsyncIterable() });
+
     const { GET } = await import('./route');
-    const req = createAuthedRequest(`${basePath}?type=citations`);
+    const req = createAuthedRequest(`${basePath}?format=json&type=citations`);
+    const res = await GET(req, { params: Promise.resolve({}) });
+
+    expect(res.status).toBe(200);
+    const text = await responseText(res);
+    const parsed = JSON.parse(text);
+    expect(parsed.data).toEqual([]);
+  });
+
+  it('JSON includes X-Export-Truncated header when row limit reached', async () => {
+    mockFetchExportData.mockResolvedValueOnce({
+      rows: emptyAsyncIterable(),
+      truncated: true,
+    });
+
+    const { GET } = await import('./route');
+    const req = createAuthedRequest(`${basePath}?format=json&type=citations`);
+    const res = await GET(req, { params: Promise.resolve({}) });
+
+    expect(res.headers.get('X-Export-Truncated')).toBe('true');
+    expect(res.headers.get('X-Export-Row-Limit')).toBe('100000');
+  });
+
+  it('returns 200 with valid JSONL for report export (format=jsonl)', async () => {
+    mockFetchExportData.mockResolvedValueOnce({ rows: sampleRows() });
+
+    const { GET } = await import('./route');
+    const req = createAuthedRequest(
+      `${basePath}?format=jsonl&type=report&promptSetId=ps_1&brandId=brand_1`
+    );
+    const res = await GET(req, { params: Promise.resolve({}) });
+
+    expect(res.status).toBe(200);
+    const text = await responseText(res);
+    const lines = text.split('\n').filter((l) => l.length > 0);
+    expect(lines).toHaveLength(1);
+    const parsed = JSON.parse(lines[0]);
+    expect(parsed.brandName).toBe('Acme');
+  });
+
+  it('returns correct Content-Type for JSONL format', async () => {
+    mockFetchExportData.mockResolvedValueOnce({ rows: emptyAsyncIterable() });
+
+    const { GET } = await import('./route');
+    const req = createAuthedRequest(`${basePath}?format=jsonl&type=citations`);
+    const res = await GET(req, { params: Promise.resolve({}) });
+
+    expect(res.headers.get('Content-Type')).toBe('application/x-ndjson; charset=utf-8');
+  });
+
+  it('returns correct Content-Disposition for JSONL format', async () => {
+    mockFetchExportData.mockResolvedValueOnce({ rows: emptyAsyncIterable() });
+
+    const { GET } = await import('./route');
+    const req = createAuthedRequest(
+      `${basePath}?format=jsonl&type=citations&from=2026-03-01&to=2026-03-31`
+    );
+    const res = await GET(req, { params: Promise.resolve({}) });
+
+    expect(res.headers.get('Content-Disposition')).toBe(
+      'attachment; filename="citations_2026-03-01_2026-03-31.jsonl"'
+    );
+  });
+
+  it('JSONL has no meta envelope', async () => {
+    mockFetchExportData.mockResolvedValueOnce({ rows: sampleRows() });
+
+    const { GET } = await import('./route');
+    const req = createAuthedRequest(
+      `${basePath}?format=jsonl&type=report&promptSetId=ps_1&brandId=brand_1`
+    );
+    const res = await GET(req, { params: Promise.resolve({}) });
+
+    const text = await responseText(res);
+    expect(text).not.toContain('"meta"');
+  });
+
+  it('JSONL empty result returns 200 with empty body', async () => {
+    mockFetchExportData.mockResolvedValueOnce({ rows: emptyAsyncIterable() });
+
+    const { GET } = await import('./route');
+    const req = createAuthedRequest(`${basePath}?format=jsonl&type=citations`);
+    const res = await GET(req, { params: Promise.resolve({}) });
+
+    expect(res.status).toBe(200);
+    const text = await responseText(res);
+    expect(text).toBe('');
+  });
+
+  it('returns 400 for format=xml listing csv, json, jsonl', async () => {
+    const { GET } = await import('./route');
+    const req = createAuthedRequest(`${basePath}?format=xml&type=citations`);
     const res = await GET(req, { params: Promise.resolve({}) });
 
     expect(res.status).toBe(400);
     const body = await res.json();
-    expect(body.error.message).toContain('format');
+    expect(body.error.message).toContain('csv');
+    expect(body.error.message).toContain('json');
+    expect(body.error.message).toContain('jsonl');
   });
 
-  it('returns 400 for invalid format', async () => {
+  it('returns 401 for JSON format without authentication', async () => {
     const { GET } = await import('./route');
-    const req = createAuthedRequest(`${basePath}?format=pdf&type=citations`);
-    const res = await GET(req, { params: Promise.resolve({}) });
-
-    expect(res.status).toBe(400);
-    const body = await res.json();
-    expect(body.error.message).toContain('pdf');
-  });
-
-  it('returns 400 for missing type param', async () => {
-    const { GET } = await import('./route');
-    const req = createAuthedRequest(`${basePath}?format=csv`);
-    const res = await GET(req, { params: Promise.resolve({}) });
-
-    expect(res.status).toBe(400);
-    const body = await res.json();
-    expect(body.error.message).toContain('type');
-  });
-
-  it('returns 400 for invalid type', async () => {
-    const { GET } = await import('./route');
-    const req = createAuthedRequest(`${basePath}?format=csv&type=invalid`);
-    const res = await GET(req, { params: Promise.resolve({}) });
-
-    expect(res.status).toBe(400);
-    const body = await res.json();
-    expect(body.error.message).toContain('invalid');
-  });
-
-  it('returns 400 for missing required type-specific params (report needs promptSetId)', async () => {
-    const { GET } = await import('./route');
-    const req = createAuthedRequest(`${basePath}?format=csv&type=report`);
-    const res = await GET(req, { params: Promise.resolve({}) });
-
-    expect(res.status).toBe(400);
-  });
-
-  it('returns 401 without authentication', async () => {
-    const { GET } = await import('./route');
-    const req = createUnauthenticatedRequest(`${basePath}?format=csv&type=citations`);
+    const req = createUnauthenticatedRequest(`${basePath}?format=json&type=citations`);
     const res = await GET(req, { params: Promise.resolve({}) });
 
     expect(res.status).toBe(401);
   });
 
-  it('returns 403 without read scope', async () => {
+  it('returns 403 for JSON format without read scope', async () => {
     mockVerifyApiKey.mockResolvedValueOnce({
       id: 'key_no_scope',
       workspaceId: 'ws_123',
@@ -245,106 +306,36 @@ describe('GET /api/v1/exports — CSV format', () => {
     });
 
     const { GET } = await import('./route');
-    const req = createAuthedRequest(`${basePath}?format=csv&type=citations`);
+    const req = createAuthedRequest(`${basePath}?format=json&type=citations`);
     const res = await GET(req, { params: Promise.resolve({}) });
 
     expect(res.status).toBe(403);
   });
 
-  it('includes rate limit headers', async () => {
+  it('JSON format works for opportunities export type', async () => {
     mockFetchExportData.mockResolvedValueOnce({ rows: emptyAsyncIterable() });
-
-    const { GET } = await import('./route');
-    const req = createAuthedRequest(`${basePath}?format=csv&type=citations`);
-    const res = await GET(req, { params: Promise.resolve({}) });
-
-    expect(res.headers.get('X-RateLimit-Limit')).toBe('20');
-  });
-
-  it('includes request ID header', async () => {
-    mockFetchExportData.mockResolvedValueOnce({ rows: emptyAsyncIterable() });
-
-    const { GET } = await import('./route');
-    const req = createAuthedRequest(`${basePath}?format=csv&type=citations`);
-    const res = await GET(req, { params: Promise.resolve({}) });
-
-    expect(res.headers.get('X-Request-Id')).toBeDefined();
-  });
-
-  it('returns header-only CSV for empty result (not an error)', async () => {
-    mockFetchExportData.mockResolvedValueOnce({ rows: emptyAsyncIterable() });
-
-    const { GET } = await import('./route');
-    const req = createAuthedRequest(`${basePath}?format=csv&type=citations`);
-    const res = await GET(req, { params: Promise.resolve({}) });
-
-    expect(res.status).toBe(200);
-    const text = await responseText(res);
-    const lines = text.split('\r\n').filter((l) => l.length > 0);
-    expect(lines).toHaveLength(1);
-  });
-
-  it('includes X-Export-Truncated header when row limit reached', async () => {
-    mockFetchExportData.mockResolvedValueOnce({
-      rows: emptyAsyncIterable(),
-      truncated: true,
-    });
-
-    const { GET } = await import('./route');
-    const req = createAuthedRequest(`${basePath}?format=csv&type=citations`);
-    const res = await GET(req, { params: Promise.resolve({}) });
-
-    expect(res.headers.get('X-Export-Truncated')).toBe('true');
-    expect(res.headers.get('X-Export-Row-Limit')).toBe('100000');
-  });
-
-  it('includes X-Export-Warnings header for report warnings', async () => {
-    mockFetchExportData.mockResolvedValueOnce({
-      rows: emptyAsyncIterable(),
-      warnings: ['sentiment: partial data', 'positions: timeout'],
-    });
 
     const { GET } = await import('./route');
     const req = createAuthedRequest(
-      `${basePath}?format=csv&type=report&promptSetId=ps_1&brandId=brand_1`
+      `${basePath}?format=json&type=opportunities&promptSetId=ps_1&brandId=brand_1`
     );
     const res = await GET(req, { params: Promise.resolve({}) });
 
-    expect(res.headers.get('X-Export-Warnings')).toBe(
-      'sentiment: partial data, positions: timeout'
-    );
+    expect(res.status).toBe(200);
+    expect(res.headers.get('Content-Type')).toBe('application/json; charset=utf-8');
+    const text = await responseText(res);
+    const parsed = JSON.parse(text);
+    expect(parsed.meta.exportType).toBe('opportunities');
   });
 
-  it('CSV content has correct number of columns for citations', async () => {
-    mockFetchExportData.mockResolvedValueOnce({
-      rows: (async function* () {
-        yield {
-          brandId: 'b1',
-          platform: 'chatgpt',
-          citationType: 'owned',
-          title: 'Test',
-          sourceUrl: 'https://test.com',
-          domain: 'test.com',
-          position: 1,
-          contextSnippet: 'snippet',
-          relevanceSignal: 'domain_match',
-          sentimentLabel: 'positive',
-          sentimentScore: '0.85',
-          locale: 'en-US',
-          createdAt: '2026-03-15',
-        };
-      })(),
-    });
+  it('JSONL format works for sentiment export type', async () => {
+    mockFetchExportData.mockResolvedValueOnce({ rows: emptyAsyncIterable() });
 
     const { GET } = await import('./route');
-    const req = createAuthedRequest(`${basePath}?format=csv&type=citations`);
+    const req = createAuthedRequest(`${basePath}?format=jsonl&type=sentiment&promptSetId=ps_1`);
     const res = await GET(req, { params: Promise.resolve({}) });
 
-    const text = await responseText(res);
-    const lines = text.split('\r\n').filter((l) => l.length > 0);
-    const headerCols = lines[0].replace(/^\uFEFF/, '').split(',').length;
-    const dataCols = lines[1].split(',').length;
-    expect(headerCols).toBe(13);
-    expect(dataCols).toBe(13);
+    expect(res.status).toBe(200);
+    expect(res.headers.get('Content-Type')).toBe('application/x-ndjson; charset=utf-8');
   });
 });

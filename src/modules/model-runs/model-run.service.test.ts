@@ -178,7 +178,7 @@ describe('model-run service', () => {
           adapterConfigIds: ['adapter_1', 'adapter_2'],
           locale: 'en-US',
         },
-        mockBoss as unknown as import('pg-boss').default
+        mockBoss as unknown as import('pg-boss').PgBoss
       );
 
       expect(result).toEqual(sampleRun);
@@ -198,7 +198,7 @@ describe('model-run service', () => {
         createModelRun(
           'ws_test',
           { promptSetId: 'ps_bad', brandId: 'brand_test', adapterConfigIds: ['adapter_1'] },
-          mockBoss as unknown as import('pg-boss').default
+          mockBoss as unknown as import('pg-boss').PgBoss
         )
       ).rejects.toThrow('Prompt set not found');
     });
@@ -212,7 +212,7 @@ describe('model-run service', () => {
         createModelRun(
           'ws_test',
           { promptSetId: 'ps_test', brandId: 'brand_bad', adapterConfigIds: ['adapter_1'] },
-          mockBoss as unknown as import('pg-boss').default
+          mockBoss as unknown as import('pg-boss').PgBoss
         )
       ).rejects.toThrow('Brand not found');
     });
@@ -227,7 +227,7 @@ describe('model-run service', () => {
         createModelRun(
           'ws_test',
           { promptSetId: 'ps_test', brandId: 'brand_test', adapterConfigIds: ['adapter_bad'] },
-          mockBoss as unknown as import('pg-boss').default
+          mockBoss as unknown as import('pg-boss').PgBoss
         )
       ).rejects.toThrow('Adapter configuration not found: adapter_bad');
     });
@@ -246,7 +246,7 @@ describe('model-run service', () => {
         createModelRun(
           'ws_test',
           { promptSetId: 'ps_test', brandId: 'brand_test', adapterConfigIds: ['adapter_1'] },
-          mockBoss as unknown as import('pg-boss').default
+          mockBoss as unknown as import('pg-boss').PgBoss
         )
       ).rejects.toThrow('Adapter configuration is disabled: adapter_1');
     });
@@ -266,7 +266,7 @@ describe('model-run service', () => {
         createModelRun(
           'ws_test',
           { promptSetId: 'ps_test', brandId: 'brand_test', adapterConfigIds: ['adapter_1'] },
-          mockBoss as unknown as import('pg-boss').default
+          mockBoss as unknown as import('pg-boss').PgBoss
         )
       ).rejects.toThrow('Prompt set has no prompts');
     });
