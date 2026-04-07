@@ -40,6 +40,15 @@ function parseEnv(): Env {
   }
 
   cached = parsed.data;
+
+  if (cached.NODE_ENV === 'production' && cached.CORS_ALLOWED_ORIGINS === '*') {
+    console.warn(
+      '[security] CORS_ALLOWED_ORIGINS is set to wildcard (*) in production. ' +
+        'Consider restricting to specific origins for session-authenticated endpoints. ' +
+        'See docs/deployment.md for guidance.'
+    );
+  }
+
   return cached;
 }
 

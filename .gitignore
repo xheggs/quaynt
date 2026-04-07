@@ -20,6 +20,10 @@ coverage/
 
 # Secrets
 secrets/
+*.pem
+*.key
+*.p12
+*.pfx
 
 # Claude Code local files
 CLAUDE.local.md

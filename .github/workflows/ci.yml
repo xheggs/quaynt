@@ -87,7 +87,6 @@ jobs:
   audit:
     name: Audit
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
@@ -97,7 +96,20 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npm audit --audit-level=high
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=critical
+
+  secrets:
+    name: Secret scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+
+      - uses: gitleaks/gitleaks-action@ff98106b2bc4783e3e8abc32d4f0dab57ef81fe2 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   commitlint:
     name: Commit lint
