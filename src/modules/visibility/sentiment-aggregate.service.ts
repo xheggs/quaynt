@@ -3,7 +3,11 @@ import type { Column } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { sentimentAggregate } from './sentiment-aggregate.schema';
 import { paginationConfig, sortConfig, applyDateRange, countTotal } from '@/lib/db/query-helpers';
-import type { SentimentAggregateFilters } from './sentiment-aggregate.types';
+import type {
+  SentimentAggregateFilters,
+  SentimentAggregateRow,
+  SentimentAggregatedResult,
+} from './sentiment-aggregate.types';
 
 const ALL_SENTINEL = '_all';
 
@@ -43,7 +47,7 @@ export async function getSentimentAggregates(
   workspaceId: string,
   filters: SentimentAggregateFilters,
   pagination: { page: number; limit: number; sort?: string; order: 'asc' | 'desc' }
-) {
+): Promise<{ items: (SentimentAggregateRow | SentimentAggregatedResult)[]; total: number }> {
   const conditions: SQL[] = [eq(sentimentAggregate.workspaceId, workspaceId)];
 
   conditions.push(eq(sentimentAggregate.promptSetId, filters.promptSetId));

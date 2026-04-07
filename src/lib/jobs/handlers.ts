@@ -10,6 +10,7 @@ import { registerOpportunityHandlers } from '@/modules/visibility/opportunity.ha
 import { registerPositionAggregateHandlers } from '@/modules/visibility/position-aggregate.handler';
 import { registerAlertHandlers } from '@/modules/alerts/alert.handler';
 import { registerNotificationHandlers } from '@/modules/notifications/notification.handler';
+import { registerPdfHandlers } from '@/modules/pdf/pdf.handler';
 
 export async function registerHandlers(boss: PgBoss): Promise<void> {
   await registerWebhookHandlers(boss);
@@ -22,6 +23,7 @@ export async function registerHandlers(boss: PgBoss): Promise<void> {
   await registerPositionAggregateHandlers(boss);
   await registerAlertHandlers(boss);
   await registerNotificationHandlers(boss);
+  await registerPdfHandlers(boss);
 
   // Commercial-only handlers
   if (env.QUAYNT_EDITION !== 'community') {

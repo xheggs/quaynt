@@ -19,6 +19,9 @@ export const NAMESPACES = [
   'sentiment',
   'alerts',
   'emails',
+  'reports',
+  'exports',
+  'reports-pdf',
 ] as const;
 
 /**

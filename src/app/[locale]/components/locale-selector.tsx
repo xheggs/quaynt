@@ -9,12 +9,12 @@ import {
 
 const REGION_GROUP_ORDER: RegionGroup[] = ['americas', 'europe', 'asia-pacific', 'mena'];
 
-const REGION_GROUP_KEYS: Record<RegionGroup, string> = {
+const REGION_GROUP_KEYS = {
   americas: 'localeGroupAmericas',
   europe: 'localeGroupEurope',
   'asia-pacific': 'localeGroupAsiaPacific',
   mena: 'localeGroupMena',
-};
+} as const satisfies Record<RegionGroup, string>;
 
 interface LocaleSelectorProps {
   value?: string;

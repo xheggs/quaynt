@@ -21,6 +21,7 @@ const envSchema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   SMTP_TLS: z.coerce.boolean().default(false),
+  REPORT_STORAGE_PATH: z.string().default('./data/reports'),
 });
 
 export type Env = z.infer<typeof envSchema>;

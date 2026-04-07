@@ -1,0 +1,52 @@
+{
+  "exports": {
+    "errors": {
+      "invalidFormat": "Unsupported export format: {format}. Supported formats: {formats}",
+      "invalidType": "Unsupported export type: {type}. Supported types: {types}",
+      "exportFailed": "Export generation failed. Please try again.",
+      "rowLimitReached": "Export truncated at {limit} rows. Apply filters to narrow your results."
+    },
+    "columns": {
+      "brandName": "Brand",
+      "brandId": "Brand ID",
+      "market": "Market",
+      "periodFrom": "Period From",
+      "periodTo": "Period To",
+      "platform": "Platform",
+      "locale": "Locale",
+      "metric": "Metric",
+      "currentValue": "Current Value",
+      "previousValue": "Previous Value",
+      "delta": "Change",
+      "changeRate": "Change %",
+      "direction": "Direction",
+      "citationUrl": "URL",
+      "citationTitle": "Title",
+      "citationSnippet": "Snippet",
+      "citationPosition": "Position",
+      "citationType": "Type",
+      "sourceUrl": "Source URL",
+      "domain": "Domain",
+      "sentimentLabel": "Sentiment",
+      "sentimentScore": "Sentiment Score",
+      "relevanceSignal": "Relevance Signal",
+      "createdAt": "Date",
+      "opportunityType": "Opportunity Type",
+      "opportunityScore": "Score",
+      "promptText": "Prompt",
+      "competitorCount": "Competitor Count",
+      "brandCitationCount": "Brand Citations",
+      "sharePercentage": "Share %",
+      "citationCount": "Citation Count",
+      "totalCitations": "Total Citations",
+      "averagePosition": "Avg Position",
+      "medianPosition": "Median Position",
+      "firstMentionRate": "First Mention Rate",
+      "topThreeRate": "Top 3 Rate",
+      "positiveCount": "Positive",
+      "neutralCount": "Neutral",
+      "negativeCount": "Negative",
+      "netSentimentScore": "Net Sentiment"
+    }
+  }
+}

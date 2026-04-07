@@ -1,0 +1,30 @@
+{
+  "reports": {
+    "title": "Reports",
+    "description": "Consolidated visibility reports across metrics and brands",
+    "data": {
+      "title": "Report Data",
+      "noData": "No report data available for the selected period"
+    },
+    "errors": {
+      "promptSetRequired": "A prompt set (market) is required to generate a report",
+      "brandRequired": "At least one brand must be specified (provide brandId or brandIds)",
+      "brandIdConflict": "Provide either brandId or brandIds, not both",
+      "tooManyBrands": "A maximum of {max} brands can be included in a single report",
+      "invalidMetric": "Invalid metric: {metric}. Valid metrics are: {validMetrics}"
+    },
+    "metrics": {
+      "recommendationShare": "Recommendation Share",
+      "citationCount": "Citation Count",
+      "sentiment": "Sentiment",
+      "positions": "Average Position",
+      "sources": "Citation Sources",
+      "opportunities": "Opportunities"
+    },
+    "direction": {
+      "up": "Increased",
+      "down": "Decreased",
+      "stable": "Stable"
+    }
+  }
+}
