@@ -2,7 +2,7 @@ import { withAuth, withScope, getAuthContext } from '@/lib/api/middleware';
 import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
-import { apiCreated, apiError, badRequest } from '@/lib/api/response';
+import { apiCreated, apiError, badRequest, notFound } from '@/lib/api/response';
 import { getRequestLogger } from '@/lib/logger';
 import { db } from '@/lib/db';
 import { createBoss } from '@/lib/jobs/boss';
@@ -11,6 +11,7 @@ import type { ReportJobScope } from '@/modules/pdf/report-job.schema';
 import { pdfReportRequestSchema } from '@/modules/pdf/pdf.types';
 import type { ReportPdfJobData } from '@/modules/pdf/pdf.types';
 import { getWorkspaceById } from '@/modules/workspace/workspace.service';
+import { getTemplate } from '@/modules/report-templates/report-template.service';
 
 const MAX_BRANDS = 25;
 const EXPIRY_DAYS = 30;
@@ -58,6 +59,14 @@ export const POST = withRequestId(
             );
           }
 
+          // Validate template if provided
+          if (params.templateId) {
+            const template = await getTemplate(auth.workspaceId, params.templateId);
+            if (!template) {
+              return notFound('report_template');
+            }
+          }
+
           // Build scope for job
           const scope: ReportJobScope = {
             promptSetId: params.promptSetId,
@@ -68,6 +77,7 @@ export const POST = withRequestId(
             metrics: params.metrics ? params.metrics.split(',').filter(Boolean) : undefined,
             platformId: params.platformId,
             locale: params.locale,
+            templateId: params.templateId,
           };
 
           // Use pg-boss singletonKey for deduplication (prevents identical jobs within 5 min)
@@ -104,6 +114,7 @@ export const POST = withRequestId(
             workspaceName,
             scope,
             locale: params.locale ?? 'en',
+            templateId: params.templateId,
           };
 
           await boss.send('report-pdf-generate', jobData, {

@@ -20,6 +20,8 @@ export const WEBHOOK_EVENT_TYPES = [
   'visibility.opportunities_updated',
   'visibility.position_aggregate_updated',
   'visibility.trend_anomaly_detected',
+  'report_schedule.delivered',
+  'report_schedule.failed',
   'webhook.test',
 ] as const;
 
@@ -296,6 +298,36 @@ export const WEBHOOK_SAMPLE_PAYLOADS: Record<WebhookEventType, object> = {
       period: 'weekly',
       anomalyCount: 1,
     },
+  },
+  'report_schedule.delivered': {
+    schedule: {
+      id: 'sched_sample123',
+      name: 'Weekly Brand Report',
+      frequency: 'weekly',
+      format: 'pdf',
+    },
+    period: {
+      from: '2026-03-31',
+      to: '2026-04-07',
+    },
+    deliveredAt: '2026-04-07T07:01:30.000Z',
+    recipientCount: 3,
+    reportDownloadUrl: '/api/v1/reports/pdf/rpt_sample789/download',
+  },
+  'report_schedule.failed': {
+    schedule: {
+      id: 'sched_sample123',
+      name: 'Weekly Brand Report',
+      frequency: 'weekly',
+      format: 'pdf',
+    },
+    period: {
+      from: '2026-03-31',
+      to: '2026-04-07',
+    },
+    error: 'BRANDS_NOT_FOUND',
+    consecutiveFailures: 5,
+    autoDisabled: true,
   },
   'webhook.test': {
     test: true,

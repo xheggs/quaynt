@@ -21,5 +21,13 @@ export function registerFonts(): void {
     ],
   });
 
+  Font.register({
+    family: 'NotoSerif',
+    fonts: [
+      { src: join(FONTS_DIR, 'NotoSerif-Regular.ttf'), fontWeight: 400 },
+      { src: join(FONTS_DIR, 'NotoSerif-Bold.ttf'), fontWeight: 700 },
+    ],
+  });
+
   registered = true;
 }

@@ -25,6 +25,41 @@
       "up": "Increased",
       "down": "Decreased",
       "stable": "Stable"
+    },
+    "schedules": {
+      "name": "Schedule Name",
+      "frequency": "Frequency",
+      "hour": "Delivery Hour",
+      "timezone": "Timezone",
+      "format": "Format",
+      "recipients": "Recipients",
+      "enabled": "Enabled",
+      "lastRun": "Last Run",
+      "nextRun": "Next Run",
+      "frequencies": {
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly"
+      },
+      "formats": {
+        "pdf": "PDF",
+        "csv": "CSV",
+        "json": "JSON"
+      },
+      "errors": {
+        "notFound": "Schedule not found",
+        "nameRequired": "Schedule name is required",
+        "invalidFrequency": "Invalid frequency. Must be daily, weekly, or monthly",
+        "noRecipients": "At least one recipient is required",
+        "tooManyRecipients": "A maximum of 25 recipients per schedule",
+        "tooManySchedules": "Maximum of 25 schedules per workspace reached",
+        "invalidTimezone": "Invalid IANA timezone identifier"
+      },
+      "status": {
+        "active": "Active",
+        "disabled": "Disabled",
+        "autoDisabled": "Auto-disabled after repeated failures"
+      }
     }
   }
 }

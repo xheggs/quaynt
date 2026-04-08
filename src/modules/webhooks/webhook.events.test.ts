@@ -25,8 +25,10 @@ describe('webhook event registry', () => {
     expect(WEBHOOK_EVENT_TYPES).toContain('visibility.position_aggregate_updated');
     expect(WEBHOOK_EVENT_TYPES).toContain('visibility.trend_anomaly_detected');
     expect(WEBHOOK_EVENT_TYPES).toContain('alert.acknowledged');
+    expect(WEBHOOK_EVENT_TYPES).toContain('report_schedule.delivered');
+    expect(WEBHOOK_EVENT_TYPES).toContain('report_schedule.failed');
     expect(WEBHOOK_EVENT_TYPES).toContain('webhook.test');
-    expect(WEBHOOK_EVENT_TYPES).toHaveLength(22);
+    expect(WEBHOOK_EVENT_TYPES).toHaveLength(24);
   });
 
   it('has sample payloads for all event types', () => {

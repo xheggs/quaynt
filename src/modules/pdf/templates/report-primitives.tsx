@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createContext, useContext } from 'react';
 import { View, Text, Image, StyleSheet } from '@react-pdf/renderer';
 
 // --- Shared styles ---
@@ -17,6 +17,33 @@ export const colors = {
   down: '#e74c3c',
   stable: '#95a5a6',
 } as const;
+
+// --- Template theming via React context ---
+
+export type ReportColors = { [K in keyof typeof colors]: string };
+
+export interface TemplateTheme {
+  colors: ReportColors;
+  fontFamily: string;
+  footerText?: string;
+}
+
+const defaultTheme: TemplateTheme = { colors, fontFamily: 'NotoSans' };
+const TemplateContext = createContext<TemplateTheme>(defaultTheme);
+
+export function TemplateProvider({
+  value,
+  children,
+}: {
+  value: TemplateTheme;
+  children: React.ReactNode;
+}) {
+  return <TemplateContext.Provider value={value}>{children}</TemplateContext.Provider>;
+}
+
+export function useTemplateTheme(): TemplateTheme {
+  return useContext(TemplateContext);
+}
 
 export const baseStyles = StyleSheet.create({
   page: {
@@ -60,9 +87,11 @@ interface PageFooterProps {
 }
 
 export function PageFooter({ generatedBy }: PageFooterProps) {
+  const theme = useTemplateTheme();
+  const footerLabel = theme.footerText ?? generatedBy;
   return (
     <View style={footerStyles.footer} fixed>
-      <Text style={footerStyles.text}>{generatedBy}</Text>
+      <Text style={footerStyles.text}>{footerLabel}</Text>
       <Text
         style={footerStyles.text}
         render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`}
@@ -95,14 +124,15 @@ interface KpiCardProps {
 }
 
 export function KpiCard({ label, value, change, direction }: KpiCardProps) {
-  const changeColor =
-    direction === 'up' ? colors.up : direction === 'down' ? colors.down : colors.stable;
+  const theme = useTemplateTheme();
+  const c = theme.colors;
+  const changeColor = direction === 'up' ? c.up : direction === 'down' ? c.down : c.stable;
   const arrow = direction === 'up' ? '\u25B2' : direction === 'down' ? '\u25BC' : '';
 
   return (
-    <View style={kpiStyles.card}>
-      <Text style={kpiStyles.label}>{label}</Text>
-      <Text style={kpiStyles.value}>{value}</Text>
+    <View style={[kpiStyles.card, { backgroundColor: c.background }]}>
+      <Text style={[kpiStyles.label, { color: c.textLight }]}>{label}</Text>
+      <Text style={[kpiStyles.value, { color: c.primary }]}>{value}</Text>
       {change && (
         <View style={kpiStyles.changeRow}>
           <Text style={[kpiStyles.changeText, { color: changeColor }]}>
@@ -142,11 +172,13 @@ interface DataTableProps {
 }
 
 export function DataTable({ headers, rows }: DataTableProps) {
+  const theme = useTemplateTheme();
+  const c = theme.colors;
   return (
     <View style={tableStyles.table}>
-      <View style={tableStyles.headerRow}>
+      <View style={[tableStyles.headerRow, { borderBottomColor: c.primary }]}>
         {headers.map((h, i) => (
-          <Text key={i} style={[tableStyles.headerCell, { flex: h.flex }]}>
+          <Text key={i} style={[tableStyles.headerCell, { flex: h.flex, color: c.primary }]}>
             {h.label}
           </Text>
         ))}
@@ -154,10 +186,17 @@ export function DataTable({ headers, rows }: DataTableProps) {
       {rows.map((row, rowIdx) => (
         <View
           key={rowIdx}
-          style={rowIdx % 2 === 1 ? [tableStyles.row, tableStyles.rowAlt] : tableStyles.row}
+          style={
+            rowIdx % 2 === 1
+              ? [tableStyles.row, { backgroundColor: c.background }]
+              : tableStyles.row
+          }
         >
           {row.map((cell, cellIdx) => (
-            <Text key={cellIdx} style={[tableStyles.cell, { flex: headers[cellIdx].flex }]}>
+            <Text
+              key={cellIdx}
+              style={[tableStyles.cell, { flex: headers[cellIdx].flex, color: c.text }]}
+            >
               {cell}
             </Text>
           ))}

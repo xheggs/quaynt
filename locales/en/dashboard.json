@@ -1,0 +1,11 @@
+{
+  "errors": {
+    "promptSetNotFound": "Prompt set not found",
+    "invalidDateRange": "Start date must be before end date",
+    "noData": "No visibility data available for this period"
+  },
+  "warnings": {
+    "sectionFailed": "Could not load {section} data",
+    "allSectionsFailed": "Unable to load dashboard data"
+  }
+}

@@ -6,7 +6,13 @@ import type {
   SourceMetricBlock,
   OpportunityMetricBlock,
 } from '@/modules/reports/report-data.types';
-import { baseStyles, colors, PageFooter, ChartWithTable, DataTable } from './report-primitives';
+import {
+  baseStyles,
+  PageFooter,
+  ChartWithTable,
+  DataTable,
+  useTemplateTheme,
+} from './report-primitives';
 
 // --- Helpers ---
 
@@ -28,6 +34,8 @@ interface SectionProps {
 export function RecommendationShareSection({ data }: SectionProps) {
   const { reportData, translations, charts } = data;
   const t = translations;
+  const theme = useTemplateTheme();
+  const c = theme.colors;
 
   const headers = [
     { label: t.tables.brand, flex: 2 },
@@ -41,8 +49,10 @@ export function RecommendationShareSection({ data }: SectionProps) {
   });
 
   return (
-    <Page size="A4" style={baseStyles.page}>
-      <Text style={baseStyles.sectionTitle}>{t.sections.recommendationShare}</Text>
+    <Page size="A4" style={[baseStyles.page, { fontFamily: theme.fontFamily, color: c.text }]}>
+      <Text style={[baseStyles.sectionTitle, { color: c.primary, borderBottomColor: c.secondary }]}>
+        {t.sections.recommendationShare}
+      </Text>
       <ChartWithTable
         chartBuffer={charts.shareByPlatform}
         noDataLabel={t.charts.noData}
@@ -70,6 +80,8 @@ export function RecommendationShareSection({ data }: SectionProps) {
 export function CompetitorBenchmarksSection({ data }: SectionProps) {
   const { reportData, translations } = data;
   const t = translations;
+  const theme = useTemplateTheme();
+  const c = theme.colors;
 
   const headers = [
     { label: t.tables.brand, flex: 2 },
@@ -91,8 +103,10 @@ export function CompetitorBenchmarksSection({ data }: SectionProps) {
   });
 
   return (
-    <Page size="A4" style={baseStyles.page}>
-      <Text style={baseStyles.sectionTitle}>{t.sections.competitorBenchmarks}</Text>
+    <Page size="A4" style={[baseStyles.page, { fontFamily: theme.fontFamily, color: c.text }]}>
+      <Text style={[baseStyles.sectionTitle, { color: c.primary, borderBottomColor: c.secondary }]}>
+        {t.sections.competitorBenchmarks}
+      </Text>
       <DataTable headers={headers} rows={rows} />
       <PageFooter generatedBy={t.footer.generatedBy} />
     </Page>
@@ -104,6 +118,8 @@ export function CompetitorBenchmarksSection({ data }: SectionProps) {
 export function OpportunitiesSection({ data }: SectionProps) {
   const { reportData, translations } = data;
   const t = translations;
+  const theme = useTemplateTheme();
+  const c = theme.colors;
 
   const brandsWithOpps = reportData.brands.filter(
     (b) => b.metrics.opportunities && Number(b.metrics.opportunities.current) > 0
@@ -131,8 +147,10 @@ export function OpportunitiesSection({ data }: SectionProps) {
   });
 
   return (
-    <Page size="A4" style={baseStyles.page}>
-      <Text style={baseStyles.sectionTitle}>{t.sections.opportunities}</Text>
+    <Page size="A4" style={[baseStyles.page, { fontFamily: theme.fontFamily, color: c.text }]}>
+      <Text style={[baseStyles.sectionTitle, { color: c.primary, borderBottomColor: c.secondary }]}>
+        {t.sections.opportunities}
+      </Text>
       <DataTable headers={headers} rows={rows} />
       <PageFooter generatedBy={t.footer.generatedBy} />
     </Page>
@@ -144,6 +162,8 @@ export function OpportunitiesSection({ data }: SectionProps) {
 export function CitationSourcesSection({ data }: SectionProps) {
   const { reportData, translations, charts } = data;
   const t = translations;
+  const theme = useTemplateTheme();
+  const c = theme.colors;
 
   // Collect top domains across all brands
   const domainMap = new Map<string, number>();
@@ -168,8 +188,10 @@ export function CitationSourcesSection({ data }: SectionProps) {
   const rows = sortedDomains.map(([domain, freq]) => [domain, String(freq)]);
 
   return (
-    <Page size="A4" style={baseStyles.page}>
-      <Text style={baseStyles.sectionTitle}>{t.sections.citationSources}</Text>
+    <Page size="A4" style={[baseStyles.page, { fontFamily: theme.fontFamily, color: c.text }]}>
+      <Text style={[baseStyles.sectionTitle, { color: c.primary, borderBottomColor: c.secondary }]}>
+        {t.sections.citationSources}
+      </Text>
       <ChartWithTable
         chartBuffer={charts.topDomains}
         noDataLabel={t.charts.noData}
@@ -186,14 +208,15 @@ export function CitationSourcesSection({ data }: SectionProps) {
 export function AlertSummarySection({ data }: SectionProps) {
   const { translations } = data;
   const t = translations;
+  const theme = useTemplateTheme();
+  const c = theme.colors;
 
-  // Alert data would come from alert events in the report period.
-  // For now, this is a structural placeholder that renders the section header.
-  // The generator service will skip this section if no alert data exists.
   return (
-    <Page size="A4" style={baseStyles.page}>
-      <Text style={baseStyles.sectionTitle}>{t.sections.alertSummary}</Text>
-      <Text style={{ fontSize: 10, color: colors.textMuted }}>{t.charts.noData}</Text>
+    <Page size="A4" style={[baseStyles.page, { fontFamily: theme.fontFamily, color: c.text }]}>
+      <Text style={[baseStyles.sectionTitle, { color: c.primary, borderBottomColor: c.secondary }]}>
+        {t.sections.alertSummary}
+      </Text>
+      <Text style={{ fontSize: 10, color: c.textMuted }}>{t.charts.noData}</Text>
       <PageFooter generatedBy={t.footer.generatedBy} />
     </Page>
   );

@@ -11,6 +11,7 @@ import { registerPositionAggregateHandlers } from '@/modules/visibility/position
 import { registerAlertHandlers } from '@/modules/alerts/alert.handler';
 import { registerNotificationHandlers } from '@/modules/notifications/notification.handler';
 import { registerPdfHandlers } from '@/modules/pdf/pdf.handler';
+import { registerScheduledReportHandlers } from '@/modules/scheduled-reports/scheduled-report.handler';
 
 export async function registerHandlers(boss: PgBoss): Promise<void> {
   await registerWebhookHandlers(boss);
@@ -24,11 +25,16 @@ export async function registerHandlers(boss: PgBoss): Promise<void> {
   await registerAlertHandlers(boss);
   await registerNotificationHandlers(boss);
   await registerPdfHandlers(boss);
+  await registerScheduledReportHandlers(boss);
 
   // Commercial-only handlers
   if (env.QUAYNT_EDITION !== 'community') {
     const { registerTrendSnapshotHandlers } =
       await import('@/modules/visibility/trend-snapshot.handler');
     await registerTrendSnapshotHandlers(boss);
+
+    const { registerLogoCleanupHandler } =
+      await import('@/modules/report-templates/template-logo-cleanup.handler');
+    await registerLogoCleanupHandler(boss);
   }
 }

@@ -22,6 +22,7 @@ export const NAMESPACES = [
   'reports',
   'exports',
   'reports-pdf',
+  'dashboard',
 ] as const;
 
 /**

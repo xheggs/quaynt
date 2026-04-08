@@ -36,5 +36,24 @@
     "hourly": "hour",
     "daily": "day",
     "weekly": "week"
+  },
+  "scheduledReport": {
+    "subject": "{scheduleName} — {periodStart} to {periodEnd}",
+    "greeting": "Your scheduled report is ready",
+    "periodLabel": "Report period",
+    "formatLabel": "Format",
+    "highlights": "Key highlights",
+    "downloadButton": "Download report",
+    "pdfAttached": "Your PDF report is attached to this email.",
+    "viewInQuaynt": "View in Quaynt",
+    "footer": {
+      "whyReceived": "You are receiving this because you are a recipient of the scheduled report \"{scheduleName}\".",
+      "unsubscribe": "Unsubscribe from this report"
+    },
+    "unsubscribe": {
+      "confirmed": "You have been unsubscribed from \"{scheduleName}\".",
+      "alreadyUnsubscribed": "You are already unsubscribed from this report.",
+      "invalidToken": "This unsubscribe link is invalid or has expired."
+    }
   }
 }

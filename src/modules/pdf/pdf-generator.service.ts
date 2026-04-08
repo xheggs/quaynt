@@ -22,6 +22,7 @@ import type {
   ReportDocumentProps,
 } from './pdf.types';
 import { PdfPermanentError, PdfTransientError } from './pdf.types';
+import type { TemplateConfig } from '@/modules/report-templates/report-template.types';
 
 import reportsPdfMessages from '../../../locales/en/reports-pdf.json';
 import reportsMessages from '../../../locales/en/reports.json';
@@ -217,6 +218,35 @@ export async function generatePdfReport(config: PdfReportConfig): Promise<PdfGen
   // 3. Render charts
   const charts = await renderCharts(reportData, translations);
 
+  // 3.5. Resolve template config (if templateId provided)
+  let templateConfig: TemplateConfig | undefined;
+  if (config.templateId) {
+    try {
+      const { getTemplate } = await import('@/modules/report-templates/report-template.service');
+      const { resolveLogoBuffer } =
+        await import('@/modules/report-templates/template-logo.service');
+
+      const template = await getTemplate(workspaceId, config.templateId);
+      if (template) {
+        templateConfig = {
+          layout: template.layout,
+          branding: template.branding,
+          coverOverrides: template.coverOverrides ?? {},
+        };
+        if (template.branding.logoPath) {
+          templateConfig.logoBuffer = await resolveLogoBuffer(template.branding.logoPath);
+        }
+      } else {
+        log.warn({ templateId: config.templateId }, 'Template not found, using default layout');
+      }
+    } catch (err) {
+      log.warn(
+        { err, templateId: config.templateId },
+        'Failed to resolve template, using default layout'
+      );
+    }
+  }
+
   // 4. Assemble template props
   const generatedAt = formatDate(new Date(), locale);
 
@@ -227,6 +257,7 @@ export async function generatePdfReport(config: PdfReportConfig): Promise<PdfGen
     locale,
     workspaceName,
     generatedAt,
+    templateConfig,
   };
 
   // 5. Render PDF stream

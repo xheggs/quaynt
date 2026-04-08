@@ -8,6 +8,7 @@ import type enModelRuns from '../../../locales/en/modelRuns.json';
 import type enCitations from '../../../locales/en/citations.json';
 import type enEmails from '../../../locales/en/emails.json';
 import type enReportsPdf from '../../../locales/en/reports-pdf.json';
+import type enDashboard from '../../../locales/en/dashboard.json';
 
 type Messages = typeof en &
   typeof enErrors &
@@ -17,7 +18,8 @@ type Messages = typeof en &
   typeof enModelRuns &
   typeof enCitations &
   typeof enEmails &
-  typeof enReportsPdf;
+  typeof enReportsPdf &
+  typeof enDashboard;
 
 declare module 'next-intl' {
   interface AppConfig {

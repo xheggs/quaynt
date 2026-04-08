@@ -20,6 +20,7 @@ export interface ReportJobScope {
   metrics?: string[];
   platformId?: string;
   locale?: string;
+  templateId?: string;
 }
 
 export const reportJob = pgTable(

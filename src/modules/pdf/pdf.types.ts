@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { ReportDataResponse } from '@/modules/reports/report-data.types';
+import type { TemplateConfig } from '@/modules/report-templates/report-template.types';
 
 // --- Report sections ---
 
@@ -45,6 +46,7 @@ export const pdfReportRequestSchema = z.object({
   metrics: z.string().optional(),
   platformId: z.string().optional(),
   locale: z.string().default('en'),
+  templateId: z.string().optional(),
 });
 
 export type PdfReportRequest = z.infer<typeof pdfReportRequestSchema>;
@@ -66,6 +68,7 @@ export interface PdfReportConfig {
   };
   locale: string;
   storagePath: string;
+  templateId?: string;
 }
 
 // --- Generation result ---
@@ -84,6 +87,7 @@ export interface ReportPdfJobData {
   workspaceName: string;
   scope: PdfReportConfig['scope'];
   locale: string;
+  templateId?: string;
 }
 
 // --- Translated strings passed to templates ---
@@ -123,6 +127,7 @@ export interface ReportDocumentProps {
   locale: string;
   workspaceName: string;
   generatedAt: string;
+  templateConfig?: TemplateConfig;
 }
 
 // --- Error classification ---

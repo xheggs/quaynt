@@ -34,6 +34,7 @@ async function processReportPdfJob(
       scope,
       locale,
       storagePath: env.REPORT_STORAGE_PATH,
+      templateId: job.data.templateId,
     });
 
     // Success: update job record

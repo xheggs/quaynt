@@ -19,4 +19,6 @@ export * from '@/modules/visibility/trend-snapshot.schema';
 export * from '@/modules/alerts/alert.schema';
 export * from '@/modules/notifications/notification.schema';
 export * from '@/modules/pdf/report-job.schema';
+export * from '@/modules/scheduled-reports/scheduled-report.schema';
+export * from '@/modules/report-templates/report-template.schema';
 export { timestamps } from './helpers';

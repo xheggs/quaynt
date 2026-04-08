@@ -1,0 +1,51 @@
+{
+  "reportsTemplates": {
+    "form": {
+      "name": "Template name",
+      "nameHint": "A descriptive name for this report template",
+      "description": "Description",
+      "descriptionHint": "Optional description of when to use this template",
+      "sections": "Report sections",
+      "sectionsHint": "Select and reorder the sections to include",
+      "branding": "Branding",
+      "logo": "Logo",
+      "logoHint": "Upload a PNG, JPEG, or SVG (max 2MB, resized to 400x200px)",
+      "primaryColor": "Primary color",
+      "secondaryColor": "Secondary color",
+      "accentColor": "Accent color",
+      "fontFamily": "Font",
+      "fontNotoSans": "Noto Sans",
+      "fontNotoSerif": "Noto Serif",
+      "footerText": "Footer text",
+      "coverTitle": "Cover title",
+      "coverSubtitle": "Cover subtitle"
+    },
+    "sections": {
+      "cover": "Cover page",
+      "executiveSummary": "Executive summary",
+      "recommendationShare": "Recommendation share",
+      "competitorBenchmarks": "Competitor benchmarks",
+      "opportunities": "Opportunities",
+      "citationSources": "Citation sources",
+      "alertSummary": "Alert summary"
+    },
+    "errors": {
+      "notFound": "Report template not found",
+      "commercialFeature": "Custom report templates require a commercial edition",
+      "limitExceeded": "Maximum {limit} templates per workspace",
+      "invalidColor": "Invalid color format — use hex (e.g., #1a2b3c)",
+      "logoTooLarge": "Logo file exceeds {limit} limit",
+      "logoInvalidType": "Logo must be PNG, JPEG, or SVG",
+      "duplicateName": "A template with this name already exists"
+    },
+    "actions": {
+      "duplicate": "Duplicate template",
+      "duplicatedName": "{name} (copy)"
+    },
+    "preview": {
+      "generating": "Generating preview...",
+      "ready": "Preview ready",
+      "sampleData": "Preview — sample data"
+    }
+  }
+}

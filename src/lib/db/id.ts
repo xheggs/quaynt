@@ -32,6 +32,10 @@ export const PREFIXES = {
   notificationLog: 'notiflog',
   digestBatch: 'digestbatch',
   reportJob: 'rpt',
+  reportSchedule: 'sched',
+  scheduleRecipient: 'schrcpt',
+  reportDelivery: 'rptdlv',
+  reportTemplate: 'tmpl',
 } as const;
 
 export function generatePrefixedId(model: keyof typeof PREFIXES): string {
