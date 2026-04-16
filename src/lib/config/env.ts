@@ -14,13 +14,19 @@ const envSchema = z.object({
   WEBHOOK_MAX_PAYLOAD_SIZE: z.coerce.number().default(65_536),
   ADAPTER_ENCRYPTION_KEY: z.string().length(64).optional(),
   ALERT_MAX_RULES_PER_WORKSPACE: z.coerce.number().default(25),
-  EMAIL_ENABLED: z.coerce.boolean().default(false),
+  EMAIL_ENABLED: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
   EMAIL_FROM: z.string().default('Quaynt <notifications@quaynt.com>'),
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().default(587),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
-  SMTP_TLS: z.coerce.boolean().default(false),
+  SMTP_TLS: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
   REPORT_STORAGE_PATH: z.string().default('./data/reports'),
 });
 

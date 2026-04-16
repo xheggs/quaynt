@@ -22,7 +22,12 @@ export const NAMESPACES = [
   'reports',
   'exports',
   'reports-pdf',
+  'reports-templates',
   'dashboard',
+  'benchmarks',
+  'opportunities',
+  'ui',
+  'settings',
 ] as const;
 
 /**

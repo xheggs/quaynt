@@ -1,6 +1,6 @@
 {
   "alert": {
-    "subject": "{severity}: {brandName} — {metricLabel} {conditionLabel} ({currentValue})",
+    "subject": "{severity}: {brandName} · {metricLabel} {conditionLabel} ({currentValue})",
     "preview": "{brandName} {metricLabel} is now {currentValue} (was {previousValue})",
     "greeting": "Alert for {brandName}",
     "metricSummary": "{metricLabel} {conditionLabel} {threshold}",
@@ -15,10 +15,10 @@
   "digest": {
     "subject": "{count, plural, one {# alert} other {# alerts}} in the past {period}",
     "preview": "You have {count, plural, one {# alert} other {# alerts}} to review",
-    "heading": "Alert digest — {period}",
+    "heading": "Alert digest: {period}",
     "alertCount": "{count, plural, one {# alert triggered} other {# alerts triggered}}",
     "viewAllButton": "View all alerts",
-    "brandSection": "{brandName} — {count, plural, one {# alert} other {# alerts}}",
+    "brandSection": "{brandName}: {count, plural, one {# alert} other {# alerts}}",
     "noAlerts": "No alerts in this period"
   },
   "footer": {
@@ -37,8 +37,17 @@
     "daily": "day",
     "weekly": "week"
   },
+  "magicLink": {
+    "subject": "Sign in to Quaynt",
+    "preview": "Your sign-in link for Quaynt",
+    "heading": "Sign in to Quaynt",
+    "body": "Click the button below to sign in to your account. This link expires in 10 minutes.",
+    "buttonText": "Sign in to Quaynt",
+    "expiry": "This link expires in 10 minutes.",
+    "ignoreNotice": "If you didn't request this email, you can safely ignore it."
+  },
   "scheduledReport": {
-    "subject": "{scheduleName} — {periodStart} to {periodEnd}",
+    "subject": "{scheduleName}: {periodStart} to {periodEnd}",
     "greeting": "Your scheduled report is ready",
     "periodLabel": "Report period",
     "formatLabel": "Format",

@@ -1,11 +1,73 @@
 {
-  "errors": {
-    "promptSetNotFound": "Prompt set not found",
-    "invalidDateRange": "Start date must be before end date",
-    "noData": "No visibility data available for this period"
-  },
-  "warnings": {
-    "sectionFailed": "Could not load {section} data",
-    "allSectionsFailed": "Unable to load dashboard data"
+  "dashboard": {
+    "pageTitle": "Dashboard",
+    "header": {
+      "title": "AI Visibility Dashboard"
+    },
+    "filters": {
+      "promptSet": "Prompt Set",
+      "promptSetPlaceholder": "All prompt sets",
+      "dateRange": "Date Range"
+    },
+    "kpiCards": {
+      "recommendationShare": "Recommendation Share",
+      "totalCitations": "Total Citations",
+      "averageSentiment": "Average Sentiment",
+      "vsPrevious": "vs previous period",
+      "noChange": "No change",
+      "ariaLabel": "{label}: {value}, {direction} {delta} vs previous period",
+      "ariaLabelNoTrend": "{label}: {value}",
+      "trendUp": "up",
+      "trendDown": "down",
+      "trendStable": "stable"
+    },
+    "sections": {
+      "movers": "Top Movers",
+      "opportunities": "Top Opportunities",
+      "platforms": "Platform Health",
+      "alerts": "Recent Alerts"
+    },
+    "movers": {
+      "empty": "No brand data available yet",
+      "share": "Share"
+    },
+    "opportunities": {
+      "empty": "No opportunities found. Run models against competitor brands to discover gaps.",
+      "missing": "Missing",
+      "weak": "Weak",
+      "competitors": "{count, plural, one {# competitor} other {# competitors}}"
+    },
+    "platforms": {
+      "healthy": "Healthy",
+      "degraded": "Degraded",
+      "unhealthy": "Unhealthy",
+      "unknown": "Unknown",
+      "disabled": "Disabled",
+      "empty": "No platforms configured",
+      "lastChecked": "Checked {date}"
+    },
+    "alerts": {
+      "active": "{count, plural, one {# active alert} other {# active alerts}}",
+      "critical": "Critical",
+      "warning": "Warning",
+      "info": "Info",
+      "viewAll": "View all alerts",
+      "empty": "No alerts configured. Set up alert rules to monitor visibility changes."
+    },
+    "empty": {
+      "title": "Welcome to Quaynt",
+      "description": "Get started by creating brands and running your first visibility check.",
+      "cta": "Create your first brand"
+    },
+    "dataAsOf": "Last updated {date}",
+    "errors": {
+      "promptSetNotFound": "Prompt set not found",
+      "invalidDateRange": "Start date must be before end date",
+      "noData": "No visibility data available for this period"
+    },
+    "warnings": {
+      "sectionFailed": "Could not load {section} data",
+      "allSectionsFailed": "Unable to load dashboard data"
+    }
   }
 }

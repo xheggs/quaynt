@@ -1,0 +1,118 @@
+{
+  "ui": {
+    "brand": {
+      "logoAlt": "Quaynt"
+    },
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "navigation": {
+      "skipToContent": "Skip to main content",
+      "brands": "Brands",
+      "promptSets": "Prompt Sets",
+      "modelRuns": "Runs",
+      "citations": "Citations",
+      "dashboard": "Dashboard",
+      "benchmarks": "Benchmarks",
+      "opportunities": "Opportunities",
+      "alerts": "Alerts",
+      "reports": "Reports",
+      "home": "Home",
+      "settings": "Settings"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "view": "View"
+    },
+    "breadcrumb": {
+      "label": "Breadcrumb"
+    },
+    "loading": {
+      "default": "Loading..."
+    },
+    "table": {
+      "noResults": "No results found",
+      "showing": "Showing {from} to {to} of {total}",
+      "rowsPerPage": "Rows per page",
+      "page": "Page {page} of {totalPages}",
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "firstPage": "First page",
+      "lastPage": "Last page",
+      "selectAll": "Select all",
+      "selectRow": "Select row",
+      "sortAscending": "Sort ascending",
+      "sortDescending": "Sort descending",
+      "columns": "Columns",
+      "selected": "{count, plural, one {# row selected} other {# rows selected}}"
+    },
+    "filters": {
+      "clearAll": "Clear all filters",
+      "search": "Search...",
+      "dateRange": {
+        "label": "Date range",
+        "last7": "Last 7 days",
+        "last30": "Last 30 days",
+        "last90": "Last 90 days",
+        "custom": "Custom range"
+      },
+      "from": "From",
+      "to": "To",
+      "apply": "Apply",
+      "noOptions": "No options found",
+      "selectedCount": "{count, plural, one {# selected} other {# selected}}",
+      "remove": "Remove"
+    },
+    "form": {
+      "required": "Required",
+      "optional": "Optional",
+      "submit": "Save",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "saved": "Saved successfully",
+      "error": "Something went wrong. Please try again.",
+      "validationError": "Please fix the errors below",
+      "delete": "Delete",
+      "confirm": "Confirm",
+      "confirmDelete": "Are you sure? This action cannot be undone."
+    },
+    "error": {
+      "title": "Something went wrong",
+      "description": "An unexpected error occurred. Please try again.",
+      "retry": "Try again",
+      "goBack": "Go back",
+      "notFound": {
+        "title": "Not found",
+        "description": "The page you're looking for doesn't exist."
+      },
+      "networkError": "Unable to connect. Please check your connection and try again."
+    },
+    "empty": {
+      "default": {
+        "title": "Nothing here yet",
+        "description": "Get started by creating your first item."
+      }
+    },
+    "toast": {
+      "success": "Success",
+      "error": "Error",
+      "copied": "Copied to clipboard",
+      "validationErrorCount": "{count, plural, one {# validation error} other {# validation errors}}",
+      "unexpectedError": "An unexpected error occurred"
+    },
+    "sidebar": {
+      "monitoring": "Monitoring",
+      "configuration": "Configuration",
+      "reporting": "Reporting",
+      "toggleSidebar": "Toggle sidebar"
+    },
+    "a11y": {
+      "chartDataTable": "Data for {chartTitle}",
+      "mainNavigation": "Main navigation",
+      "settingsNavigation": "Settings navigation"
+    }
+  }
+}

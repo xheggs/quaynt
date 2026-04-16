@@ -36,6 +36,7 @@ export const PREFIXES = {
   scheduleRecipient: 'schrcpt',
   reportDelivery: 'rptdlv',
   reportTemplate: 'tmpl',
+  userPreference: 'upref',
 } as const;
 
 export function generatePrefixedId(model: keyof typeof PREFIXES): string {

@@ -24,36 +24,42 @@ export function apiError(
   );
 }
 
+/**
+ * The helpers below default `message` to the error code when no message is
+ * supplied. API error codes are machine-readable and do not require i18n
+ * (see .claude/rules/i18n.md). For user-facing errors, callers MUST pass an
+ * already-translated message, e.g.:
+ *
+ *   const t = await getTranslations('errors.api');
+ *   return badRequest(t('badRequest'));
+ */
+
 export function badRequest(message?: string, details?: unknown): NextResponse {
-  return apiError('BAD_REQUEST', message ?? 'The request could not be processed', 400, details);
+  return apiError('BAD_REQUEST', message ?? 'BAD_REQUEST', 400, details);
 }
 
 export function unauthorized(message?: string): NextResponse {
-  return apiError('UNAUTHORIZED', message ?? 'Authentication is required', 401);
+  return apiError('UNAUTHORIZED', message ?? 'UNAUTHORIZED', 401);
 }
 
 export function forbidden(message?: string): NextResponse {
-  return apiError('FORBIDDEN', message ?? 'You do not have permission to perform this action', 403);
+  return apiError('FORBIDDEN', message ?? 'FORBIDDEN', 403);
 }
 
-export function notFound(resource?: string): NextResponse {
-  return apiError(
-    'NOT_FOUND',
-    resource ? `${resource} was not found` : 'The requested resource was not found',
-    404
-  );
+export function notFound(message?: string): NextResponse {
+  return apiError('NOT_FOUND', message ?? 'NOT_FOUND', 404);
 }
 
 export function conflict(message?: string): NextResponse {
-  return apiError('CONFLICT', message ?? 'The request conflicts with the current state', 409);
+  return apiError('CONFLICT', message ?? 'CONFLICT', 409);
 }
 
-export function unprocessable(details?: unknown): NextResponse {
-  return apiError('UNPROCESSABLE_ENTITY', 'The request could not be processed', 422, details);
+export function unprocessable(details?: unknown, message?: string): NextResponse {
+  return apiError('UNPROCESSABLE_ENTITY', message ?? 'UNPROCESSABLE_ENTITY', 422, details);
 }
 
-export function tooManyRequests(retryAfter?: number): NextResponse {
-  const response = apiError('TOO_MANY_REQUESTS', 'Too many requests, please try again later', 429);
+export function tooManyRequests(retryAfter?: number, message?: string): NextResponse {
+  const response = apiError('TOO_MANY_REQUESTS', message ?? 'TOO_MANY_REQUESTS', 429);
   if (retryAfter !== undefined) {
     response.headers.set('Retry-After', String(retryAfter));
   }

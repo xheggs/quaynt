@@ -2,10 +2,15 @@
   "errors": {
     "api": {
       "badRequest": "The request could not be processed",
+      "conflict": "The request conflicts with the current state",
       "forbidden": "You do not have permission to perform this action",
       "internalError": "An unexpected error occurred. Please try again later.",
+      "networkError": "Unable to connect. Please check your connection and try again.",
       "notFound": "The requested resource was not found",
-      "unauthorized": "Authentication is required"
+      "tooManyRequests": "Too many requests, please try again later",
+      "unauthorized": "Authentication is required",
+      "unknown": "An unexpected error occurred",
+      "unprocessable": "The request could not be processed"
     },
     "apiKey": {
       "invalidScope": "Invalid API key scope",
@@ -15,7 +20,8 @@
     "auth": {
       "emailAlreadyExists": "An account with this email already exists",
       "insufficientScope": "This API key does not have permission for this action",
-      "invalidCredentials": "Invalid email or password",
+      "magicLinkExpired": "This sign-in link has expired. Please request a new one.",
+      "magicLinkFailed": "Could not send sign-in link. Please try again.",
       "notWorkspaceMember": "You are not a member of this workspace",
       "sessionExpired": "Your session has expired, please sign in again",
       "workspaceRequired": "A workspace context is required for this request"

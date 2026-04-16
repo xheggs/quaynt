@@ -9,6 +9,14 @@ import type enCitations from '../../../locales/en/citations.json';
 import type enEmails from '../../../locales/en/emails.json';
 import type enReportsPdf from '../../../locales/en/reports-pdf.json';
 import type enDashboard from '../../../locales/en/dashboard.json';
+import type enBenchmarks from '../../../locales/en/benchmarks.json';
+import type enOpportunities from '../../../locales/en/opportunities.json';
+import type enUi from '../../../locales/en/ui.json';
+import type enAlerts from '../../../locales/en/alerts.json';
+import type enReports from '../../../locales/en/reports.json';
+import type enExports from '../../../locales/en/exports.json';
+import type enReportsTemplates from '../../../locales/en/reports-templates.json';
+import type enSettings from '../../../locales/en/settings.json';
 
 type Messages = typeof en &
   typeof enErrors &
@@ -19,7 +27,15 @@ type Messages = typeof en &
   typeof enCitations &
   typeof enEmails &
   typeof enReportsPdf &
-  typeof enDashboard;
+  typeof enDashboard &
+  typeof enBenchmarks &
+  typeof enOpportunities &
+  typeof enUi &
+  typeof enAlerts &
+  typeof enReports &
+  typeof enExports &
+  typeof enReportsTemplates &
+  typeof enSettings;
 
 declare module 'next-intl' {
   interface AppConfig {

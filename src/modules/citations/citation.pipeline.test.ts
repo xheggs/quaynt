@@ -228,16 +228,14 @@ describe('extractCitationsForModelRun', () => {
     mockGetBrand.mockResolvedValueOnce(sampleBrand);
 
     const mockAdapter = {
-      extractCitations: vi
-        .fn()
-        .mockResolvedValueOnce([
-          {
-            url: 'https://acme.com/page',
-            title: 'Acme Page',
-            snippet: 'Great tools.',
-            position: 1,
-          },
-        ]),
+      extractCitations: vi.fn().mockResolvedValueOnce([
+        {
+          url: 'https://acme.com/page',
+          title: 'Acme Page',
+          snippet: 'Great tools.',
+          position: 1,
+        },
+      ]),
     };
     mockCreateInstance.mockReturnValueOnce(mockAdapter);
     mockReturning.mockReturnValueOnce([{ id: 'cit_mock123' }]);
@@ -411,16 +409,14 @@ describe('extractCitationsForModelRun', () => {
     mockGetBrand.mockResolvedValueOnce(sampleBrand);
 
     const mockAdapter = {
-      extractCitations: vi
-        .fn()
-        .mockResolvedValueOnce([
-          {
-            url: 'https://acme.com/page',
-            title: 'Acme Page',
-            snippet: 'Great tools.',
-            position: 1,
-          },
-        ]),
+      extractCitations: vi.fn().mockResolvedValueOnce([
+        {
+          url: 'https://acme.com/page',
+          title: 'Acme Page',
+          snippet: 'Great tools.',
+          position: 1,
+        },
+      ]),
     };
     mockCreateInstance.mockReturnValueOnce(mockAdapter);
     mockReturning.mockReturnValueOnce([{ id: 'cit_mock123' }]);
@@ -488,16 +484,14 @@ describe('extractCitationsForModelRun', () => {
     mockGetBrand.mockResolvedValueOnce(sampleBrand);
 
     const mockAdapter = {
-      extractCitations: vi
-        .fn()
-        .mockResolvedValueOnce([
-          {
-            url: 'https://acme.com/page',
-            title: 'Acme Page',
-            snippet: 'Great tools.',
-            position: 1,
-          },
-        ]),
+      extractCitations: vi.fn().mockResolvedValueOnce([
+        {
+          url: 'https://acme.com/page',
+          title: 'Acme Page',
+          snippet: 'Great tools.',
+          position: 1,
+        },
+      ]),
     };
     mockCreateInstance.mockReturnValueOnce(mockAdapter);
     mockReturning.mockReturnValueOnce([{ id: 'cit_mock123' }]);
@@ -524,16 +518,14 @@ describe('extractCitationsForModelRun', () => {
     mockGetBrand.mockResolvedValueOnce(sampleBrand);
 
     const mockAdapter = {
-      extractCitations: vi
-        .fn()
-        .mockResolvedValueOnce([
-          {
-            url: 'https://acme.com/page',
-            title: 'Acme Page',
-            snippet: 'Great tools.',
-            position: 1,
-          },
-        ]),
+      extractCitations: vi.fn().mockResolvedValueOnce([
+        {
+          url: 'https://acme.com/page',
+          title: 'Acme Page',
+          snippet: 'Great tools.',
+          position: 1,
+        },
+      ]),
     };
     mockCreateInstance.mockReturnValueOnce(mockAdapter);
     mockReturning.mockReturnValueOnce([{ id: 'cit_mock123' }]);
@@ -631,16 +623,14 @@ describe('extractCitationsForModelRun', () => {
     mockGetBrand.mockResolvedValueOnce(sampleBrand);
 
     const mockAdapter = {
-      extractCitations: vi
-        .fn()
-        .mockResolvedValueOnce([
-          {
-            url: 'https://acme.com/page',
-            title: 'Acme Page',
-            snippet: 'Great tools.',
-            position: 1,
-          },
-        ]),
+      extractCitations: vi.fn().mockResolvedValueOnce([
+        {
+          url: 'https://acme.com/page',
+          title: 'Acme Page',
+          snippet: 'Great tools.',
+          position: 1,
+        },
+      ]),
     };
     mockCreateInstance.mockReturnValueOnce(mockAdapter);
     mockReturning.mockReturnValueOnce([{ id: 'cit_mock123' }]);
@@ -671,16 +661,14 @@ describe('extractCitationsForModelRun', () => {
     mockGetBrand.mockResolvedValueOnce(sampleBrand);
 
     const mockAdapter = {
-      extractCitations: vi
-        .fn()
-        .mockResolvedValueOnce([
-          {
-            url: 'https://acme.com/page',
-            title: 'Acme Page',
-            snippet: 'Great tools.',
-            position: 1,
-          },
-        ]),
+      extractCitations: vi.fn().mockResolvedValueOnce([
+        {
+          url: 'https://acme.com/page',
+          title: 'Acme Page',
+          snippet: 'Great tools.',
+          position: 1,
+        },
+      ]),
     };
     mockCreateInstance.mockReturnValueOnce(mockAdapter);
     mockReturning.mockReturnValueOnce([{ id: 'cit_mock123' }]);
@@ -708,16 +696,14 @@ describe('extractCitationsForModelRun', () => {
     mockGetBrand.mockResolvedValueOnce(sampleBrand);
 
     const mockAdapter = {
-      extractCitations: vi
-        .fn()
-        .mockResolvedValueOnce([
-          {
-            url: 'https://www.acme.com/page?utm_source=twitter',
-            title: 'Acme Page',
-            snippet: 'Great tools.',
-            position: 1,
-          },
-        ]),
+      extractCitations: vi.fn().mockResolvedValueOnce([
+        {
+          url: 'https://www.acme.com/page?utm_source=twitter',
+          title: 'Acme Page',
+          snippet: 'Great tools.',
+          position: 1,
+        },
+      ]),
     };
     mockCreateInstance.mockReturnValueOnce(mockAdapter);
     mockReturning.mockReturnValueOnce([{ id: 'cit_mock123' }]);
@@ -780,16 +766,14 @@ describe('extractCitationsForModelRun', () => {
     mockGetBrand.mockResolvedValueOnce(sampleBrand);
 
     const mockAdapter = {
-      extractCitations: vi
-        .fn()
-        .mockResolvedValueOnce([
-          {
-            url: 'https://acme.com/page',
-            title: 'Acme Page',
-            snippet: 'Great tools.',
-            position: 1,
-          },
-        ]),
+      extractCitations: vi.fn().mockResolvedValueOnce([
+        {
+          url: 'https://acme.com/page',
+          title: 'Acme Page',
+          snippet: 'Great tools.',
+          position: 1,
+        },
+      ]),
     };
     mockCreateInstance.mockReturnValueOnce(mockAdapter);
     mockReturning.mockReturnValueOnce([{ id: 'cit_mock123' }]);
@@ -820,16 +804,14 @@ describe('extractCitationsForModelRun', () => {
     mockGetBrand.mockResolvedValueOnce(sampleBrand);
 
     const mockAdapter = {
-      extractCitations: vi
-        .fn()
-        .mockResolvedValueOnce([
-          {
-            url: 'https://acme.com/page',
-            title: 'Acme Page',
-            snippet: 'Great tools.',
-            position: 1,
-          },
-        ]),
+      extractCitations: vi.fn().mockResolvedValueOnce([
+        {
+          url: 'https://acme.com/page',
+          title: 'Acme Page',
+          snippet: 'Great tools.',
+          position: 1,
+        },
+      ]),
     };
     mockCreateInstance.mockReturnValueOnce(mockAdapter);
     mockReturning.mockReturnValueOnce([{ id: 'cit_mock123' }]);

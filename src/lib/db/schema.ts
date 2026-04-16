@@ -21,4 +21,5 @@ export * from '@/modules/notifications/notification.schema';
 export * from '@/modules/pdf/report-job.schema';
 export * from '@/modules/scheduled-reports/scheduled-report.schema';
 export * from '@/modules/report-templates/report-template.schema';
+export * from '@/modules/user/user-preference.schema';
 export { timestamps } from './helpers';

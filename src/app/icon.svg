@@ -1,0 +1,13 @@
+<svg width="1500" height="1500" viewBox="0 0 1500 1500" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .fg { fill: #0A0A0A; }
+    .fg-stroke { stroke: #0A0A0A; }
+    @media (prefers-color-scheme: dark) {
+      .fg { fill: #EAEAEA; }
+      .fg-stroke { stroke: #EAEAEA; }
+    }
+  </style>
+  <circle class="fg-stroke" cx="750" cy="750" r="650" stroke-width="200" fill="none"/>
+  <rect class="fg" x="617.84" y="900.684" width="400" height="928.324" rx="200" transform="rotate(-45 617.84 900.684)"/>
+  <circle class="fg" cx="750" cy="750" r="300" stroke="#C09CDA" stroke-width="200"/>
+</svg>

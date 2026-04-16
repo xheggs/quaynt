@@ -32,7 +32,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -47,9 +47,15 @@ services:
     <<: *app
     container_name: quaynt-web
     ports:
-      - "${PORT:-3000}:3000"
+      - '${PORT:-3000}:3000'
     healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/api/v1/health/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3000/api/v1/health/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -63,7 +69,7 @@ services:
   worker:
     <<: *app
     container_name: quaynt-worker
-    command: ["node", "dist/worker.cjs"]
+    command: ['node', 'dist/worker.cjs']
     deploy:
       resources:
         limits:

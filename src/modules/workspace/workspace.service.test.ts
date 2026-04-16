@@ -4,22 +4,36 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const mockTransaction = vi.fn();
 const mockSelect = vi.fn();
 const mockInsert = vi.fn();
+const mockUpdate = vi.fn();
+const mockDelete = vi.fn();
 const mockFrom = vi.fn();
 const mockWhere = vi.fn();
 const mockLimit = vi.fn();
 const mockValues = vi.fn();
 const mockReturning = vi.fn();
 const mockInnerJoin = vi.fn();
+const mockSet = vi.fn();
+const mockOnConflictDoNothing = vi.fn();
+const mockOrderBy = vi.fn();
+const mockOffset = vi.fn();
 
 vi.mock('@/lib/db', () => {
   mockSelect.mockReturnValue({ from: mockFrom });
   mockFrom.mockReturnValue({ where: mockWhere, innerJoin: mockInnerJoin });
-  mockWhere.mockReturnValue({ limit: mockLimit });
+  mockWhere.mockReturnValue({ limit: mockLimit, returning: mockReturning });
   mockInnerJoin.mockReturnValue({ where: mockWhere });
   mockLimit.mockReturnValue([]);
   mockInsert.mockReturnValue({ values: mockValues });
-  mockValues.mockReturnValue({ returning: mockReturning });
+  mockValues.mockReturnValue({
+    returning: mockReturning,
+    onConflictDoNothing: mockOnConflictDoNothing,
+  });
+  mockOnConflictDoNothing.mockReturnValue({ returning: mockReturning });
   mockReturning.mockReturnValue([{ id: 'ws_test', name: 'Test', slug: 'test' }]);
+  mockUpdate.mockReturnValue({ set: mockSet });
+  mockSet.mockReturnValue({ where: mockWhere });
+  mockDelete.mockReturnValue({ where: mockWhere });
+  mockLimit.mockReturnValue([]);
   mockTransaction.mockImplementation(
     async (fn: (tx: Record<string, unknown>) => Promise<unknown>) => {
       return fn({
@@ -33,6 +47,8 @@ vi.mock('@/lib/db', () => {
     db: {
       select: mockSelect,
       insert: mockInsert,
+      update: mockUpdate,
+      delete: mockDelete,
       transaction: mockTransaction,
     },
   };
@@ -53,6 +69,24 @@ vi.mock('./workspace.schema', () => ({
   },
 }));
 
+vi.mock('@/modules/auth/auth.schema', () => ({
+  user: {
+    id: 'id',
+    name: 'name',
+    email: 'email',
+  },
+}));
+
+vi.mock('@/lib/db/query-helpers', () => ({
+  paginationConfig: () => ({ limit: 25, offset: 0 }),
+  sortConfig: () => undefined,
+  countTotal: vi.fn().mockResolvedValue(0),
+}));
+
+vi.mock('@/lib/api/pagination', () => ({
+  parsePagination: vi.fn(),
+}));
+
 vi.mock('@/lib/config/env', () => ({
   env: { QUAYNT_EDITION: 'community' },
 }));
@@ -62,9 +96,15 @@ describe('workspace service', () => {
     vi.clearAllMocks();
     mockSelect.mockReturnValue({ from: mockFrom });
     mockFrom.mockReturnValue({ where: mockWhere, innerJoin: mockInnerJoin });
-    mockWhere.mockReturnValue({ limit: mockLimit });
+    mockWhere.mockReturnValue({ limit: mockLimit, returning: mockReturning });
     mockInnerJoin.mockReturnValue({ where: mockWhere });
     mockLimit.mockReturnValue([]);
+    mockReturning.mockReturnValue([]);
+    mockUpdate.mockReturnValue({ set: mockSet });
+    mockSet.mockReturnValue({ where: mockWhere });
+    mockDelete.mockReturnValue({ where: mockWhere });
+    mockInsert.mockReturnValue({ values: mockValues });
+    mockValues.mockReturnValue({ returning: mockReturning });
   });
 
   describe('getWorkspaceById', () => {
@@ -143,6 +183,7 @@ describe('workspace service', () => {
 
   describe('createWorkspaceForUser', () => {
     it('uses a transaction', async () => {
+      mockReturning.mockReturnValueOnce([{ id: 'ws_test', name: 'Test', slug: 'test' }]);
       const { createWorkspaceForUser } = await import('./workspace.service');
       await createWorkspaceForUser('usr_1', 'Test', 'test');
       expect(mockTransaction).toHaveBeenCalledOnce();
@@ -167,6 +208,90 @@ describe('workspace service', () => {
       const slug1 = generateWorkspaceSlug('Test');
       const slug2 = generateWorkspaceSlug('Test');
       expect(slug1).not.toBe(slug2);
+    });
+  });
+
+  describe('updateWorkspace', () => {
+    it('updates workspace name', async () => {
+      const updated = { id: 'ws_1', name: 'New Name', slug: 'test' };
+      mockReturning.mockReturnValueOnce([updated]);
+
+      const { updateWorkspace } = await import('./workspace.service');
+      const result = await updateWorkspace('ws_1', { name: 'New Name' });
+      expect(result).toEqual(updated);
+      expect(mockUpdate).toHaveBeenCalled();
+    });
+
+    it('returns existing workspace when no updates provided', async () => {
+      const existing = { id: 'ws_1', name: 'Test', slug: 'test' };
+      mockLimit.mockReturnValueOnce([existing]);
+
+      const { updateWorkspace } = await import('./workspace.service');
+      const result = await updateWorkspace('ws_1', {});
+      expect(result).toEqual(existing);
+      expect(mockUpdate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('addMemberByEmail', () => {
+    it('throws USER_NOT_FOUND when email not found', async () => {
+      mockLimit.mockReturnValueOnce([]); // user lookup
+
+      const { addMemberByEmail } = await import('./workspace.service');
+      await expect(addMemberByEmail('ws_1', 'nobody@example.com', 'member')).rejects.toThrow(
+        'USER_NOT_FOUND'
+      );
+    });
+
+    it('throws ALREADY_A_MEMBER when user is already a member', async () => {
+      mockLimit
+        .mockReturnValueOnce([{ id: 'usr_2', name: 'User', email: 'user@example.com' }]) // user found
+        .mockReturnValueOnce([{ id: 'wm_1', role: 'member' }]); // already a member
+
+      const { addMemberByEmail } = await import('./workspace.service');
+      await expect(addMemberByEmail('ws_1', 'user@example.com', 'member')).rejects.toThrow(
+        'ALREADY_A_MEMBER'
+      );
+    });
+  });
+
+  describe('updateMemberRole', () => {
+    it('throws MEMBER_NOT_FOUND for invalid member', async () => {
+      mockLimit.mockReturnValueOnce([]); // member not found
+
+      const { updateMemberRole } = await import('./workspace.service');
+      await expect(updateMemberRole('ws_1', 'wm_999', 'admin', 'usr_1')).rejects.toThrow(
+        'MEMBER_NOT_FOUND'
+      );
+    });
+
+    it('throws CANNOT_CHANGE_OWN_ROLE when acting on self', async () => {
+      mockLimit.mockReturnValueOnce([
+        { id: 'wm_1', userId: 'usr_1', workspaceId: 'ws_1', role: 'admin' },
+      ]);
+
+      const { updateMemberRole } = await import('./workspace.service');
+      await expect(updateMemberRole('ws_1', 'wm_1', 'member', 'usr_1')).rejects.toThrow(
+        'CANNOT_CHANGE_OWN_ROLE'
+      );
+    });
+  });
+
+  describe('removeMember', () => {
+    it('throws MEMBER_NOT_FOUND for invalid member', async () => {
+      mockLimit.mockReturnValueOnce([]);
+
+      const { removeMember } = await import('./workspace.service');
+      await expect(removeMember('ws_1', 'wm_999', 'usr_1')).rejects.toThrow('MEMBER_NOT_FOUND');
+    });
+
+    it('throws CANNOT_REMOVE_SELF when removing self', async () => {
+      mockLimit.mockReturnValueOnce([
+        { id: 'wm_1', userId: 'usr_1', workspaceId: 'ws_1', role: 'admin' },
+      ]);
+
+      const { removeMember } = await import('./workspace.service');
+      await expect(removeMember('ws_1', 'wm_1', 'usr_1')).rejects.toThrow('CANNOT_REMOVE_SELF');
     });
   });
 });

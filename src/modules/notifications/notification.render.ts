@@ -20,10 +20,12 @@ export async function loadEmailTranslations(locale: string): Promise<Record<stri
 export async function loadAlertTranslations(locale: string): Promise<Record<string, unknown>> {
   try {
     const mod = await import(`../../../locales/${locale}/alerts.json`);
-    return mod.default as Record<string, unknown>;
+    const json = mod.default as Record<string, unknown>;
+    return (json.alerts as Record<string, unknown>) ?? json;
   } catch {
     const mod = await import('../../../locales/en/alerts.json');
-    return mod.default as Record<string, unknown>;
+    const json = mod.default as Record<string, unknown>;
+    return (json.alerts as Record<string, unknown>) ?? json;
   }
 }
 

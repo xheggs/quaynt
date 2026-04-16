@@ -44,7 +44,7 @@ export function withRequestLog<T extends Record<string, string> = Record<string,
     } catch (error) {
       const durationMs = Math.round(performance.now() - start);
       childLogger.error({ err: error, durationMs }, 'unhandled error in request handler');
-      return apiError('INTERNAL_SERVER_ERROR', 'An unexpected error occurred', 500);
+      return apiError('INTERNAL_SERVER_ERROR', 'INTERNAL_SERVER_ERROR', 500);
     }
   };
 }

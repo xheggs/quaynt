@@ -6,6 +6,16 @@ import {
   getLocaleDisplayName,
   type RegionGroup,
 } from '@/lib/locale/supported-locales';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 const REGION_GROUP_ORDER: RegionGroup[] = ['americas', 'europe', 'asia-pacific', 'mena'];
 
@@ -33,32 +43,35 @@ export function LocaleSelector({ value, onChange, id }: LocaleSelectorProps) {
     grouped.set(entry.regionGroup, [...group, entry]);
   }
 
+  const selectorId = id ?? 'locale-selector';
+
   return (
-    <div>
-      <label htmlFor={id ?? 'locale-selector'}>{t('locale')}</label>
-      <select
-        id={id ?? 'locale-selector'}
-        value={value ?? ''}
-        onChange={(e) => onChange(e.target.value || undefined)}
-        aria-label={t('locale')}
-        aria-describedby={id ? `${id}-help` : 'locale-selector-help'}
-      >
-        <option value="">{t('localePlaceholder')}</option>
-        {REGION_GROUP_ORDER.map((group) => {
-          const entries = grouped.get(group);
-          if (!entries?.length) return null;
-          return (
-            <optgroup key={group} label={t(REGION_GROUP_KEYS[group])}>
-              {entries.map((entry) => (
-                <option key={entry.tag} value={entry.tag}>
-                  {getLocaleDisplayName(entry.tag, uiLocale)}
-                </option>
-              ))}
-            </optgroup>
-          );
-        })}
-      </select>
-      <p id={id ? `${id}-help` : 'locale-selector-help'}>{t('localeHelp')}</p>
+    <div className="flex flex-col gap-space-2">
+      <Label htmlFor={selectorId}>{t('locale')}</Label>
+      <Select value={value ?? ''} onValueChange={(val) => onChange(val || undefined)}>
+        <SelectTrigger id={selectorId} aria-label={t('locale')}>
+          <SelectValue placeholder={t('localePlaceholder')} />
+        </SelectTrigger>
+        <SelectContent>
+          {REGION_GROUP_ORDER.map((group) => {
+            const entries = grouped.get(group);
+            if (!entries?.length) return null;
+            return (
+              <SelectGroup key={group}>
+                <SelectLabel>{t(REGION_GROUP_KEYS[group])}</SelectLabel>
+                {entries.map((entry) => (
+                  <SelectItem key={entry.tag} value={entry.tag}>
+                    {getLocaleDisplayName(entry.tag, uiLocale)}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            );
+          })}
+        </SelectContent>
+      </Select>
+      <p id={`${selectorId}-help`} className="text-xs text-muted-foreground">
+        {t('localeHelp')}
+      </p>
     </div>
   );
 }

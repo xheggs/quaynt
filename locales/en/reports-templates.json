@@ -1,15 +1,43 @@
 {
   "reportsTemplates": {
+    "page": {
+      "title": "Report Templates",
+      "description": "Create branded templates for your PDF reports"
+    },
+    "columns": {
+      "name": "Name",
+      "sections": "Sections",
+      "font": "Font",
+      "colors": "Colors",
+      "created": "Created"
+    },
+    "count": "{count, plural, one {# template} other {# templates}}",
+    "empty": {
+      "title": "No templates yet",
+      "description": "Create a branded template to customize the look of your PDF reports",
+      "action": "Create template"
+    },
+    "commercial": {
+      "badge": "Commercial",
+      "upgrade": "Custom report templates require a commercial edition"
+    },
     "form": {
+      "createTitle": "Create template",
+      "editTitle": "Edit template",
       "name": "Template name",
+      "namePlaceholder": "e.g., Client brand report",
       "nameHint": "A descriptive name for this report template",
       "description": "Description",
+      "descriptionPlaceholder": "Describe when to use this template",
       "descriptionHint": "Optional description of when to use this template",
-      "sections": "Report sections",
-      "sectionsHint": "Select and reorder the sections to include",
       "branding": "Branding",
       "logo": "Logo",
-      "logoHint": "Upload a PNG, JPEG, or SVG (max 2MB, resized to 400x200px)",
+      "logoHint": "Upload a PNG or JPEG (max 2MB, resized to 400x200px)",
+      "logoUpload": "Upload logo",
+      "logoDragDrop": "or drag and drop",
+      "logoRemove": "Remove logo",
+      "logoUploading": "Uploading...",
+      "logoUploaded": "Logo uploaded",
       "primaryColor": "Primary color",
       "secondaryColor": "Secondary color",
       "accentColor": "Accent color",
@@ -17,8 +45,17 @@
       "fontNotoSans": "Noto Sans",
       "fontNotoSerif": "Noto Serif",
       "footerText": "Footer text",
+      "footerTextPlaceholder": "e.g., Confidential - For internal use only",
+      "sections": "Report sections",
+      "sectionsHint": "Select and reorder the sections to include",
+      "sectionsCount": "{enabled} of {total} sections",
+      "moveUp": "Move {section} up",
+      "moveDown": "Move {section} down",
+      "coverPage": "Cover page",
       "coverTitle": "Cover title",
-      "coverSubtitle": "Cover subtitle"
+      "coverTitlePlaceholder": "Custom title (defaults to report title)",
+      "coverSubtitle": "Cover subtitle",
+      "coverSubtitlePlaceholder": "Custom subtitle"
     },
     "sections": {
       "cover": "Cover page",
@@ -29,23 +66,63 @@
       "citationSources": "Citation sources",
       "alertSummary": "Alert summary"
     },
+    "preview": {
+      "button": "Preview",
+      "generating": "Generating preview...",
+      "ready": "Preview ready",
+      "error": "Preview generation failed. Please try again.",
+      "sampleData": "Preview uses sample data"
+    },
+    "duplicate": {
+      "action": "Duplicate",
+      "success": "Template duplicated",
+      "error": "Failed to duplicate template"
+    },
+    "delete": {
+      "action": "Delete",
+      "title": "Delete template",
+      "confirm": "Are you sure you want to delete \"{name}\"? Reports using this template will fall back to the default layout.",
+      "success": "Template deleted",
+      "error": "Failed to delete template"
+    },
+    "actions": {
+      "edit": "Edit",
+      "duplicate": "Duplicate template",
+      "duplicatedName": "{name} (copy)",
+      "preview": "Preview",
+      "delete": "Delete"
+    },
+    "validation": {
+      "nameRequired": "Template name is required",
+      "nameTooLong": "Name must be 255 characters or fewer",
+      "descriptionTooLong": "Description must be 1000 characters or fewer",
+      "invalidColor": "Invalid color format. Use hex (e.g., #1a2b3c).",
+      "footerTooLong": "Footer text must be 500 characters or fewer",
+      "coverTitleTooLong": "Cover title must be 255 characters or fewer",
+      "coverSubtitleTooLong": "Cover subtitle must be 500 characters or fewer",
+      "logoTooLarge": "Logo file exceeds 2MB limit",
+      "logoInvalidType": "Logo must be PNG or JPEG",
+      "atLeastOneSection": "At least one section must be enabled"
+    },
+    "limit": {
+      "indicator": "{count} of {max} templates",
+      "reached": "Maximum of {max} templates reached for this workspace"
+    },
     "errors": {
       "notFound": "Report template not found",
       "commercialFeature": "Custom report templates require a commercial edition",
       "limitExceeded": "Maximum {limit} templates per workspace",
-      "invalidColor": "Invalid color format — use hex (e.g., #1a2b3c)",
+      "invalidColor": "Invalid color format. Use hex (e.g., #1a2b3c).",
       "logoTooLarge": "Logo file exceeds {limit} limit",
-      "logoInvalidType": "Logo must be PNG, JPEG, or SVG",
-      "duplicateName": "A template with this name already exists"
+      "logoInvalidType": "Logo must be PNG or JPEG",
+      "duplicateName": "A template with this name already exists",
+      "uploadFailed": "Logo upload failed. Please try again.",
+      "forbidden": "You don't have access to report templates in this workspace"
     },
-    "actions": {
-      "duplicate": "Duplicate template",
-      "duplicatedName": "{name} (copy)"
-    },
-    "preview": {
-      "generating": "Generating preview...",
-      "ready": "Preview ready",
-      "sampleData": "Preview — sample data"
-    }
+    "createSuccess": "Template created",
+    "updateSuccess": "Template updated",
+    "templateSelector": "Template",
+    "templateSelectorPlaceholder": "Default layout",
+    "templateSelectorHint": "Apply a branded template to the PDF report"
   }
 }

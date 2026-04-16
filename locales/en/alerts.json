@@ -1,93 +1,243 @@
 {
-  "title": "Alerts",
-  "description": "Monitor your brand visibility with automated alerts",
-  "rule": {
-    "created": "Alert rule created",
-    "updated": "Alert rule updated",
-    "deleted": "Alert rule deleted",
-    "enabled": "Alert rule enabled",
-    "disabled": "Alert rule disabled"
-  },
-  "metric": {
-    "recommendationShare": "Recommendation share",
-    "citationCount": "Citation count",
-    "sentimentScore": "Sentiment score",
-    "positionAverage": "Average position"
-  },
-  "condition": {
-    "dropsBelow": "Drops below",
-    "exceeds": "Exceeds",
-    "changesByPercent": "Changes by percentage",
-    "changesByAbsolute": "Changes by absolute value"
-  },
-  "direction": {
-    "any": "Any direction",
-    "increase": "Increase only",
-    "decrease": "Decrease only"
-  },
-  "severity": {
-    "info": "Info",
-    "warning": "Warning",
-    "critical": "Critical"
-  },
-  "evaluation": {
-    "triggered": "Alert triggered: {metric} {condition} {threshold}",
-    "cooldownActive": "Alert evaluation skipped — cooldown active",
-    "conditionNotMet": "Alert condition not met",
-    "insufficientData": "Insufficient data for alert evaluation"
-  },
-  "event": {
-    "triggered": "Alert triggered",
-    "acknowledged": "Alert acknowledged",
-    "snoozed": "Alert snoozed",
-    "resolved": "Alert resolved"
-  },
-  "management": {
-    "title": "Alert Events",
-    "description": "View and manage alert events",
-    "noEvents": "No alert events found",
-    "filter": {
-      "severity": "Filter by severity",
-      "status": "Filter by status",
-      "rule": "Filter by rule",
-      "dateRange": "Filter by date range"
+  "alerts": {
+    "title": "Alerts",
+    "description": "Monitor your brand visibility with automated alerts",
+    "rule": {
+      "created": "Alert rule created",
+      "updated": "Alert rule updated",
+      "deleted": "Alert rule deleted",
+      "enabled": "Alert rule enabled",
+      "disabled": "Alert rule disabled"
     },
-    "status": {
-      "active": "Active",
-      "acknowledged": "Acknowledged",
-      "snoozed": "Snoozed"
+    "metric": {
+      "recommendationShare": "Recommendation share",
+      "citationCount": "Citation count",
+      "sentimentScore": "Sentiment score",
+      "positionAverage": "Average position"
     },
-    "action": {
+    "condition": {
+      "dropsBelow": "Drops below",
+      "exceeds": "Exceeds",
+      "changesByPercent": "Changes by percentage",
+      "changesByAbsolute": "Changes by absolute value"
+    },
+    "direction": {
+      "any": "Any direction",
+      "increase": "Increase only",
+      "decrease": "Decrease only"
+    },
+    "severity": {
+      "info": "Info",
+      "warning": "Warning",
+      "critical": "Critical"
+    },
+    "evaluation": {
+      "triggered": "Alert triggered: {metric} {condition} {threshold}",
+      "cooldownActive": "Alert evaluation skipped: cooldown active",
+      "conditionNotMet": "Alert condition not met",
+      "insufficientData": "Insufficient data for alert evaluation"
+    },
+    "event": {
+      "triggered": "Alert triggered",
+      "acknowledged": "Alert acknowledged",
+      "snoozed": "Alert snoozed",
+      "resolved": "Alert resolved"
+    },
+    "management": {
+      "title": "Alert Events",
+      "description": "View and manage alert events",
+      "noEvents": "No alert events found",
+      "filter": {
+        "severity": "Filter by severity",
+        "status": "Filter by status",
+        "rule": "Filter by rule",
+        "dateRange": "Filter by date range"
+      },
+      "status": {
+        "active": "Active",
+        "acknowledged": "Acknowledged",
+        "snoozed": "Snoozed"
+      },
+      "action": {
+        "acknowledge": "Acknowledge",
+        "snooze": "Snooze",
+        "viewDetails": "View details"
+      }
+    },
+    "snooze": {
+      "title": "Snooze Alert",
+      "duration": "Snooze for {duration}",
+      "until": "Snoozed until {time}",
+      "expired": "Snooze expired",
+      "maxExceeded": "Snooze duration cannot exceed {max, number} days",
+      "mustBeFuture": "Snooze time must be in the future",
+      "exactlyOne": "Provide exactly one of duration or snoozedUntil",
+      "success": "Alert snoozed until {time}",
+      "presets": {
+        "1h": "1 hour",
+        "4h": "4 hours",
+        "24h": "24 hours",
+        "1w": "1 week"
+      },
+      "custom": "Custom time"
+    },
+    "summary": {
+      "title": "Alert Summary",
+      "total": "{count, plural, =0 {No alerts} one {# alert} other {# alerts}}",
+      "active": "{count, plural, =0 {No active alerts} one {# active alert} other {# active alerts}}",
+      "topRules": "Top triggering rules"
+    },
+    "error": {
+      "eventNotFound": "Alert event not found",
+      "invalidSeverity": "Invalid severity filter. Allowed: info, warning, critical",
+      "invalidStatus": "Invalid status filter. Allowed: active, acknowledged, snoozed"
+    },
+    "limit": {
+      "reached": "Workspace alert rule limit reached (maximum {max, number})"
+    },
+    "notifications": {
+      "webhook": {
+        "summary": "{severity}: {brandName} · {metricLabel} {conditionLabel} threshold ({currentValue}, was {previousValue})"
+      }
+    },
+    "page": {
+      "title": "Alerts"
+    },
+    "tabs": {
+      "rules": "Rules",
+      "events": "Events",
+      "notifications": "Notifications"
+    },
+    "rules": {
+      "title": "Alert Rules",
+      "description": "Configure rules to monitor your brand visibility metrics",
+      "create": "Create Rule",
+      "count": "{count, plural, =0 {No rules} one {# rule} other {# rules}}",
+      "search": "Search rules...",
+      "filterMetric": "Metric",
+      "filterEnabled": "Status",
+      "filterAll": "All",
+      "filterEnabledOnly": "Enabled",
+      "filterDisabledOnly": "Disabled",
+      "empty": {
+        "title": "No alert rules",
+        "description": "Create your first alert rule to start monitoring visibility metrics automatically.",
+        "cta": "Create Rule"
+      },
+      "deleteTitle": "Delete Rule",
+      "deleteConfirm": "This will permanently delete \"{name}\" and stop all future alerts from this rule.",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "never": "Never"
+    },
+    "form": {
+      "createTitle": "Create Alert Rule",
+      "editTitle": "Edit Alert Rule",
+      "name": "Name",
+      "description": "Description",
+      "metric": "Metric",
+      "promptSet": "Prompt Set",
+      "brand": "Brand",
+      "platform": "Platform",
+      "locale": "Locale",
+      "condition": "Condition",
+      "threshold": "Threshold",
+      "thresholdPercentage": "Percentage",
+      "thresholdValue": "Value",
+      "direction": "Direction",
+      "directionHelp": "For change-based conditions, restrict to increases or decreases only",
+      "cooldown": "Cooldown (minutes)",
+      "cooldownHelp": "Minimum time between repeated alerts for this rule",
+      "severity": "Severity",
+      "enabledLabel": "Enabled",
+      "namePlaceholder": "e.g. Recommendation share drop alert",
+      "descriptionPlaceholder": "Optional description for this alert rule",
+      "thresholdPlaceholder": "e.g. 20",
+      "localePlaceholder": "e.g. en-US",
+      "conditionSentence": "Alert when {metric} {condition} {threshold}",
+      "metricImmutable": "Metric cannot be changed after creation",
+      "promptSetImmutable": "Prompt set cannot be changed after creation",
+      "submit": "Save",
+      "cancel": "Cancel",
+      "sectionBasics": "Basics",
+      "sectionMonitor": "What to monitor",
+      "sectionCondition": "When to alert",
+      "sectionSettings": "Alert settings"
+    },
+    "validation": {
+      "nameRequired": "Rule name is required",
+      "nameTooLong": "Rule name must be 255 characters or less",
+      "descriptionTooLong": "Description must be 1000 characters or less",
+      "thresholdRequired": "Threshold is required",
+      "thresholdPositive": "Threshold must be a positive number",
+      "brandRequired": "Brand is required",
+      "promptSetRequired": "Prompt set is required",
+      "metricRequired": "Metric is required",
+      "conditionRequired": "Condition is required",
+      "cooldownRange": "Cooldown must be between 1 and 10080 minutes",
+      "snoozeExactlyOne": "Provide exactly one of duration or snooze until time"
+    },
+    "events": {
+      "title": "Alert Events",
+      "description": "View and manage triggered alert events",
+      "count": "{count, plural, =0 {No events} one {# event} other {# events}}",
+      "columns": {
+        "severity": "Severity",
+        "rule": "Rule",
+        "metric": "Metric & Value",
+        "value": "Value",
+        "brand": "Brand",
+        "triggered": "Triggered",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No alert events",
+        "description": "When alert rules are triggered, events will appear here."
+      },
+      "filterSeverity": "Severity",
+      "filterStatus": "Status",
+      "filterRule": "Rule",
+      "filterDateRange": "Date range",
       "acknowledge": "Acknowledge",
-      "snooze": "Snooze",
-      "viewDetails": "View details"
-    }
-  },
-  "snooze": {
-    "duration": "Snooze for {duration}",
-    "until": "Snoozed until {time}",
-    "expired": "Snooze expired",
-    "maxExceeded": "Snooze duration cannot exceed {max, number} days",
-    "mustBeFuture": "Snooze time must be in the future",
-    "exactlyOne": "Provide exactly one of duration or snoozedUntil"
-  },
-  "summary": {
-    "title": "Alert Summary",
-    "total": "{count, plural, =0 {No alerts} one {# alert} other {# alerts}}",
-    "active": "{count, plural, =0 {No active alerts} one {# active alert} other {# active alerts}}",
-    "topRules": "Top triggering rules"
-  },
-  "error": {
-    "eventNotFound": "Alert event not found",
-    "invalidSeverity": "Invalid severity filter. Allowed: info, warning, critical",
-    "invalidStatus": "Invalid status filter. Allowed: active, acknowledged, snoozed"
-  },
-  "limit": {
-    "reached": "Workspace alert rule limit reached (maximum {max, number})"
-  },
-  "notifications": {
-    "webhook": {
-      "summary": "{severity}: {brandName} — {metricLabel} {conditionLabel} threshold ({currentValue}, was {previousValue})"
+      "acknowledged": "Acknowledged",
+      "valueSummary": "{value} (was {previous})"
+    },
+    "notificationPrefs": {
+      "title": "Notification Preferences",
+      "description": "Configure how you receive alert notifications",
+      "email": {
+        "title": "Email Notifications",
+        "enabled": "Enable email notifications",
+        "frequency": "Digest frequency",
+        "hour": "Delivery hour",
+        "day": "Delivery day",
+        "timezone": "Timezone",
+        "severityFilter": "Severity filter",
+        "frequencyOptions": {
+          "immediate": "Immediate",
+          "hourly": "Hourly digest",
+          "daily": "Daily digest",
+          "weekly": "Weekly digest"
+        },
+        "dayOptions": {
+          "0": "Sunday",
+          "1": "Monday",
+          "2": "Tuesday",
+          "3": "Wednesday",
+          "4": "Thursday",
+          "5": "Friday",
+          "6": "Saturday"
+        }
+      },
+      "webhook": {
+        "title": "Webhook Notifications",
+        "enabled": "Enable webhook notifications",
+        "severityFilter": "Severity filter",
+        "note": "Webhook endpoints are configured in workspace settings."
+      },
+      "save": "Save preferences",
+      "saved": "Preferences saved"
     }
   }
 }

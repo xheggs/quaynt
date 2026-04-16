@@ -27,28 +27,24 @@ export function computeNextRunAt(
 
     if (localHour !== hour) continue;
 
+    let matched = false;
+
     if (frequency === 'daily') {
-      return toStartOfHour(check, timezone, hour);
-    }
-
-    if (frequency === 'weekly') {
+      matched = true;
+    } else if (frequency === 'weekly') {
       const localDay = getDayOfWeekInTimezone(check, timezone);
-      if (localDay === dayOfWeek) {
-        return toStartOfHour(check, timezone, hour);
-      }
-    }
-
-    if (frequency === 'monthly') {
+      matched = localDay === dayOfWeek;
+    } else if (frequency === 'monthly') {
       const localDom = getDayOfMonthInTimezone(check, timezone);
       const lastDay = getLastDayOfMonthInTimezone(check, timezone);
+      matched = dayOfMonth === -1 ? localDom === lastDay : localDom === dayOfMonth;
+    }
 
-      if (dayOfMonth === -1) {
-        if (localDom === lastDay) {
-          return toStartOfHour(check, timezone, hour);
-        }
-      } else if (localDom === dayOfMonth) {
-        return toStartOfHour(check, timezone, hour);
-      }
+    if (matched) {
+      const result = toStartOfHour(check, timezone, hour);
+      // toStartOfHour snaps to the top of the hour, which may be before `now`
+      // if we're still within the target hour. Skip and continue to the next day.
+      if (result > now) return result;
     }
   }
 

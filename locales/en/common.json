@@ -13,13 +13,22 @@
     "appDescription": "AI visibility platform",
     "appName": "Quaynt",
     "auth": {
+      "checkEmail": "Check your email",
+      "checkSpam": "Check your spam folder if you don't see it.",
       "email": "Email",
+      "magicLinkSent": "We sent a sign-in link to {email}. Click the link to continue.",
       "name": "Name",
-      "password": "Password",
+      "resendLink": "Resend link",
+      "resendLinkCooldown": "Resend in {seconds}s",
+      "sendMagicLink": "Continue with email",
       "signIn": "Sign in",
       "signOut": "Sign out",
-      "signUp": "Sign up"
+      "useDifferentEmail": "Use a different email",
+      "magicLinkExpired": "This sign-in link has expired. Please request a new one.",
+      "magicLinkFailed": "Could not send sign-in link. Please try again."
     },
+    "getStarted": "Get started",
+    "learnMore": "Learn more",
     "webhook": {
       "create": "Create webhook",
       "delete": "Delete webhook",

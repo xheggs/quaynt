@@ -1,0 +1,97 @@
+{
+  "opportunities": {
+    "pageTitle": "Opportunity Discovery",
+    "header": {
+      "title": "Opportunity Discovery",
+      "description": "Find prompts where your brand is missing and competitors appear"
+    },
+    "filters": {
+      "promptSet": "Market",
+      "promptSetPlaceholder": "Select a market (prompt set)",
+      "brand": "Brand",
+      "brandPlaceholder": "Select a brand",
+      "platform": "Platform",
+      "platformAll": "All platforms",
+      "type": "Type",
+      "typeAll": "All types",
+      "typeMissing": "Missing",
+      "typeWeak": "Weak",
+      "minCompetitors": "Min competitors",
+      "minCompetitorsPlaceholder": "Any",
+      "dateRange": "Date Range"
+    },
+    "summary": {
+      "totalOpportunities": "Total Opportunities",
+      "missing": "Missing",
+      "missingSubtext": "Brand absent",
+      "weak": "Weak",
+      "weakSubtext": "Below median",
+      "averageScore": "Avg. Score",
+      "totalCount": "{count, plural, one {# opportunity} other {# opportunities}}"
+    },
+    "table": {
+      "prompt": "Prompt",
+      "type": "Type",
+      "score": "Score",
+      "competitors": "Competitors",
+      "platforms": "Platforms",
+      "brandCitations": "Brand Citations",
+      "period": "Period",
+      "expand": "Details"
+    },
+    "types": {
+      "missing": "Missing",
+      "weak": "Weak",
+      "missingDescription": "Brand not cited, but competitors are",
+      "weakDescription": "Brand cited but below competitor median"
+    },
+    "score": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "ariaLabel": "Priority score {score} out of 80",
+      "tooltip": "Priority score (0-80) based on competitor density (50%) and platform breadth (30%), adjusted for gap type. Higher = more urgent."
+    },
+    "detail": {
+      "competitorsTitle": "Competitor Breakdown",
+      "competitorCitations": "{count, plural, one {# citation} other {# citations}}",
+      "platformsTitle": "Platform Breakdown",
+      "platformGap": "Gap",
+      "platformPresent": "Present",
+      "suggestedAction": "Suggested Action",
+      "actionMissing": "Create content targeting this prompt",
+      "actionWeak": "Optimize existing content for this prompt",
+      "fullPrompt": "Full Prompt"
+    },
+    "empty": {
+      "noMarket": "Select a market to discover opportunities",
+      "noMarketDescription": "Choose a prompt set that represents the competitive category you want to analyse",
+      "noBrand": "Select a brand to discover opportunities",
+      "noBrandDescription": "Choose the brand you want to find visibility gaps for",
+      "noData": "No gaps found",
+      "noDataDescription": "Your brand appears in all tracked prompts, or no competitors are tracked yet",
+      "noDataCta": "Run models to generate opportunity data",
+      "noPromptSets": "No prompt sets created yet",
+      "noPromptSetsDescription": "Create a prompt set to define a competitive market for opportunity discovery",
+      "noPromptSetsCta": "Create prompt set"
+    },
+    "error": {
+      "noAccess": "You don't have access to this workspace's opportunities",
+      "noAccessDescription": "Ask the workspace owner to grant you access",
+      "generic": "Something went wrong loading opportunities",
+      "staleBrand": "The selected market or brand no longer exists"
+    },
+    "pagination": {
+      "showing": "Showing {from}-{to} of {total}",
+      "page": "Page {page}",
+      "perPage": "Per page"
+    },
+    "aria": {
+      "tableCaption": "Opportunity discovery results showing prompts where your brand has visibility gaps",
+      "sortAscending": "Sort ascending",
+      "sortDescending": "Sort descending",
+      "expandRow": "Expand details for prompt: {prompt}",
+      "collapseRow": "Collapse details for prompt: {prompt}"
+    }
+  }
+}

@@ -12,7 +12,7 @@
       "maxPromptsReached": "Prompt set has reached the maximum of 500 prompts"
     },
     "fields": {
-      "name": "Prompt Set Name",
+      "name": "Name",
       "description": "Description",
       "tags": "Tags",
       "template": "Prompt Template",
@@ -25,6 +25,90 @@
       "prompts": "Prompts",
       "count": "{count, plural, =0 {no prompt sets} one {# prompt set} other {# prompt sets}}",
       "promptCount": "{count, plural, =0 {no prompts} one {# prompt} other {# prompts}}"
+    },
+    "list": {
+      "pageTitle": "Prompt Sets",
+      "search": "Search prompt sets..."
+    },
+    "empty": {
+      "title": "No prompt sets yet",
+      "description": "Prompt sets define the queries Quaynt sends to AI platforms to track your brand's visibility. Create your first prompt set to get started.",
+      "addFirst": "Create your first prompt set"
+    },
+    "create": {
+      "title": "Create Prompt Set",
+      "description": "Group related prompts to track a market, topic, or campaign.",
+      "button": "Add Prompt Set",
+      "success": "Prompt set created successfully"
+    },
+    "edit": {
+      "title": "Edit Prompt Set",
+      "description": "Update this prompt set's details.",
+      "success": "Prompt set updated successfully"
+    },
+    "delete": {
+      "title": "Delete Prompt Set",
+      "description": "Are you sure you want to delete \"{name}\"? This prompt set and all its prompts will be archived.",
+      "success": "Prompt set deleted successfully"
+    },
+    "detail": {
+      "prompts": "Prompts",
+      "promptCount": "{count, plural, =0 {no prompts} one {# prompt} other {# prompts}}",
+      "created": "Created",
+      "updated": "Last updated",
+      "noDescription": "No description provided"
+    },
+    "form": {
+      "namePlaceholder": "e.g. Product Reviews: Electronics",
+      "charCount": "{current} of {max}"
+    },
+    "validation": {
+      "nameRequired": "Prompt set name is required",
+      "nameTooLong": "Name must be 255 characters or less",
+      "descriptionTooLong": "Description must be 2,000 characters or less",
+      "tooManyTags": "Maximum 20 tags allowed",
+      "tagTooLong": "Each tag must be 100 characters or less",
+      "templateRequired": "Prompt template is required",
+      "templateTooLong": "Prompt template must be 5,000 characters or less"
+    },
+    "tagInput": {
+      "placeholder": "Type a tag and press Enter",
+      "maxReached": "Maximum tags reached",
+      "removeTag": "Remove {name}"
+    },
+    "prompts": {
+      "empty": {
+        "title": "No prompts yet",
+        "description": "Add your first prompt template to this set. Use '{'{'brand'}'}', '{'{'locale'}'}', and '{'{'market'}'}' as variable placeholders."
+      },
+      "add": {
+        "placeholder": "Enter a prompt template... Use '{'{'brand'}'}', '{'{'locale'}'}', '{'{'market'}'}' for variables",
+        "button": "Add Prompt",
+        "success": "Prompt added successfully"
+      },
+      "edit": {
+        "success": "Prompt updated successfully"
+      },
+      "delete": {
+        "title": "Delete Prompt",
+        "description": "Are you sure you want to delete this prompt?",
+        "success": "Prompt deleted successfully"
+      },
+      "reorder": {
+        "success": "Prompt order updated"
+      }
+    },
+    "dnd": {
+      "pickedUp": "Picked up prompt at position {position}",
+      "movedTo": "Moved to position {position}",
+      "droppedAt": "Dropped at position {position}",
+      "cancelled": "Reordering cancelled"
+    },
+    "variables": {
+      "brand": "Brand name",
+      "locale": "Target locale",
+      "market": "Market category",
+      "unknown": "Custom variable"
     }
   }
 }

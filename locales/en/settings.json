@@ -1,0 +1,317 @@
+{
+  "settings": {
+    "title": "Settings",
+    "sidebar": {
+      "account": "Account",
+      "workspace": "Workspace",
+      "profile": "Profile",
+      "general": "General",
+      "members": "Members",
+      "integrations": "Integrations",
+      "adapters": "Adapters",
+      "apiKeys": "API Keys",
+      "webhooks": "Webhooks"
+    },
+    "profile": {
+      "title": "Profile",
+      "description": "Manage your account settings",
+      "nameLabel": "Display Name",
+      "namePlaceholder": "Your name",
+      "emailLabel": "Email",
+      "emailHelp": "Your email address cannot be changed",
+      "localeLabel": "Language",
+      "localeHelp": "Choose your preferred interface language",
+      "save": "Save Changes",
+      "saved": "Profile updated"
+    },
+    "workspace": {
+      "title": "Workspace",
+      "description": "Manage workspace settings",
+      "nameLabel": "Workspace Name",
+      "namePlaceholder": "My workspace",
+      "slugLabel": "Workspace Slug",
+      "slugHelp": "Used in URLs. Cannot be changed.",
+      "ownerLabel": "Owner",
+      "save": "Save Changes",
+      "saved": "Workspace updated",
+      "readOnly": "Only workspace admins can change these settings"
+    },
+    "members": {
+      "title": "Members",
+      "description": "Manage who has access to this workspace",
+      "count": "{count, plural, =0 {No members} one {1 member} other {{count} members}}",
+      "add": "Add Member",
+      "search": "Search members...",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No members",
+        "description": "Add team members to collaborate"
+      },
+      "addTitle": "Add Member",
+      "addDescription": "Add an existing Quaynt user to this workspace by email",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "colleague@company.com",
+      "roleLabel": "Role",
+      "roleHelp": "Choose the role for this member",
+      "addSubmit": "Add Member",
+      "addSuccess": "{name} has been added to the workspace",
+      "changeRoleTitle": "Change Role",
+      "changeRoleDescription": "Change the role for {name}",
+      "changeRoleConfirm": "Change Role",
+      "changeRoleSuccess": "Role updated for {name}",
+      "removeTitle": "Remove Member",
+      "removeConfirm": "Remove {name} from this workspace? They will lose access to all workspace data.",
+      "removeButton": "Remove Member",
+      "removeSuccess": "{name} has been removed",
+      "roleLabels": {
+        "owner": "Owner",
+        "admin": "Admin",
+        "member": "Member"
+      },
+      "roleDescriptions": {
+        "owner": "Full control over the workspace",
+        "admin": "Can manage members, settings, and all resources",
+        "member": "Can view and use workspace resources"
+      }
+    },
+    "adapters": {
+      "title": "Platform Adapters",
+      "description": "Configure which AI platforms Quaynt monitors",
+      "add": "Add Adapter",
+      "count": "{count, plural, =0 {No adapters} one {1 adapter} other {{count} adapters}}",
+      "columns": {
+        "platform": "Platform",
+        "displayName": "Display Name",
+        "status": "Status",
+        "health": "Health",
+        "lastChecked": "Last Checked",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No adapters configured",
+        "description": "Add your first AI platform adapter to start monitoring",
+        "cta": "Add Adapter"
+      },
+      "form": {
+        "createTitle": "Add Platform Adapter",
+        "editTitle": "Edit Adapter",
+        "platformLabel": "Platform",
+        "platformPlaceholder": "Select a platform",
+        "displayNameLabel": "Display Name",
+        "displayNamePlaceholder": "e.g. My ChatGPT API",
+        "credentialsSection": "Credentials",
+        "configSection": "Configuration",
+        "credentialHelp": "Credentials are encrypted at rest and never displayed after saving",
+        "credentialUpdateHelp": "Enter new credentials to update",
+        "submit": "Save Adapter",
+        "cancel": "Cancel"
+      },
+      "health": {
+        "healthy": "Healthy",
+        "degraded": "Degraded",
+        "unhealthy": "Unhealthy",
+        "unknown": "Unknown",
+        "check": "Check Health",
+        "checking": "Checking...",
+        "costWarning": "Health checks for SERP-based adapters incur a small API cost (~$0.003 per check)",
+        "lastChecked": "Last checked {time}",
+        "neverChecked": "Never checked",
+        "checkSuccess": "Health check completed: {status}"
+      },
+      "deleteTitle": "Delete Adapter",
+      "deleteConfirm": "Deleting \"{name}\" will stop all monitoring for this platform. This cannot be undone.",
+      "deleteSuccess": "Adapter \"{name}\" has been deleted",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "credentialsSet": "Configured",
+      "credentialsNotSet": "Not configured",
+      "createSuccess": "Adapter created",
+      "updateSuccess": "Adapter updated",
+      "platformNames": {
+        "chatgpt": "ChatGPT",
+        "perplexity": "Perplexity",
+        "gemini": "Gemini",
+        "claude": "Claude",
+        "ai-overviews": "AI Overviews",
+        "copilot": "Copilot",
+        "grok": "Grok",
+        "deepseek": "DeepSeek"
+      }
+    },
+    "apiKeys": {
+      "title": "API Keys",
+      "description": "Manage programmatic access to the Quaynt API",
+      "generate": "Generate New Key",
+      "count": "{count, plural, =0 {No API keys} one {1 API key} other {{count} API keys}}",
+      "columns": {
+        "name": "Name",
+        "prefix": "Key Prefix",
+        "scope": "Scope",
+        "lastUsed": "Last Used",
+        "expires": "Expires",
+        "created": "Created",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No API keys",
+        "description": "Generate an API key to access the Quaynt API programmatically",
+        "cta": "Generate Key"
+      },
+      "form": {
+        "title": "Generate API Key",
+        "nameLabel": "Key Name",
+        "namePlaceholder": "My integration key",
+        "scopeLabel": "Scope",
+        "scopeHelp": "Controls what this key can access",
+        "expiresLabel": "Expiration",
+        "expiresHelp": "When this key should expire",
+        "noExpiry": "No expiry",
+        "submit": "Generate Key",
+        "scopeOptions": {
+          "read": "Read-only",
+          "readWrite": "Read & Write",
+          "admin": "Admin"
+        },
+        "scopeDescriptions": {
+          "read": "Can read data but cannot make changes",
+          "readWrite": "Can read and write data",
+          "admin": "Full access including workspace management"
+        }
+      },
+      "generated": {
+        "title": "API Key Generated",
+        "warning": "Copy this key now. It will not be shown again.",
+        "copy": "Copy to Clipboard",
+        "copied": "Copied!",
+        "close": "I've copied the key",
+        "closeConfirm": "Are you sure? The key will not be shown again."
+      },
+      "revokeTitle": "Revoke API Key",
+      "revokeConfirm": "Revoking \"{name}\" will immediately invalidate this key. Any integrations using it will stop working.",
+      "revokeSuccess": "API key \"{name}\" has been revoked",
+      "neverUsed": "Never used",
+      "noExpiry": "No expiry",
+      "expired": "Expired"
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "description": "Receive real-time notifications when events occur in Quaynt",
+      "add": "Add Webhook",
+      "count": "{count, plural, =0 {No webhooks} one {1 webhook} other {{count} webhooks}}",
+      "maxReached": "Maximum of 10 webhook endpoints reached",
+      "columns": {
+        "url": "Endpoint URL",
+        "events": "Events",
+        "status": "Status",
+        "created": "Created",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No webhooks",
+        "description": "Add a webhook endpoint to receive event notifications",
+        "cta": "Add Webhook"
+      },
+      "form": {
+        "createTitle": "Add Webhook",
+        "editTitle": "Edit Webhook",
+        "urlLabel": "Endpoint URL",
+        "urlPlaceholder": "https://example.com/webhook",
+        "urlHelp": "Must be HTTPS",
+        "eventsLabel": "Events",
+        "eventsHelp": "Select which events trigger this webhook",
+        "allEvents": "All events",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "What this webhook is used for",
+        "submit": "Save Webhook",
+        "cancel": "Cancel"
+      },
+      "secret": {
+        "title": "Webhook Secret",
+        "info": "Use this secret to verify webhook signatures. Copy it now; it will not be shown again.",
+        "copy": "Copy to Clipboard",
+        "copied": "Copied!",
+        "rotateTitle": "Rotate Secret",
+        "rotateConfirm": "Rotating the secret will invalidate the current one. Update your webhook handler before rotating.",
+        "rotateButton": "Rotate Secret",
+        "rotateSuccess": "Secret rotated",
+        "done": "Done"
+      },
+      "test": "Send Test Event",
+      "testSuccess": "Test event dispatched",
+      "testDisabled": "Enable the webhook to send test events",
+      "deleteTitle": "Delete Webhook",
+      "deleteConfirm": "Delete this webhook endpoint? Pending deliveries will be discarded.",
+      "deleteSuccess": "Webhook deleted",
+      "createSuccess": "Webhook created",
+      "updateSuccess": "Webhook updated",
+      "status": {
+        "active": "Active",
+        "disabled": "Disabled",
+        "failing": "Failing"
+      },
+      "deliveries": {
+        "title": "Recent Deliveries",
+        "columns": {
+          "event": "Event",
+          "status": "Status",
+          "httpStatus": "HTTP Status",
+          "latency": "Latency",
+          "time": "Time"
+        },
+        "empty": "No deliveries yet",
+        "statusLabels": {
+          "pending": "Pending",
+          "success": "Success",
+          "failed": "Failed"
+        }
+      },
+      "eventsSelected": "{count, plural, one {1 event} other {{count} events}}",
+      "eventCategories": {
+        "citation": "Citations",
+        "alert": "Alerts",
+        "report": "Reports",
+        "model_run": "Model Runs",
+        "brand": "Brands",
+        "prompt_set": "Prompt Sets",
+        "adapter": "Adapters",
+        "visibility": "Visibility",
+        "report_schedule": "Report Schedules",
+        "webhook": "Webhooks"
+      }
+    },
+    "errors": {
+      "userNotFound": "No account found with this email. They need to sign up first.",
+      "alreadyAMember": "This user is already a member of this workspace",
+      "cannotRemoveSoleOwner": "Cannot remove the sole workspace owner",
+      "cannotChangeOwnRole": "You cannot change your own role",
+      "cannotRemoveSelf": "You cannot remove yourself from the workspace",
+      "insufficientRole": "You do not have permission to perform this action",
+      "permissionDenied": "You don't have permission to view these settings",
+      "workspaceNotFound": "Workspace not found",
+      "platformDuplicate": "An adapter for this platform already exists"
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "nameTooLong": "Name must be 255 characters or fewer",
+      "emailInvalid": "Please enter a valid email address",
+      "roleRequired": "Please select a role",
+      "platformRequired": "Please select a platform",
+      "scopeRequired": "Please select a scope",
+      "urlInvalid": "Please enter a valid URL",
+      "urlHttpsRequired": "URL must start with https://",
+      "eventsRequired": "Select at least one event",
+      "descriptionTooLong": "Description must be 500 characters or fewer",
+      "fieldRequired": "This field is required",
+      "numberRequired": "Please enter a valid number",
+      "numberMin": "Value is below minimum",
+      "numberMax": "Value exceeds maximum",
+      "selectRequired": "Please select an option"
+    }
+  }
+}

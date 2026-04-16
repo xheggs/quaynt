@@ -28,6 +28,9 @@
       "skipped": "Skipped"
     },
     "labels": {
+      "modelRun": "Model run",
+      "modelRuns": "Model Runs",
+      "count": "{count, plural, one {# run} other {# runs}}",
       "create": "Create model run",
       "cancel": "Cancel model run",
       "results": "Results",
@@ -41,6 +44,95 @@
       "localeGroupAsiaPacific": "Asia Pacific",
       "localeGroupMena": "Middle East & Africa",
       "localeAll": "All locales"
+    },
+    "list": {
+      "pageTitle": "Model Runs",
+      "title": "Model Runs"
+    },
+    "empty": {
+      "title": "No model runs yet",
+      "description": "Start your first model run to see how your brand appears across AI platforms.",
+      "addFirst": "New Run"
+    },
+    "create": {
+      "title": "New Model Run",
+      "description": "Configure and trigger a new model run across AI platforms.",
+      "submit": "Start Run",
+      "success": "Model run started successfully"
+    },
+    "cancel": {
+      "title": "Cancel Model Run",
+      "description": "Are you sure you want to cancel this run? Pending jobs will be skipped, but jobs already running will complete.",
+      "confirm": "Cancel Run",
+      "success": "Model run cancelled"
+    },
+    "detail": {
+      "pageTitle": "Model Run Details",
+      "runInfo": "Run Information",
+      "promptSet": "Prompt Set",
+      "brand": "Brand",
+      "adapters": "AI Platforms",
+      "locale": "Locale",
+      "market": "Market",
+      "allLocales": "All locales",
+      "started": "Started",
+      "completed": "Completed",
+      "duration": "Duration",
+      "running": "Running…",
+      "errorSummary": "Error Summary",
+      "results": "Results"
+    },
+    "form": {
+      "brandPlaceholder": "Select a brand",
+      "promptSetPlaceholder": "Select a prompt set",
+      "adapterHelp": "Select at least one AI platform to query",
+      "marketPlaceholder": "e.g. Electronics, SaaS, Healthcare",
+      "summary": "This will run across {platforms, plural, one {# platform} other {# platforms}}."
+    },
+    "validation": {
+      "promptSetRequired": "Prompt set is required",
+      "brandRequired": "Brand is required",
+      "adapterRequired": "At least one AI platform is required",
+      "tooManyAdapters": "Maximum 10 platforms per run"
+    },
+    "filters": {
+      "status": "Status",
+      "allStatuses": "All statuses"
+    },
+    "progress": {
+      "label": "Run progress",
+      "fraction": "{done} / {total}",
+      "percent": "{value}%",
+      "completed": "{count, plural, one {# completed} other {# completed}}",
+      "failed": "{count, plural, one {# failed} other {# failed}}",
+      "pending": "{count, plural, one {# pending} other {# pending}}",
+      "running": "{count, plural, one {# running} other {# running}}",
+      "skipped": "{count, plural, one {# skipped} other {# skipped}}"
+    },
+    "duration": {
+      "subSecond": "< 1s",
+      "seconds": "{value}s",
+      "minutesSeconds": "{minutes}m {seconds}s",
+      "hoursMinutes": "{hours}h {minutes}m"
+    },
+    "results": {
+      "response": "Response",
+      "error": "Error",
+      "metadata": "Metadata",
+      "empty": "No results match the current filters.",
+      "prompt": "Prompt",
+      "platform": "Platform",
+      "duration": "Duration",
+      "expandRow": "Expand row",
+      "collapseRow": "Collapse row"
+    },
+    "columns": {
+      "status": "Status",
+      "promptSetBrand": "Prompt Set / Brand",
+      "progress": "Progress",
+      "created": "Created",
+      "duration": "Duration",
+      "actions": "Actions"
     }
   }
 }

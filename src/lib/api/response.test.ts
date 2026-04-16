@@ -97,10 +97,16 @@ describe('pre-built error helpers', () => {
     expect(body.error.code).toBe('NOT_FOUND');
   });
 
-  it('notFound includes resource name', async () => {
-    const response = notFound('API key');
+  it('notFound uses supplied message verbatim', async () => {
+    const response = notFound('API key not found');
     const body = await response.json();
-    expect(body.error.message).toBe('API key was not found');
+    expect(body.error.message).toBe('API key not found');
+  });
+
+  it('notFound defaults message to the error code', async () => {
+    const response = notFound();
+    const body = await response.json();
+    expect(body.error.message).toBe('NOT_FOUND');
   });
 
   it('conflict returns 409', async () => {

@@ -91,6 +91,20 @@ To reset the Docker environment (stops containers, deletes data, rebuilds):
 bash scripts/docker-reset.sh
 ```
 
+## UI Stack
+
+The frontend uses the following infrastructure (configured in PRP 5.1):
+
+- **Tailwind CSS v4** — CSS-first configuration with Quaynt design tokens in `src/app/globals.css`
+- **shadcn/ui (Mira style)** — Accessible components built on Radix UI primitives
+- **TanStack Query v5** — Server-state management with stale-while-revalidate caching
+- **Zustand v5** — Lightweight client-side UI state
+- **next-themes** — Dark mode with system preference detection (class-based toggle)
+- **Inter Variable + Geist Mono** — Typography via `next/font` (self-hosted, no external requests)
+- **vitest-axe** — Automated WCAG 2.1 AA accessibility testing in CI
+
+Design tokens, color palette, and component patterns are documented in `docs/architecture/design-system.md`.
+
 ## Available Scripts
 
 | Script                 | Description                          |

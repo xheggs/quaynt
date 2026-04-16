@@ -1,0 +1,89 @@
+{
+  "benchmarks": {
+    "pageTitle": "Competitor Benchmarks",
+    "header": {
+      "title": "Competitor Benchmarks",
+      "description": "Compare brand visibility across AI platforms within a market"
+    },
+    "filters": {
+      "promptSet": "Market",
+      "promptSetPlaceholder": "Select a market (prompt set)",
+      "platform": "Platform",
+      "platformAll": "All platforms",
+      "dateRange": "Date Range",
+      "comparisonPeriod": "Compare to",
+      "previousPeriod": "Previous period",
+      "previousWeek": "Previous week",
+      "previousMonth": "Previous month"
+    },
+    "table": {
+      "rank": "Rank",
+      "brand": "Brand",
+      "share": "Rec. Share",
+      "shareDelta": "Change",
+      "citations": "Citations",
+      "citationsDelta": "Cit. Change",
+      "modelRuns": "Runs"
+    },
+    "trend": {
+      "up": "up",
+      "down": "down",
+      "stable": "stable",
+      "new": "new",
+      "rankUp": "Up {count}",
+      "rankDown": "Down {count}",
+      "rankNew": "New entrant",
+      "rankStable": "Unchanged"
+    },
+    "charts": {
+      "shareByBrand": "Recommendation Share by Brand",
+      "periodComparison": "Period Comparison",
+      "sharePercent": "Share (%)",
+      "brandHeader": "Brand",
+      "previousPeriod": "Previous Period",
+      "currentPeriod": "Current Period",
+      "noDataForChart": "Not enough data to display chart",
+      "showingTopBrands": "Showing top {count} of {total} brands",
+      "ariaShareBar": "Bar chart showing recommendation share for each brand in {market}",
+      "ariaPeriodComparison": "Grouped bar chart comparing recommendation share between previous and current period in {market}"
+    },
+    "platforms": {
+      "title": "Platform Breakdown",
+      "description": "Where each brand is strongest and weakest",
+      "share": "Share",
+      "noBreakdown": "Select 'All platforms' to see the platform breakdown"
+    },
+    "presence": {
+      "title": "Brand Presence Matrix",
+      "description": "Which brands appear for which prompts",
+      "prompt": "Prompt",
+      "present": "Present",
+      "absent": "Absent",
+      "citations": "{count, plural, one {# citation} other {# citations}}",
+      "noBrands": "No brand data for this prompt",
+      "ariaPresent": "{brand} is present for prompt {prompt} with {count, plural, one {# citation} other {# citations}}",
+      "ariaAbsent": "{brand} is absent for prompt {prompt}"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "presence": "Presence Matrix"
+    },
+    "empty": {
+      "noMarket": "Select a market to view competitor benchmarks",
+      "noMarketDescription": "Choose a prompt set that represents the competitive category you want to analyse",
+      "noData": "No benchmark data available",
+      "noDataDescription": "Run models against this prompt set to generate benchmark data",
+      "noPromptSets": "No prompt sets created yet",
+      "noPromptSetsDescription": "Create a prompt set to define a competitive market for benchmarking",
+      "noPromptSetsCta": "Create prompt set"
+    },
+    "error": {
+      "noAccess": "You don't have access to this workspace's benchmarks",
+      "noAccessDescription": "Ask the workspace owner to grant you access",
+      "staleMarket": "The selected market no longer exists"
+    },
+    "dataAsOf": "Last updated {date}",
+    "totalBrands": "{count, plural, one {# brand} other {# brands}}",
+    "totalPrompts": "{count, plural, one {# prompt} other {# prompts}}"
+  }
+}

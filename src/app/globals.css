@@ -1,0 +1,449 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Quaynt Design System — CSS Tokens
+ * Source: docs/architecture/design-system.md
+ *
+ * "Calm authority" — warm neutrals, purple accent, dual-mode.
+ */
+
+/* ── Light Mode Tokens ─────────────────────────────────────────── */
+
+:root {
+  /* Neutral palette (cool neutrals — crisp, not warm) */
+  --background: #ffffff;
+  --foreground: #111111;
+  --card: #ffffff;
+  --card-foreground: #111111;
+  --popover: #ffffff;
+  --popover-foreground: #111111;
+  --muted: #f5f5f5;
+  --muted-foreground: #666666;
+  --accent: #f5f5f5;
+  --accent-foreground: #111111;
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #9b70bc;
+
+  /* Primary (brand purple) */
+  --primary: #9b70bc;
+  --primary-foreground: #ffffff;
+  --primary-hover: #b08fd0;
+
+  /* Secondary */
+  --secondary: #f5f5f5;
+  --secondary-foreground: #111111;
+
+  /* Semantic */
+  --success: #267a43;
+  --success-bg: #f0fdf4;
+  --warning: #b45309;
+  --warning-bg: #fffbeb;
+  --destructive: #d42121;
+  --destructive-bg: #fef2f2;
+  --info: #2563eb;
+  --info-bg: #eff6ff;
+
+  /* Sidebar */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #111111;
+  --sidebar-border: #e5e5e5;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-accent-foreground: #111111;
+  --sidebar-ring: #9b70bc;
+  --sidebar-primary: #9b70bc;
+  --sidebar-primary-foreground: #1a1625;
+
+  /* Elevation (light mode) */
+  --shadow-card: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-elevated: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  /* Spacing scale (8px base grid) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ── Typography Scale ──────────────────────────────────────────── */
+
+  /* Command register — draws the eye, anchors the page */
+  --type-display-size: 48px;
+  --type-display-size-mobile: 32px;
+  --type-display-weight: 700;
+  --type-display-leading: 1.08;
+  --type-display-tracking: -0.035em;
+
+  --type-kpi-size: 36px;
+  --type-kpi-size-mobile: 28px;
+  --type-kpi-weight: 700;
+  --type-kpi-leading: 1.0;
+  --type-kpi-tracking: -0.03em;
+
+  --type-page-size: 28px;
+  --type-page-size-mobile: 24px;
+  --type-page-weight: 700;
+  --type-page-leading: 1.15;
+  --type-page-tracking: -0.025em;
+
+  /* Guide register — readable, scannable, professional */
+  --type-section-size: 20px;
+  --type-section-size-mobile: 18px;
+  --type-section-weight: 650;
+  --type-section-leading: 1.3;
+  --type-section-tracking: -0.015em;
+
+  --type-card-title-size: 15px;
+  --type-card-title-weight: 600;
+  --type-card-title-leading: 1.4;
+  --type-card-title-tracking: -0.01em;
+
+  --type-body-size: 14px;
+  --type-body-weight: 400;
+  --type-body-leading: 1.6;
+  --type-body-tracking: -0.005em;
+
+  --type-table-size: 13px;
+  --type-table-weight: 400;
+  --type-table-leading: 1.4;
+  --type-table-tracking: 0em;
+
+  /* Recede register — supporting text, stays out of the way */
+  --type-label-size: 12px;
+  --type-label-weight: 500;
+  --type-label-leading: 1.35;
+  --type-label-tracking: 0.02em;
+
+  --type-overline-size: 11px;
+  --type-overline-weight: 600;
+  --type-overline-leading: 1.4;
+  --type-overline-tracking: 0.08em;
+
+  --type-caption-size: 11px;
+  --type-caption-weight: 400;
+  --type-caption-leading: 1.4;
+  --type-caption-tracking: 0.01em;
+
+  /* Chart categorical palette (light) */
+  --chart-1: #7c5cba;
+  --chart-2: #2d8a4e;
+  --chart-3: #d97706;
+  --chart-4: #2563eb;
+  --chart-5: #dc2626;
+  --chart-6: #0891b2;
+  --chart-7: #9333ea;
+  --chart-8: #65605a;
+
+  /* shadcn base radius (used for calc-based variants) */
+  --radius: 0.375rem;
+}
+
+/* ── Dark Mode Tokens ──────────────────────────────────────────── */
+
+.dark {
+  --background: #0f0f11;
+  --foreground: #eaeae8;
+  --card: #18181b;
+  --card-foreground: #eaeae8;
+  --popover: #2a2a2e;
+  --popover-foreground: #eaeae8;
+  --muted: #222225;
+  --muted-foreground: #9b9b98;
+  --accent: #222225;
+  --accent-foreground: #eaeae8;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #9b70bc;
+
+  --primary: #9b70bc;
+  --primary-foreground: #ffffff;
+  --primary-hover: #8560a8;
+
+  --secondary: #222225;
+  --secondary-foreground: #eaeae8;
+
+  --success: #4ade80;
+  --success-bg: rgba(74, 222, 128, 0.1);
+  --warning: #fbbf24;
+  --warning-bg: rgba(251, 191, 36, 0.1);
+  --destructive: #f87171;
+  --destructive-bg: rgba(248, 113, 113, 0.1);
+  --info: #60a5fa;
+  --info-bg: rgba(96, 165, 250, 0.1);
+
+  --sidebar: #0f0f11;
+  --sidebar-foreground: #eaeae8;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-accent: #222225;
+  --sidebar-accent-foreground: #eaeae8;
+  --sidebar-ring: #9b70bc;
+  --sidebar-primary: #9b70bc;
+  --sidebar-primary-foreground: #1a1625;
+
+  /* No visible shadows in dark mode — use border-only elevation */
+  --shadow-card: none;
+  --shadow-elevated: none;
+
+  --chart-1: #a78bda;
+  --chart-2: #5bb97a;
+  --chart-3: #f59e0b;
+  --chart-4: #60a5fa;
+  --chart-5: #f87171;
+  --chart-6: #22d3ee;
+  --chart-7: #c084fc;
+  --chart-8: #a8a29e;
+}
+
+/* ── Tailwind Theme Mapping ────────────────────────────────────── */
+
+@theme inline {
+  /* Colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-bg: var(--destructive-bg);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  --color-chart-7: var(--chart-7);
+  --color-chart-8: var(--chart-8);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+
+  /* Typography */
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-inter);
+
+  /* Typography scale (Tailwind access) */
+  --font-size-display: var(--type-display-size);
+  --font-size-kpi: var(--type-kpi-size);
+  --font-size-page: var(--type-page-size);
+  --font-size-section: var(--type-section-size);
+  --font-size-card-title: var(--type-card-title-size);
+  --font-size-body: var(--type-body-size);
+  --font-size-table: var(--type-table-size);
+  --font-size-label: var(--type-label-size);
+  --font-size-overline: var(--type-overline-size);
+  --font-size-caption: var(--type-caption-size);
+
+  /* Letter-spacing tokens */
+  --letter-spacing-tighter: -0.035em;
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-snug: -0.01em;
+  --letter-spacing-normal: -0.005em;
+  --letter-spacing-wide: 0.02em;
+  --letter-spacing-wider: 0.08em;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --spacing-space-1: var(--space-1);
+  --spacing-space-2: var(--space-2);
+  --spacing-space-3: var(--space-3);
+  --spacing-space-4: var(--space-4);
+  --spacing-space-5: var(--space-5);
+  --spacing-space-6: var(--space-6);
+  --spacing-space-8: var(--space-8);
+  --spacing-space-10: var(--space-10);
+  --spacing-space-12: var(--space-12);
+  --spacing-space-16: var(--space-16);
+}
+
+/* ── Base Styles ───────────────────────────────────────────────── */
+
+body {
+  font-feature-settings:
+    'cv01' 1,
+    'ss03' 1;
+  letter-spacing: -0.01em; /* Global tightening — Inter default is too loose (Vercel's technique) */
+}
+
+/* Balanced headings — prevent orphaned words */
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+/* Tabular numerals for numeric contexts */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* CJK letter-spacing override — ideographs must not be tracked tighter */
+:lang(zh), :lang(ja), :lang(ko) {
+  letter-spacing: 0 !important;
+}
+
+/* ── Reduced Motion ────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── shadcn Base Layer ─────────────────────────────────────────── */
+
+@layer base {
+  * {
+    @apply border-border outline-ring;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* ── Typography Utility Classes ───────────────────────────────── */
+
+@layer utilities {
+  /* Command register — draws the eye, anchors the page */
+  .type-display {
+    font-size: var(--type-display-size-mobile);
+    font-weight: var(--type-display-weight);
+    line-height: var(--type-display-leading);
+    letter-spacing: var(--type-display-tracking);
+  }
+  @media (min-width: 768px) {
+    .type-display {
+      font-size: var(--type-display-size);
+    }
+  }
+
+  .type-kpi {
+    font-size: var(--type-kpi-size-mobile);
+    font-weight: var(--type-kpi-weight);
+    line-height: var(--type-kpi-leading);
+    letter-spacing: var(--type-kpi-tracking);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (min-width: 768px) {
+    .type-kpi {
+      font-size: var(--type-kpi-size);
+    }
+  }
+
+  .type-page {
+    font-size: var(--type-page-size-mobile);
+    font-weight: var(--type-page-weight);
+    line-height: var(--type-page-leading);
+    letter-spacing: var(--type-page-tracking);
+  }
+  @media (min-width: 768px) {
+    .type-page {
+      font-size: var(--type-page-size);
+    }
+  }
+
+  /* Guide register — readable, scannable, professional */
+  .type-section {
+    font-size: var(--type-section-size-mobile);
+    font-weight: var(--type-section-weight);
+    line-height: var(--type-section-leading);
+    letter-spacing: var(--type-section-tracking);
+  }
+  @media (min-width: 768px) {
+    .type-section {
+      font-size: var(--type-section-size);
+    }
+  }
+
+  .type-card-title {
+    font-size: var(--type-card-title-size);
+    font-weight: var(--type-card-title-weight);
+    line-height: var(--type-card-title-leading);
+    letter-spacing: var(--type-card-title-tracking);
+  }
+
+  .type-body {
+    font-size: var(--type-body-size);
+    font-weight: var(--type-body-weight);
+    line-height: var(--type-body-leading);
+    letter-spacing: var(--type-body-tracking);
+  }
+
+  .type-table {
+    font-size: var(--type-table-size);
+    font-weight: var(--type-table-weight);
+    line-height: var(--type-table-leading);
+    letter-spacing: var(--type-table-tracking);
+  }
+
+  /* Recede register — supporting text, stays out of the way */
+  .type-label {
+    font-size: var(--type-label-size);
+    font-weight: var(--type-label-weight);
+    line-height: var(--type-label-leading);
+    letter-spacing: var(--type-label-tracking);
+  }
+
+  .type-overline {
+    font-size: var(--type-overline-size);
+    font-weight: var(--type-overline-weight);
+    line-height: var(--type-overline-leading);
+    letter-spacing: var(--type-overline-tracking);
+    text-transform: uppercase;
+  }
+
+  .type-caption {
+    font-size: var(--type-caption-size);
+    font-weight: var(--type-caption-weight);
+    line-height: var(--type-caption-leading);
+    letter-spacing: var(--type-caption-tracking);
+  }
+}

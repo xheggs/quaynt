@@ -17,6 +17,59 @@
       "brand": "Brand",
       "brands": "Brands",
       "count": "{count, plural, =0 {no brands} one {# brand} other {# brands}}"
+    },
+    "list": {
+      "pageTitle": "Brands",
+      "search": "Search brands..."
+    },
+    "empty": {
+      "title": "No brands yet",
+      "description": "Brands are the companies you want to track across AI platforms. Add your first brand to get started.",
+      "addFirst": "Add your first brand"
+    },
+    "create": {
+      "title": "Add Brand",
+      "description": "Create a new brand to start tracking its AI visibility.",
+      "button": "Add Brand",
+      "success": "Brand created successfully"
+    },
+    "edit": {
+      "title": "Edit Brand",
+      "description": "Update this brand's details.",
+      "success": "Brand updated successfully"
+    },
+    "delete": {
+      "title": "Delete Brand",
+      "description": "Are you sure you want to delete \"{name}\"? This brand and its associated data will be archived.",
+      "success": "Brand deleted successfully"
+    },
+    "detail": {
+      "info": "Brand Information",
+      "aliases": "Also known as",
+      "noAliases": "No aliases defined",
+      "noDescription": "No description provided",
+      "created": "Created",
+      "updated": "Last updated",
+      "visibilityComingSoon": "Visibility Metrics",
+      "visibilityComingSoonDescription": "Visibility tracking will be available once prompt sets and monitoring are configured."
+    },
+    "form": {
+      "namePlaceholder": "e.g. Acme Corporation",
+      "domainPlaceholder": "e.g. acme.com",
+      "charCount": "{current}/{max}"
+    },
+    "validation": {
+      "nameRequired": "Brand name is required",
+      "nameTooLong": "Brand name must be 255 characters or less",
+      "domainTooLong": "Domain must be 255 characters or less",
+      "descriptionTooLong": "Description must be 1,000 characters or less",
+      "tooManyAliases": "Maximum 50 aliases allowed",
+      "aliasTooLong": "Each alias must be 255 characters or less"
+    },
+    "aliasInput": {
+      "placeholder": "Type an alias and press Enter",
+      "maxReached": "Maximum aliases reached",
+      "removeAlias": "Remove {name}"
     }
   }
 }

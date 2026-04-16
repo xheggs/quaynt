@@ -2,6 +2,16 @@
   "reports": {
     "title": "Reports",
     "description": "Consolidated visibility reports across metrics and brands",
+    "page": {
+      "title": "Reports",
+      "description": "Generate, download, and schedule visibility reports"
+    },
+    "tabs": {
+      "generate": "Generate",
+      "downloads": "Downloads",
+      "schedules": "Schedules",
+      "templates": "Templates"
+    },
     "data": {
       "title": "Report Data",
       "noData": "No report data available for the selected period"
@@ -26,7 +36,88 @@
       "down": "Decreased",
       "stable": "Stable"
     },
+    "generate": {
+      "title": "Generate Report",
+      "description": "Create an on-demand visibility report or data export",
+      "promptSet": "Prompt Set",
+      "brands": "Brands",
+      "format": "Format",
+      "dateRange": "Date Range",
+      "comparison": "Comparison Period",
+      "platform": "Platform",
+      "locale": "Locale",
+      "promptSetPlaceholder": "Select a prompt set",
+      "brandsPlaceholder": "Select brands",
+      "formatPlaceholder": "Select format",
+      "brandsHelp": "Select up to {max} brands",
+      "dateRangeHelp": "Defaults to last 30 days if not specified",
+      "submit": "Generate Report",
+      "submitPdf": "Generate PDF",
+      "submitExport": "Export {format}",
+      "formatOptions": {
+        "pdf": "PDF Report",
+        "csv": "CSV Spreadsheet",
+        "json": "JSON Data",
+        "jsonl": "JSONL Stream"
+      },
+      "formatDescriptions": {
+        "pdf": "Branded report with charts and analysis",
+        "csv": "Tabular data for spreadsheets",
+        "json": "Structured data with metadata",
+        "jsonl": "Line-delimited JSON for data pipelines"
+      },
+      "comparisonOptions": {
+        "none": "No comparison",
+        "previous_period": "Previous period",
+        "previous_week": "Previous week",
+        "previous_month": "Previous month"
+      },
+      "jobStarted": "Report generation started",
+      "jobCompleted": "Report is ready for download",
+      "jobFailed": "Report generation failed"
+    },
+    "job": {
+      "status": {
+        "pending": "Pending",
+        "processing": "Processing",
+        "completed": "Completed",
+        "failed": "Failed"
+      },
+      "progress": "Generating your report...",
+      "download": "Download Report",
+      "expiresIn": "Expires {timeRemaining}",
+      "expired": "Expired",
+      "tryAgain": "Try Again",
+      "dismiss": "Dismiss",
+      "tooManyConcurrent": "Too many reports generating. Please wait for current reports to finish."
+    },
+    "downloads": {
+      "title": "Downloads",
+      "description": "View and download previously generated reports",
+      "columns": {
+        "format": "Format",
+        "promptSet": "Prompt Set",
+        "brands": "Brands",
+        "createdAt": "Created",
+        "expiresAt": "Expires",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No reports yet",
+        "description": "Generate your first visibility report to see it here.",
+        "cta": "Generate Report"
+      },
+      "filterStatus": "Status",
+      "filterDateRange": "Date range",
+      "download": "Download",
+      "expired": "Expired",
+      "count": "{count, plural, one {# report} other {# reports}}",
+      "expiresIn": "{days, plural, one {# day left} other {# days left}}"
+    },
     "schedules": {
+      "title": "Scheduled Reports",
+      "description": "Set up recurring reports delivered automatically by email",
       "name": "Schedule Name",
       "frequency": "Frequency",
       "hour": "Delivery Hour",
@@ -36,6 +127,7 @@
       "enabled": "Enabled",
       "lastRun": "Last Run",
       "nextRun": "Next Run",
+      "create": "Create Schedule",
       "frequencies": {
         "daily": "Daily",
         "weekly": "Weekly",
@@ -59,7 +151,93 @@
         "active": "Active",
         "disabled": "Disabled",
         "autoDisabled": "Auto-disabled after repeated failures"
-      }
+      },
+      "columns": {
+        "name": "Name",
+        "schedule": "Schedule",
+        "recipients": "Recipients",
+        "format": "Format",
+        "lastDelivered": "Last Delivered",
+        "nextRun": "Next Run",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No scheduled reports",
+        "description": "Set up recurring reports to keep stakeholders updated automatically.",
+        "cta": "Create Schedule"
+      },
+      "paused": "Paused",
+      "disabledReason": "Auto-disabled after {count} consecutive failures",
+      "triggerNow": "Send Now",
+      "triggerSuccess": "Report delivery triggered",
+      "deleteTitle": "Delete Schedule",
+      "deleteConfirm": "This will permanently delete \"{name}\" and cancel all future deliveries.",
+      "deleteSuccess": "Schedule deleted",
+      "recipientCount": "{count, plural, one {# recipient} other {# recipients}}",
+      "toggleSuccess": "Schedule {action}",
+      "toggleEnabled": "enabled",
+      "toggleDisabled": "disabled"
+    },
+    "form": {
+      "createTitle": "Create Schedule",
+      "editTitle": "Edit Schedule",
+      "name": "Name",
+      "description": "Description",
+      "promptSet": "Prompt Set",
+      "brands": "Brands",
+      "schedule": "Schedule",
+      "recipients": "Recipients",
+      "format": "Format",
+      "template": "Template",
+      "enabled": "Enabled",
+      "sendIfEmpty": "Send if empty",
+      "namePlaceholder": "Weekly visibility report",
+      "descriptionPlaceholder": "Brief description of this scheduled report",
+      "recipientPlaceholder": "email@example.com",
+      "schedulePresets": {
+        "daily": "Daily at 9:00 AM",
+        "weeklyMonday": "Weekly on Monday",
+        "monthlyFirst": "Monthly on the 1st",
+        "firstMondayMonthly": "First Monday monthly"
+      },
+      "scheduleCustom": "Custom cron expression",
+      "scheduleHelp": "Uses cron syntax (e.g., '0 9 * * MON' for every Monday at 9am)",
+      "sendIfEmptyHelp": "Send report even when no data matches the selected scope",
+      "addRecipient": "Add recipient",
+      "removeRecipient": "Remove recipient",
+      "submit": "Save",
+      "cancel": "Cancel",
+      "formatInfo": "Scheduled reports are delivered as PDF"
+    },
+    "validation": {
+      "nameRequired": "Schedule name is required",
+      "nameTooLong": "Name must be 255 characters or fewer",
+      "descriptionTooLong": "Description must be 1000 characters or fewer",
+      "promptSetRequired": "A prompt set is required",
+      "brandsRequired": "At least one brand is required",
+      "brandsTooMany": "A maximum of 25 brands can be selected",
+      "scheduleRequired": "A schedule is required",
+      "recipientsRequired": "At least one recipient is required",
+      "recipientInvalid": "Invalid email address",
+      "formatRequired": "A format is required",
+      "dateRangeInvalid": "End date must be after start date"
+    },
+    "deliveries": {
+      "title": "Delivery History",
+      "columns": {
+        "status": "Status",
+        "sentAt": "Sent",
+        "recipientCount": "Recipients",
+        "failureReason": "Failure Reason"
+      },
+      "empty": "No deliveries yet",
+      "status": {
+        "pending": "Pending",
+        "sent": "Sent",
+        "failed": "Failed"
+      },
+      "loadMore": "Load more"
     }
   }
 }

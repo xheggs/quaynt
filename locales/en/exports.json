@@ -1,5 +1,12 @@
 {
   "exports": {
+    "button": "Export",
+    "buttonWithCount": "Export ({count})",
+    "format": {
+      "csv": "Export as CSV",
+      "json": "Export as JSON",
+      "jsonl": "Export as JSONL"
+    },
     "errors": {
       "invalidFormat": "Unsupported export format: {format}. Supported formats: {formats}",
       "invalidType": "Unsupported export type: {type}. Supported types: {types}",

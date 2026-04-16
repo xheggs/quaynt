@@ -17,11 +17,11 @@ services:
       POSTGRES_DB: quaynt
       PGDATA: /var/lib/postgresql/18/docker
     ports:
-      - "127.0.0.1:5432:5432"
+      - '127.0.0.1:5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U quaynt -d quaynt"]
+      test: ['CMD-SHELL', 'pg_isready -U quaynt -d quaynt']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -35,7 +35,7 @@ services:
       target: dev
     container_name: quaynt-web
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - ./src:/app/src
       - ./public:/app/public
@@ -83,6 +83,14 @@ services:
     init: true
     restart: unless-stopped
     stop_grace_period: 30s
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: quaynt-mailpit
+    ports:
+      - '127.0.0.1:8025:8025'
+      - '127.0.0.1:1025:1025'
+    restart: unless-stopped
 
 volumes:
   pgdata:
