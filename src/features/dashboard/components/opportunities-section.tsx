@@ -1,7 +1,9 @@
 'use client';
 
+import { Lightbulb } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { EmptyState } from '@/components/empty-state';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ErrorState } from '@/components/error-state';
@@ -15,18 +17,18 @@ export function OpportunitiesSection({ opportunities }: OpportunitiesSectionProp
   const t = useTranslations('dashboard');
 
   return (
-    <Card>
+    <Card className="col-span-12 md:col-span-6">
       <CardHeader>
         <CardTitle className="type-section">{t('sections.opportunities')}</CardTitle>
       </CardHeader>
-      <CardContent className="p-0 px-4 pb-4">
+      <CardContent className="p-0 px-5 pb-5">
         {opportunities === null ? (
           <ErrorState
             variant="inline"
             description={t('warnings.sectionFailed', { section: t('sections.opportunities') })}
           />
         ) : opportunities.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t('opportunities.empty')}</p>
+          <EmptyState variant="inline" icon={Lightbulb} title={t('opportunities.empty')} />
         ) : (
           <ul className="divide-y divide-border" data-testid="opportunities-list">
             {opportunities.map((opp) => (

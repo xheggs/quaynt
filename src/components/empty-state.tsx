@@ -46,15 +46,20 @@ export function EmptyState({
       aria-live="polite"
       className={cn(emptyStateVariants({ variant }), className)}
     >
-      {Icon && <Icon className={cn(iconSize, 'text-muted-foreground')} aria-hidden="true" />}
-      <h3 className={cn('text-foreground', variant === 'page' ? 'type-card-title' : 'type-label')}>
+      {Icon && (
+        <Icon
+          className={cn(iconSize, variant === 'page' ? 'text-primary/40' : 'text-muted-foreground')}
+          aria-hidden="true"
+        />
+      )}
+      <h3 className={cn('text-foreground', variant === 'page' ? 'type-section' : 'type-label')}>
         {title}
       </h3>
       {description && (
         <p
           className={cn(
-            'max-w-sm text-muted-foreground',
-            variant === 'page' ? 'text-sm' : 'text-xs'
+            'text-muted-foreground',
+            variant === 'page' ? 'max-w-md text-sm' : 'max-w-sm text-xs'
           )}
         >
           {description}

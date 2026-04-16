@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { Loader2, Upload, X } from 'lucide-react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -107,7 +108,14 @@ export function TemplateLogoUpload({
   if (previewUrl) {
     return (
       <div className="group relative inline-block rounded-md border border-border p-2">
-        <img src={previewUrl} alt="" className="max-h-[100px] max-w-[200px] object-contain" />
+        <Image
+          src={previewUrl}
+          alt=""
+          width={200}
+          height={100}
+          className="max-h-[100px] max-w-[200px] object-contain"
+          unoptimized
+        />
         <Button
           type="button"
           variant="destructive"

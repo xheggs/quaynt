@@ -3,7 +3,7 @@ import { db } from '@/lib/db';
 import { env } from '@/lib/config/env';
 import { workspace, workspaceMember } from './workspace.schema';
 import { user } from '@/modules/auth/auth.schema';
-import { paginationConfig, sortConfig, countTotal } from '@/lib/db/query-helpers';
+import { paginationConfig, sortConfig } from '@/lib/db/query-helpers';
 import type { PaginationParams } from '@/lib/api/pagination';
 
 const ROLE_HIERARCHY: Record<string, number> = {

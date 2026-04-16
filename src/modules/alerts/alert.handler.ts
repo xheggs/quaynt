@@ -11,6 +11,8 @@ const ALERT_METRICS: AlertMetric[] = [
   'citation_count',
   'sentiment_score',
   'position_average',
+  'crawler_visit_count',
+  'crawler_bot_activity',
 ];
 
 export async function registerAlertHandlers(boss: PgBoss): Promise<void> {

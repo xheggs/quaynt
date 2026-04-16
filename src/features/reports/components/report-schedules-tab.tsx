@@ -1,8 +1,7 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Calendar, Plus } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
 import { queryKeys } from '@/lib/query/keys';
@@ -24,8 +23,6 @@ import { useReportSchedulesQuery } from '../use-reports-query';
 import { useScheduleColumns } from './schedule-columns';
 import { ScheduleFormDialog } from './schedule-form-dialog';
 import { DeleteScheduleDialog } from './delete-schedule-dialog';
-
-import { fetchPromptSets } from '@/features/prompt-sets/prompt-set.api';
 
 export function ReportSchedulesTab() {
   const t = useTranslations('reports');
@@ -52,20 +49,6 @@ export function ReportSchedulesTab() {
   const { showSkeleton } = useDelayedLoading(isLoading);
 
   // Name lookups for prompt sets
-  const { data: promptSetsData } = useQuery({
-    queryKey: queryKeys.promptSets.list({ limit: 100 }),
-    queryFn: () => fetchPromptSets({ limit: 100 }),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const promptSetNames: Record<string, string> = useMemo(() => {
-    const lookup: Record<string, string> = {};
-    for (const p of promptSetsData?.data ?? []) {
-      lookup[p.id] = p.name;
-    }
-    return lookup;
-  }, [promptSetsData]);
-
   // Toggle enabled mutation
   const toggleMutation = useApiMutation<ReportSchedule, { id: string; enabled: boolean }>({
     mutationFn: ({ id, enabled }) => updateReportSchedule(id, { enabled }),
@@ -105,7 +88,6 @@ export function ReportSchedulesTab() {
     onDelete,
     onToggleEnabled,
     onTrigger,
-    promptSetNames,
   });
 
   const hasFilters = !!params.search;

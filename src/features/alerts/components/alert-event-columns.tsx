@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Check, Clock } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';

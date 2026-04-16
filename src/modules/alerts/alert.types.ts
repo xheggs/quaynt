@@ -2,7 +2,9 @@ export type AlertMetric =
   | 'recommendation_share'
   | 'citation_count'
   | 'sentiment_score'
-  | 'position_average';
+  | 'position_average'
+  | 'crawler_visit_count'
+  | 'crawler_bot_activity';
 
 export type AlertCondition =
   | 'drops_below'
@@ -18,6 +20,7 @@ export interface AlertScope {
   brandId: string;
   platformId?: string;
   locale?: string;
+  botName?: string;
 }
 
 export interface AlertRuleCreate {
@@ -48,7 +51,7 @@ export interface AlertRuleUpdate {
 
 export interface AlertEvaluateJobData {
   workspaceId: string;
-  promptSetId: string;
+  promptSetId: string | null;
   metric: AlertMetric;
   date: string;
 }

@@ -4,8 +4,6 @@ import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
-
 import { queryKeys } from '@/lib/query/keys';
 import { useApiMutation } from '@/hooks/use-api-mutation';
 import { Input } from '@/components/ui/input';

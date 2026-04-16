@@ -1,0 +1,1 @@
+ALTER TABLE "alert_rule" ALTER COLUMN "prompt_set_id" DROP NOT NULL;

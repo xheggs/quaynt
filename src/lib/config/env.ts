@@ -28,6 +28,8 @@ const envSchema = z.object({
     .default('false')
     .transform((v) => v === 'true'),
   REPORT_STORAGE_PATH: z.string().default('./data/reports'),
+  CRAWLER_MAX_UPLOAD_SIZE: z.coerce.number().default(209_715_200), // 200MB
+  CRAWLER_VISIT_RETENTION_DAYS: z.coerce.number().default(90),
 });
 
 export type Env = z.infer<typeof envSchema>;

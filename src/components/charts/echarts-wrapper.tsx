@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import * as echarts from 'echarts/core';
-import { BarChart } from 'echarts/charts';
+import { BarChart, LineChart } from 'echarts/charts';
 import {
   GridComponent,
   TooltipComponent,
@@ -24,6 +24,7 @@ export interface ChartDataTable {
 // Register tree-shaken ECharts components once
 echarts.use([
   BarChart,
+  LineChart,
   GridComponent,
   TooltipComponent,
   LegendComponent,

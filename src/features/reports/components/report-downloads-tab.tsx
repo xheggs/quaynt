@@ -11,12 +11,9 @@ import { DataTable } from '@/components/data-table/data-table';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import { DataTablePagination } from '@/components/data-table/data-table-pagination';
 import { EmptyState } from '@/components/empty-state';
-import { FilterBar } from '@/components/filters/filter-bar';
-import { SelectFilter } from '@/components/filters/select-filter';
 import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 
 import type { ReportJob } from '../reports.types';
-import { JOB_STATUSES } from '../reports.types';
 import { buildReportDownloadUrl } from '../reports.api';
 import { useReportJobsQuery } from '../use-reports-query';
 import { ReportFormatBadge } from './report-format-badge';
@@ -30,36 +27,14 @@ export function ReportDownloadsTab({ onNavigateToGenerate }: ReportDownloadsTabP
   const t = useTranslations('reports');
   const locale = useLocale();
 
-  const {
-    data,
-    meta,
-    isLoading,
-    sorting,
-    onSortingChange,
-    pagination,
-    onPaginationChange,
-    params,
-    setParams,
-  } = useReportJobsQuery({
-    status: undefined,
-  });
+  const { data, meta, isLoading, sorting, onSortingChange, pagination, onPaginationChange } =
+    useReportJobsQuery({
+      status: undefined,
+    });
 
   const { showSkeleton } = useDelayedLoading(isLoading);
 
-  const statusOptions = useMemo(
-    () => [
-      { label: t('downloads.filterStatus'), value: '' },
-      ...JOB_STATUSES.map((s) => ({
-        label: t(`job.status.${s}` as never),
-        value: s,
-      })),
-    ],
-    [t]
-  );
-
   const columns = useDownloadColumns({ locale, t });
-
-  const activeFilterCount = params.search ? 1 : 0;
 
   return (
     <div className="space-y-4">

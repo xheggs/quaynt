@@ -1,9 +1,10 @@
 'use client';
 
-import { AlertTriangle, ArrowRight, Info } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Bell, Info } from 'lucide-react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { EmptyState } from '@/components/empty-state';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ErrorState } from '@/components/error-state';
@@ -26,7 +27,7 @@ export function AlertsSection({ alerts }: AlertsSectionProps) {
   const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short' });
 
   return (
-    <Card>
+    <Card className="col-span-12 md:col-span-6">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="type-section flex items-center gap-2">
@@ -39,21 +40,21 @@ export function AlertsSection({ alerts }: AlertsSectionProps) {
           </CardTitle>
           <Link
             href={`/${locale}/alerts?tab=events`}
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-1 text-xs text-primary hover:text-primary-hover transition-colors"
           >
             {t('alerts.viewAll')}
             <ArrowRight className="size-3" />
           </Link>
         </div>
       </CardHeader>
-      <CardContent className="p-0 px-4 pb-4">
+      <CardContent className="p-0 px-5 pb-5">
         {alerts === null ? (
           <ErrorState
             variant="inline"
             description={t('warnings.sectionFailed', { section: t('sections.alerts') })}
           />
         ) : alerts.total === 0 && alerts.recentEvents.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t('alerts.empty')}</p>
+          <EmptyState variant="inline" icon={Bell} title={t('alerts.empty')} />
         ) : (
           <div className="space-y-4">
             <div className="flex gap-4" data-testid="alert-severity-summary">

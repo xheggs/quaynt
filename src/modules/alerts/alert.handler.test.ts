@@ -150,8 +150,8 @@ describe('alert handler', () => {
       const handler = mockBoss.work.mock.calls[1][2];
       await handler([{ id: 'job_reconcile', data: {} }]);
 
-      // 2 workspace/promptSet pairs x 4 metrics = 8 sends
-      expect(mockBoss.send).toHaveBeenCalledTimes(8);
+      // 2 workspace/promptSet pairs x 6 metrics = 12 sends
+      expect(mockBoss.send).toHaveBeenCalledTimes(12);
 
       // Verify singleton dedup keys
       expect(mockBoss.send).toHaveBeenCalledWith(

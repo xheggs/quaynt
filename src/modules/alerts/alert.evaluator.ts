@@ -1,11 +1,12 @@
 import type { PgBoss } from 'pg-boss';
-import { eq, and, lt, desc } from 'drizzle-orm';
+import { eq, and, lt, desc, isNull, sql } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { computeDelta } from '@/modules/visibility/trend.stats';
 import { recommendationShare } from '@/modules/visibility/recommendation-share.schema';
 import { sentimentAggregate } from '@/modules/visibility/sentiment-aggregate.schema';
 import { positionAggregate } from '@/modules/visibility/position-aggregate.schema';
+import { crawlerDailyAggregate } from '@/modules/crawler/crawler-aggregate.schema';
 import {
   dispatchAlertEmail,
   dispatchAlertWebhook,
@@ -87,10 +88,23 @@ export function isCooldownActive(
 export async function resolveMetricValue(
   metric: AlertMetric,
   workspaceId: string,
-  promptSetId: string,
+  promptSetId: string | null,
   scope: AlertScope,
   date: string
 ): Promise<{ currentValue: number | null; previousValue: number | null }> {
+  // Crawler metrics are workspace-scoped — no promptSetId or brandId needed
+  if (metric === 'crawler_visit_count') {
+    return resolveFromCrawlerVisitCount(workspaceId, scope.botName, date);
+  }
+  if (metric === 'crawler_bot_activity') {
+    return resolveFromCrawlerBotActivity(workspaceId, scope.botName, date);
+  }
+
+  // Non-crawler metrics require promptSetId
+  if (!promptSetId) {
+    return { currentValue: null, previousValue: null };
+  }
+
   const platformId = scope.platformId ?? '_all';
   const locale = scope.locale ?? '_all';
   const { brandId } = scope;
@@ -252,9 +266,100 @@ async function resolveFromPositionAggregate(
   };
 }
 
+async function resolveFromCrawlerVisitCount(
+  workspaceId: string,
+  botName: string | undefined,
+  date: string
+): Promise<{ currentValue: number | null; previousValue: number | null }> {
+  const targetBot = botName ?? '_all_';
+
+  const [current] = await db
+    .select({ visitCount: crawlerDailyAggregate.visitCount })
+    .from(crawlerDailyAggregate)
+    .where(
+      and(
+        eq(crawlerDailyAggregate.workspaceId, workspaceId),
+        eq(crawlerDailyAggregate.botName, targetBot),
+        eq(crawlerDailyAggregate.periodStart, date)
+      )
+    )
+    .limit(1);
+
+  const [previous] = await db
+    .select({ visitCount: crawlerDailyAggregate.visitCount })
+    .from(crawlerDailyAggregate)
+    .where(
+      and(
+        eq(crawlerDailyAggregate.workspaceId, workspaceId),
+        eq(crawlerDailyAggregate.botName, targetBot),
+        lt(crawlerDailyAggregate.periodStart, date)
+      )
+    )
+    .orderBy(desc(crawlerDailyAggregate.periodStart))
+    .limit(1);
+
+  return {
+    currentValue: current?.visitCount ?? null,
+    previousValue: previous?.visitCount ?? null,
+  };
+}
+
+async function resolveFromCrawlerBotActivity(
+  workspaceId: string,
+  botName: string | undefined,
+  date: string
+): Promise<{ currentValue: number | null; previousValue: number | null }> {
+  // Returns the number of consecutive days with zero visits for the specified bot.
+  // currentValue = consecutive zero-visit days (0 means active today).
+  const targetBot = botName ?? '_all_';
+
+  // Check if there's data for today
+  const [current] = await db
+    .select({ visitCount: crawlerDailyAggregate.visitCount })
+    .from(crawlerDailyAggregate)
+    .where(
+      and(
+        eq(crawlerDailyAggregate.workspaceId, workspaceId),
+        eq(crawlerDailyAggregate.botName, targetBot),
+        eq(crawlerDailyAggregate.periodStart, date)
+      )
+    )
+    .limit(1);
+
+  const currentVisits = current?.visitCount ?? 0;
+
+  // Find last date with visits
+  const [lastActive] = await db
+    .select({ periodStart: crawlerDailyAggregate.periodStart })
+    .from(crawlerDailyAggregate)
+    .where(
+      and(
+        eq(crawlerDailyAggregate.workspaceId, workspaceId),
+        eq(crawlerDailyAggregate.botName, targetBot),
+        sql`${crawlerDailyAggregate.visitCount} > 0`
+      )
+    )
+    .orderBy(desc(crawlerDailyAggregate.periodStart))
+    .limit(1);
+
+  let daysSinceActive = 0;
+  if (lastActive) {
+    const lastDate = new Date(lastActive.periodStart);
+    const currentDate = new Date(date);
+    daysSinceActive = Math.floor(
+      (currentDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+  }
+
+  return {
+    currentValue: currentVisits > 0 ? 0 : daysSinceActive,
+    previousValue: null,
+  };
+}
+
 export async function evaluateRulesForMetric(
   workspaceId: string,
-  promptSetId: string,
+  promptSetId: string | null,
   metric: AlertMetric,
   date: string,
   boss: PgBoss
@@ -263,17 +368,22 @@ export async function evaluateRulesForMetric(
   const results: AlertEvaluationResult[] = [];
 
   // Load all enabled rules for this workspace + metric + promptSet
+  const isCrawlerMetric = metric.startsWith('crawler_');
+  const ruleConditions = [
+    eq(alertRule.workspaceId, workspaceId),
+    eq(alertRule.metric, metric),
+    eq(alertRule.enabled, true),
+  ];
+  if (!isCrawlerMetric && promptSetId) {
+    ruleConditions.push(eq(alertRule.promptSetId, promptSetId));
+  } else if (isCrawlerMetric) {
+    ruleConditions.push(isNull(alertRule.promptSetId));
+  }
+
   const rules = await db
     .select()
     .from(alertRule)
-    .where(
-      and(
-        eq(alertRule.workspaceId, workspaceId),
-        eq(alertRule.metric, metric),
-        eq(alertRule.promptSetId, promptSetId),
-        eq(alertRule.enabled, true)
-      )
-    );
+    .where(and(...ruleConditions));
 
   if (rules.length === 0) {
     log.debug('No enabled alert rules found');

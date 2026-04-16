@@ -17,7 +17,7 @@ import { ErrorState } from '@/components/error-state';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { TableSkeleton } from '@/components/skeletons';
 
-import type { AdapterConfig, AdapterUpdate } from '../../integrations.types';
+import type { AdapterConfig } from '../../integrations.types';
 import { updateAdapter } from '../../integrations.api';
 import { useWorkspaceQuery } from '../../use-settings-query';
 import { useAdaptersQuery } from '../../use-integrations-query';
@@ -81,11 +81,12 @@ function AdaptersContent() {
       );
       toggleMutation.mutate({ id: adapter.id, enabled: !adapter.enabled });
     },
-    [queryClient, params, meta, toggleMutation]
+    [queryClient, params, toggleMutation]
   );
 
   const onEdit = useCallback((adapter: AdapterConfig) => setEditAdapter(adapter), []);
   const onDelete = useCallback((adapter: AdapterConfig) => setDeleteTarget(adapter), []);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onHealthCheck = useCallback((_adapter: AdapterConfig) => {
     // Health check is handled inline via the AdapterHealthCheck component
     // in the row actions. For now, this is a placeholder callback.

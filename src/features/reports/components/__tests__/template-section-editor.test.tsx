@@ -41,8 +41,6 @@ describe('TemplateSectionEditor', () => {
       <TemplateSectionEditor sections={sections} onChange={onChange} />
     );
 
-    // Radix Checkbox renders a button with role="checkbox"
-    const coverCheckbox = container.querySelector('#section-cover');
     // The Radix Checkbox wraps the native element - find the clickable button
     const items = container.querySelectorAll('li');
     const firstItem = items[0];

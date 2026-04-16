@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Copy, Eye, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -46,10 +47,13 @@ export function useTemplateColumns({
           return (
             <div className="flex items-center gap-3 min-w-0">
               {template.branding.logoUrl && (
-                <img
+                <Image
                   src={template.branding.logoUrl}
                   alt=""
+                  width={32}
+                  height={32}
                   className="size-8 shrink-0 rounded object-contain"
+                  unoptimized
                 />
               )}
               <div className="min-w-0">

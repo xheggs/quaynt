@@ -11,8 +11,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 
 const routeLabels: Record<string, string> = {
   dashboard: 'navigation.dashboard',
@@ -27,43 +25,40 @@ const routeLabels: Record<string, string> = {
   settings: 'navigation.settings',
 };
 
-export function SiteHeader() {
+/**
+ * Page-level breadcrumb for detail and form pages.
+ * Only renders when the route has more than one segment (e.g., /brands/123).
+ */
+export function PageBreadcrumb() {
   const t = useTranslations('ui');
   const locale = useLocale();
   const pathname = usePathname();
 
-  // Parse pathname: /en/dashboard/... → ['dashboard', ...]
   const segments = pathname.replace(`/${locale}`, '').split('/').filter(Boolean);
+
+  // Only show breadcrumb on nested routes
+  if (segments.length <= 1) return null;
 
   const currentSegment = segments[0] ?? 'dashboard';
   const labelKey = routeLabels[currentSegment];
   const currentLabel = labelKey ? t(labelKey as never) : currentSegment;
 
   return (
-    <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-4 lg:px-6">
-      <SidebarTrigger className="-ml-1" />
-      <Separator orientation="vertical" className="mx-2 h-4" />
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            {segments.length > 1 ? (
-              <BreadcrumbLink href={`/${locale}/${currentSegment}`}>{currentLabel}</BreadcrumbLink>
-            ) : (
-              <BreadcrumbPage>{currentLabel}</BreadcrumbPage>
-            )}
-          </BreadcrumbItem>
-          {segments.length > 1 && (
-            <>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="capitalize">
-                  {segments.slice(1).join(' / ').replace(/-/g, ' ')}
-                </BreadcrumbPage>
-              </BreadcrumbItem>
-            </>
-          )}
-        </BreadcrumbList>
-      </Breadcrumb>
-    </header>
+    <Breadcrumb className="mb-4">
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href={`/${locale}/${currentSegment}`}>{currentLabel}</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbPage className="capitalize">
+            {segments.slice(1).join(' / ').replace(/-/g, ' ')}
+          </BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }
+
+/** @deprecated Use PageBreadcrumb instead */
+export const SiteHeader = PageBreadcrumb;

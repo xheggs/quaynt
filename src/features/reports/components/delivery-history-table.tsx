@@ -28,7 +28,7 @@ const deliveryStatusConfig: Record<
 export function DeliveryHistoryTable({ scheduleId }: DeliveryHistoryTableProps) {
   const t = useTranslations('reports');
   const locale = useLocale();
-  const { data, isLoading, pagination, onPaginationChange, sorting, onSortingChange, meta } =
+  const { data, isLoading, pagination, onPaginationChange, sorting, onSortingChange } =
     useScheduleDeliveriesQuery(scheduleId, { limit: 5 });
 
   const { showSkeleton } = useDelayedLoading(isLoading);

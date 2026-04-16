@@ -27,9 +27,7 @@ export const alertRule = pgTable(
     name: text().notNull(),
     description: text(),
     metric: text().notNull(),
-    promptSetId: text()
-      .notNull()
-      .references(() => promptSet.id, { onDelete: 'cascade' }),
+    promptSetId: text().references(() => promptSet.id, { onDelete: 'cascade' }),
     scope: jsonb().$type<AlertScope>().notNull(),
     condition: text().notNull(),
     threshold: numeric({ precision: 12, scale: 4 }).notNull(),

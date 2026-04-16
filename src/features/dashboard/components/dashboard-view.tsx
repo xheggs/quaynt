@@ -127,17 +127,18 @@ function DashboardContent() {
       {data.warnings && data.warnings.length > 0 && (
         <div className="space-y-1">
           {data.warnings.map((warning, i) => (
-            <p key={i} className="text-xs text-amber-600 dark:text-amber-400">
-              {warning}
-            </p>
+            <div key={i} className="rounded-md bg-warning-bg px-3 py-2">
+              <p className="type-caption text-warning">{warning}</p>
+            </div>
           ))}
         </div>
       )}
 
       {/* KPI row */}
       {data.kpis && (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-12 gap-4">
           <KpiCard
+            className="col-span-12 md:col-span-6 lg:col-span-4"
             label={t('kpiCards.recommendationShare')}
             value={data.kpis.recommendationShare.current}
             delta={data.kpis.recommendationShare.delta}
@@ -145,6 +146,7 @@ function DashboardContent() {
             sparkline={data.kpis.recommendationShare.sparkline}
           />
           <KpiCard
+            className="col-span-12 md:col-span-6 lg:col-span-4"
             label={t('kpiCards.totalCitations')}
             value={data.kpis.totalCitations.current}
             delta={data.kpis.totalCitations.delta}
@@ -152,6 +154,7 @@ function DashboardContent() {
             sparkline={data.kpis.totalCitations.sparkline}
           />
           <KpiCard
+            className="col-span-12 md:col-span-6 lg:col-span-4"
             label={t('kpiCards.averageSentiment')}
             value={data.kpis.averageSentiment.current}
             delta={data.kpis.averageSentiment.delta}
@@ -162,7 +165,7 @@ function DashboardContent() {
       )}
 
       {/* Section grid */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-12 gap-4">
         <MoversSection movers={data.movers} />
         <OpportunitiesSection opportunities={data.opportunities} />
         <PlatformsSection platforms={data.platforms} />

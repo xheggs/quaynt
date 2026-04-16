@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { queryKeys } from '@/lib/query/keys';
@@ -37,7 +37,6 @@ import type {
   AdapterConfig,
   AdapterCreate,
   AdapterUpdate,
-  PlatformInfo,
   CredentialField,
   ConfigField,
 } from '../../integrations.types';

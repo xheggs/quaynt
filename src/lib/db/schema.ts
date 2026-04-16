@@ -22,4 +22,7 @@ export * from '@/modules/pdf/report-job.schema';
 export * from '@/modules/scheduled-reports/scheduled-report.schema';
 export * from '@/modules/report-templates/report-template.schema';
 export * from '@/modules/user/user-preference.schema';
+export * from '@/modules/crawler/crawler-upload.schema';
+export * from '@/modules/crawler/crawler-visit.schema';
+export * from '@/modules/crawler/crawler-aggregate.schema';
 export { timestamps } from './helpers';

@@ -12,7 +12,6 @@ import { ApiError } from '@/lib/query/types';
 import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { EmptyState } from '@/components/empty-state';
 import { ErrorState } from '@/components/error-state';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { DetailSkeleton } from '@/components/skeletons/detail-skeleton';

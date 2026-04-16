@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertTriangle, Check, Copy } from 'lucide-react';
@@ -120,7 +120,6 @@ interface GenerateKeyFormProps {
 
 function GenerateKeyForm({ onGenerated }: GenerateKeyFormProps) {
   const t = useTranslations('settings');
-  const tUi = useTranslations('ui');
   const [unmappedErrors, setUnmappedErrors] = useState<{ message: string }[]>([]);
 
   const form = useForm<ApiKeyCreateFormValues>({

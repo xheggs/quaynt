@@ -20,7 +20,8 @@
       "alerts": "Alerts",
       "reports": "Reports",
       "home": "Home",
-      "settings": "Settings"
+      "settings": "Settings",
+      "crawlerAnalytics": "Crawlers"
     },
     "actions": {
       "edit": "Edit",
@@ -108,6 +109,12 @@
       "configuration": "Configuration",
       "reporting": "Reporting",
       "toggleSidebar": "Toggle sidebar"
+    },
+    "topNav": {
+      "configure": "Configure",
+      "reporting": "Reporting",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
     },
     "a11y": {
       "chartDataTable": "Data for {chartTitle}",

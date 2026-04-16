@@ -3,6 +3,7 @@
 import { Minus, TrendingDown, TrendingUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { EmptyState } from '@/components/empty-state';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ErrorState } from '@/components/error-state';
 import { cn } from '@/lib/utils';
@@ -28,18 +29,18 @@ export function MoversSection({ movers }: MoversSectionProps) {
   const t = useTranslations('dashboard');
 
   return (
-    <Card>
+    <Card className="col-span-12 md:col-span-6">
       <CardHeader>
         <CardTitle className="type-section">{t('sections.movers')}</CardTitle>
       </CardHeader>
-      <CardContent className="p-0 px-4 pb-4">
+      <CardContent className="p-0 px-5 pb-5">
         {movers === null ? (
           <ErrorState
             variant="inline"
             description={t('warnings.sectionFailed', { section: t('sections.movers') })}
           />
         ) : movers.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t('movers.empty')}</p>
+          <EmptyState variant="inline" icon={TrendingUp} title={t('movers.empty')} />
         ) : (
           <ul className="divide-y divide-border" data-testid="movers-list">
             {movers.map((mover) => {

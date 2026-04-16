@@ -27,7 +27,6 @@ interface UseScheduleColumnsCallbacks {
   onDelete: (schedule: ReportSchedule) => void;
   onToggleEnabled: (schedule: ReportSchedule) => void;
   onTrigger: (schedule: ReportSchedule) => void;
-  promptSetNames: Record<string, string>;
 }
 
 export function useScheduleColumns({
@@ -35,7 +34,6 @@ export function useScheduleColumns({
   onDelete,
   onToggleEnabled,
   onTrigger,
-  promptSetNames,
 }: UseScheduleColumnsCallbacks): ColumnDef<ReportSchedule>[] {
   const t = useTranslations('reports');
   const locale = useLocale();

@@ -4,40 +4,42 @@ import { Monitor, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 export function ThemeToggle() {
-  const { setTheme, resolvedTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const t = useTranslations('ui');
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          {resolvedTheme === 'dark' ? <Moon className="size-4" /> : <Sun className="size-4" />}
-          <span className="sr-only">{t('theme.light')}</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme('light')}>
-          <Sun className="mr-2 size-4" />
-          {t('theme.light')}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>
-          <Moon className="mr-2 size-4" />
-          {t('theme.dark')}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('system')}>
-          <Monitor className="mr-2 size-4" />
-          {t('theme.system')}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <ToggleGroup
+      type="single"
+      value={theme}
+      onValueChange={(value) => {
+        if (value) setTheme(value);
+      }}
+      className="h-8 gap-0 rounded-md border border-border bg-muted/50 p-0.5"
+    >
+      <ToggleGroupItem
+        value="light"
+        aria-label={t('theme.light')}
+        className="h-7 w-7 rounded-sm data-[state=on]:bg-background data-[state=on]:shadow-sm"
+      >
+        <Sun className="size-3.5" />
+      </ToggleGroupItem>
+      <ToggleGroupItem
+        value="dark"
+        aria-label={t('theme.dark')}
+        className="h-7 w-7 rounded-sm data-[state=on]:bg-background data-[state=on]:shadow-sm"
+      >
+        <Moon className="size-3.5" />
+      </ToggleGroupItem>
+      <ToggleGroupItem
+        value="system"
+        aria-label={t('theme.system')}
+        className="h-7 w-7 rounded-sm data-[state=on]:bg-background data-[state=on]:shadow-sm"
+      >
+        <Monitor className="size-3.5" />
+      </ToggleGroupItem>
+    </ToggleGroup>
   );
 }

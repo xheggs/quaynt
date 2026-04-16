@@ -17,6 +17,7 @@ import type enReports from '../../../locales/en/reports.json';
 import type enExports from '../../../locales/en/exports.json';
 import type enReportsTemplates from '../../../locales/en/reports-templates.json';
 import type enSettings from '../../../locales/en/settings.json';
+import type enCrawlerAnalytics from '../../../locales/en/crawlerAnalytics.json';
 
 type Messages = typeof en &
   typeof enErrors &
@@ -35,7 +36,8 @@ type Messages = typeof en &
   typeof enReports &
   typeof enExports &
   typeof enReportsTemplates &
-  typeof enSettings;
+  typeof enSettings &
+  typeof enCrawlerAnalytics;
 
 declare module 'next-intl' {
   interface AppConfig {

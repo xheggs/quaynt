@@ -44,4 +44,6 @@ export const queryKeys = {
   reportTemplates: createQueryKeys('reportTemplates'),
   userPreferences: createQueryKeys('userPreferences'),
   members: createQueryKeys('members'),
+  crawlerUploads: createQueryKeys('crawlerUploads'),
+  crawlerAnalytics: createQueryKeys('crawlerAnalytics'),
 } as const;

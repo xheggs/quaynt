@@ -1,12 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { axe } from 'vitest-axe';
 import { screen } from '@testing-library/react';
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { renderWithCitationProviders } from './test-utils';
 import { useCitationColumns } from '../components/citation-columns';
 import type { CitationRecord } from '../citation.types';

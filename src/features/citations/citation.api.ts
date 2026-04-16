@@ -1,5 +1,5 @@
 import { apiFetch, apiFetchPaginated } from '@/lib/query/fetch';
-import type { PaginatedResponse, QueryFilters } from '@/lib/query/types';
+import type { PaginatedResponse } from '@/lib/query/types';
 import type { CitationRecord, CitationListFilters } from './citation.types';
 
 export function fetchCitations(

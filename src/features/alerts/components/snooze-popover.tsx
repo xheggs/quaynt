@@ -3,8 +3,6 @@
 import { useState } from 'react';
 import { Clock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useQueryClient } from '@tanstack/react-query';
-
 import { queryKeys } from '@/lib/query/keys';
 import { useApiMutation } from '@/hooks/use-api-mutation';
 import { Button } from '@/components/ui/button';
@@ -28,7 +26,6 @@ interface SnoozePopoverProps {
 
 export function SnoozePopover({ eventId, disabled }: SnoozePopoverProps) {
   const t = useTranslations('alerts');
-  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [showCustom, setShowCustom] = useState(false);
   const [customDateTime, setCustomDateTime] = useState('');

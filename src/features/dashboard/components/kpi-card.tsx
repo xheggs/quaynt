@@ -52,7 +52,7 @@ export function KpiCard({
 
   if (loading) {
     return (
-      <Card className={cn('bg-gradient-to-t from-primary/5 to-card p-5', className)}>
+      <Card className={cn('border-l-2 border-l-primary bg-card p-5', className)}>
         <CardContent className="space-y-3 p-0">
           <Skeleton className="h-3 w-24" />
           <Skeleton className="h-8 w-20" />
@@ -80,7 +80,7 @@ export function KpiCard({
 
   return (
     <Card
-      className={cn('bg-gradient-to-t from-primary/5 to-card p-5', className)}
+      className={cn('border-l-2 border-l-primary bg-card p-5', className)}
       aria-label={ariaLabel}
     >
       <CardContent className="space-y-3 p-0">

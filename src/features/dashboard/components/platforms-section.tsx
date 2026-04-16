@@ -1,7 +1,9 @@
 'use client';
 
+import { Activity } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { EmptyState } from '@/components/empty-state';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ErrorState } from '@/components/error-state';
 import { cn } from '@/lib/utils';
@@ -23,18 +25,18 @@ export function PlatformsSection({ platforms }: PlatformsSectionProps) {
   const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short' });
 
   return (
-    <Card>
+    <Card className="col-span-12 md:col-span-6">
       <CardHeader>
         <CardTitle className="type-section">{t('sections.platforms')}</CardTitle>
       </CardHeader>
-      <CardContent className="p-0 px-4 pb-4">
+      <CardContent className="p-0 px-5 pb-5">
         {platforms === null ? (
           <ErrorState
             variant="inline"
             description={t('warnings.sectionFailed', { section: t('sections.platforms') })}
           />
         ) : platforms.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t('platforms.empty')}</p>
+          <EmptyState variant="inline" icon={Activity} title={t('platforms.empty')} />
         ) : (
           <div
             className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3"

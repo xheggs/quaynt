@@ -14,9 +14,6 @@ const mockReturning = vi.fn();
 const mockInnerJoin = vi.fn();
 const mockSet = vi.fn();
 const mockOnConflictDoNothing = vi.fn();
-const mockOrderBy = vi.fn();
-const mockOffset = vi.fn();
-
 vi.mock('@/lib/db', () => {
   mockSelect.mockReturnValue({ from: mockFrom });
   mockFrom.mockReturnValue({ where: mockWhere, innerJoin: mockInnerJoin });

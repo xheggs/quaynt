@@ -9,7 +9,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 
 import { describe, it, expect, vi } from 'vitest';
 import { axe } from 'vitest-axe';
-import { screen, fireEvent } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { render } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { MultiSelectFilter } from '../multi-select-filter';

@@ -37,6 +37,9 @@ export const PREFIXES = {
   reportDelivery: 'rptdlv',
   reportTemplate: 'tmpl',
   userPreference: 'upref',
+  crawlerUpload: 'crup',
+  crawlerVisit: 'crvis',
+  crawlerAgg: 'crag',
 } as const;
 
 export function generatePrefixedId(model: keyof typeof PREFIXES): string {

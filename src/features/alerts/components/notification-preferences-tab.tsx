@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 
@@ -62,7 +61,6 @@ function formatHour(hour: number): string {
 }
 
 export function NotificationPreferencesTab() {
-  const t = useTranslations('alerts');
   const { data, isLoading, isError, refetch } = useNotificationPreferencesQuery();
   const { showSkeleton } = useDelayedLoading(isLoading);
 

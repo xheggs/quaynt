@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { Bell } from 'lucide-react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
 import { queryKeys } from '@/lib/query/keys';
@@ -36,7 +36,6 @@ const STATUS_I18N: Record<string, string> = {
 
 export function AlertEventsTab() {
   const t = useTranslations('alerts');
-  const queryClient = useQueryClient();
 
   // Filters
   const [severityFilter, setSeverityFilter] = useState('');
@@ -48,7 +47,6 @@ export function AlertEventsTab() {
     meta,
     isLoading,
     isError,
-    params,
     setParams,
     resetParams,
     sorting,

@@ -12,6 +12,8 @@ import { registerAlertHandlers } from '@/modules/alerts/alert.handler';
 import { registerNotificationHandlers } from '@/modules/notifications/notification.handler';
 import { registerPdfHandlers } from '@/modules/pdf/pdf.handler';
 import { registerScheduledReportHandlers } from '@/modules/scheduled-reports/scheduled-report.handler';
+import { registerCrawlerParseHandler } from '@/modules/crawler/crawler-parse.handler';
+import { registerCrawlerAggregateHandler } from '@/modules/crawler/crawler-aggregate.handler';
 
 export async function registerHandlers(boss: PgBoss): Promise<void> {
   await registerWebhookHandlers(boss);
@@ -26,6 +28,8 @@ export async function registerHandlers(boss: PgBoss): Promise<void> {
   await registerNotificationHandlers(boss);
   await registerPdfHandlers(boss);
   await registerScheduledReportHandlers(boss);
+  await registerCrawlerParseHandler(boss);
+  await registerCrawlerAggregateHandler(boss);
 
   // Commercial-only handlers
   if (env.QUAYNT_EDITION !== 'community') {

@@ -1,0 +1,100 @@
+{
+  "crawlerAnalytics": {
+    "page": {
+      "title": "Crawler Analytics",
+      "description": "See which AI bots are crawling your site"
+    },
+    "upload": {
+      "title": "Upload Server Logs",
+      "dropzone": "Drop your server log file here, or click to browse",
+      "formats": "Supports Apache, Nginx, and CloudFront log formats (.log, .txt, .gz)",
+      "maxSize": "Maximum file size: {size}",
+      "formatOverride": "Log format (auto-detected if not specified)",
+      "processing": "Processing... {parsed} of {total} lines",
+      "complete": "Upload complete: {visits} bot visits found from {bots} bots",
+      "failed": "Upload failed: {error}",
+      "cancel": "Cancel Upload",
+      "cancelConfirm": "Cancel processing this upload?",
+      "duplicate": "This file has already been uploaded",
+      "duplicateId": "Existing upload: {uploadId}"
+    },
+    "kpi": {
+      "totalVisits": "Total Bot Visits",
+      "uniqueBots": "Active Bots",
+      "uniquePages": "Pages Crawled",
+      "searchBots": "Search Bots"
+    },
+    "filters": {
+      "dateRange": "Date Range",
+      "botName": "Bot",
+      "botCategory": "Category",
+      "allBots": "All bots",
+      "allCategories": "All categories"
+    },
+    "category": {
+      "search": "Search",
+      "training": "Training",
+      "userAction": "User Action"
+    },
+    "chart": {
+      "title": "Bot Activity Over Time",
+      "visits": "Visits"
+    },
+    "botTable": {
+      "title": "Bot Breakdown",
+      "name": "Bot",
+      "operator": "Operator",
+      "category": "Category",
+      "visits": "Visits",
+      "uniquePages": "Pages",
+      "lastSeen": "Last Seen"
+    },
+    "pagesTable": {
+      "title": "Most Crawled Pages",
+      "path": "Path",
+      "visits": "Visits",
+      "botCount": "Bots",
+      "lastCrawled": "Last Crawled"
+    },
+    "gapsTable": {
+      "title": "Coverage Gaps",
+      "path": "Path",
+      "lastCrawled": "Last Crawled",
+      "daysSince": "Days Since"
+    },
+    "uploads": {
+      "title": "Upload History",
+      "filename": "File",
+      "format": "Format",
+      "status": "Status",
+      "lines": "Lines",
+      "visits": "Visits",
+      "date": "Uploaded",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this upload and all associated visit data?"
+    },
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "completed": "Completed",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    },
+    "empty": {
+      "title": "No crawler data yet",
+      "description": "Upload your server access logs to see which AI bots are crawling your site",
+      "action": "Upload Logs"
+    },
+    "errors": {
+      "invalidFileType": "Invalid file type. Supported: .log, .txt, .gz",
+      "fileTooLarge": "File exceeds maximum size of {size}",
+      "formatNotDetected": "Could not detect log format. Please select the format manually.",
+      "uploadFailed": "Upload failed. Please try again.",
+      "pushTooMany": "Maximum {max} visits per request"
+    },
+    "alert": {
+      "visitCount": "Bot Visit Count",
+      "botActivity": "Bot Activity"
+    }
+  }
+}
