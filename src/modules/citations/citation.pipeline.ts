@@ -19,6 +19,7 @@ import { generatePrefixedId } from '@/lib/db/id';
 import { classifyCitationType, filterBrandRelevantCitations } from './citation.classifier';
 import { analyzeSentiment } from './sentiment';
 import { normalizeUrl } from './url-normalize';
+import { runQueryFanoutForResult } from '@/modules/query-fanout/query-fanout.service';
 
 /**
  * Extract, classify, and persist citations for a completed model run.
@@ -77,6 +78,7 @@ export async function extractCitationsForModelRun(
       textContent: modelRunResult.textContent,
       responseMetadata: modelRunResult.responseMetadata,
       interpolatedPrompt: modelRunResult.interpolatedPrompt,
+      promptId: modelRunResult.promptId,
     })
     .from(modelRunResult)
     .where(and(eq(modelRunResult.modelRunId, runId), eq(modelRunResult.status, 'completed')));
@@ -206,6 +208,31 @@ export async function extractCitationsForModelRun(
       log.warn(
         { error: err instanceof Error ? err.message : String(err) },
         'Failed to dispatch citation.new webhook (citations are persisted)'
+      );
+    }
+  }
+
+  // 6b. Extract observed query-fanout per result. Runs after citations are
+  // committed so citationId reconciliation can match against authoritative
+  // citation rows. Failures never break the enclosing job: the service
+  // catches its own errors and returns `{ skipped: true }`.
+  for (const result of results) {
+    try {
+      await runQueryFanoutForResult({
+        workspaceId,
+        modelRunId: runId,
+        result,
+        log,
+        boss,
+      });
+    } catch (err) {
+      log.warn(
+        {
+          error: err instanceof Error ? err.message : String(err),
+          modelRunResultId: result.id,
+          platformId: result.platformId,
+        },
+        'Query fan-out step threw unexpectedly (citations are persisted)'
       );
     }
   }

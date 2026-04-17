@@ -1,0 +1,198 @@
+// @vitest-environment jsdom
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { screen, waitFor, fireEvent, cleanup } from '@testing-library/react';
+
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  globalThis.ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
+import { render } from '@testing-library/react';
+import { NextIntlClientProvider } from 'next-intl';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import queryFanoutMessages from '../../../../../../locales/en/queryFanout.json';
+
+const fetchMock = vi.fn();
+const simulateMock = vi.fn();
+vi.mock('../query-fanout.api', async () => {
+  const actual = await vi.importActual<typeof import('../query-fanout.api')>('../query-fanout.api');
+  return {
+    ...actual,
+    fetchQueryFanoutForResult: (...args: unknown[]) => fetchMock(...args),
+    simulateQueryFanout: (...args: unknown[]) => simulateMock(...args),
+  };
+});
+
+import { QueryFanoutSection } from '../query-fanout-section';
+
+function renderWith(children: React.ReactNode) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
+  return render(
+    <NextIntlClientProvider locale="en" messages={queryFanoutMessages}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </NextIntlClientProvider>
+  );
+}
+
+function renderSection(
+  overrides: Partial<{
+    modelRunId: string;
+    modelRunResultId: string;
+    platformId: string;
+    promptId: string;
+  }> = {}
+) {
+  return renderWith(
+    <QueryFanoutSection
+      modelRunId={overrides.modelRunId ?? 'run_1'}
+      modelRunResultId={overrides.modelRunResultId ?? 'runres_1'}
+      platformId={overrides.platformId ?? 'gemini'}
+      promptId={overrides.promptId ?? 'prompt_1'}
+    />
+  );
+}
+
+describe('QueryFanoutSection', () => {
+  beforeEach(() => {
+    fetchMock.mockReset();
+    simulateMock.mockReset();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
+  it('shows "not available" message and Generate CTA for unsupported platforms', async () => {
+    fetchMock.mockResolvedValue([]);
+    renderSection({ platformId: 'perplexity' });
+
+    fireEvent.click(screen.getByRole('button', { name: /query fan-out/i }));
+    await waitFor(() =>
+      expect(screen.getByText(/isn't available for this platform/i)).toBeDefined()
+    );
+    expect(screen.getByRole('button', { name: /generate inferred fan-out/i })).toBeDefined();
+  });
+
+  it('renders observed sub-queries and root sources for a supported platform', async () => {
+    fetchMock.mockResolvedValue([
+      {
+        modelRunResultId: 'runres_1',
+        platformId: 'gemini',
+        promptId: 'prompt_1',
+        promptText: 'Prompt',
+        rootMetadata: { groundingAttribution: 'root-only' },
+        subQueries: [
+          {
+            id: 'qfn_sub1',
+            text: 'how to use asana',
+            metadata: null,
+            sources: [],
+            isSimulated: false,
+            intentType: null,
+            simulationProvider: null,
+            simulationModel: null,
+          },
+        ],
+        rootSources: [
+          { id: 'qfn_src1', url: 'https://asana.com', title: 'Asana', citationId: null },
+        ],
+      },
+    ]);
+
+    renderSection({ platformId: 'gemini' });
+
+    fireEvent.click(screen.getByRole('button', { name: /query fan-out/i }));
+    await waitFor(() => expect(screen.getByText('how to use asana')).toBeDefined());
+    expect(screen.getByText(/Sources grounding the response/i)).toBeDefined();
+    expect(screen.getByText(/sources could not be mapped/i)).toBeDefined();
+    expect(screen.getByText('Asana')).toBeDefined();
+    // When observed data exists, the "Show inferred" toggle is available.
+    expect(screen.getByText(/show inferred sub-queries/i)).toBeDefined();
+  });
+
+  it('renders the Inferred pill and attribution for simulated sub-queries', async () => {
+    fetchMock.mockResolvedValue([
+      {
+        modelRunResultId: 'runres_1',
+        platformId: 'perplexity',
+        promptId: 'prompt_1',
+        promptText: 'Prompt',
+        rootMetadata: null,
+        subQueries: [
+          {
+            id: 'qfn_sub1',
+            text: 'alpha sub-query',
+            metadata: null,
+            sources: [],
+            isSimulated: true,
+            intentType: 'reformulation',
+            simulationProvider: 'openai',
+            simulationModel: 'gpt-4o-mini',
+          },
+        ],
+        rootSources: [],
+      },
+    ]);
+
+    renderSection({ platformId: 'perplexity' });
+
+    fireEvent.click(screen.getByRole('button', { name: /query fan-out/i }));
+    await waitFor(() => expect(screen.getByText('alpha sub-query')).toBeDefined());
+    expect(screen.getByText(/Inferred/)).toBeDefined();
+    // Open the details to reveal the attribution line.
+    fireEvent.click(screen.getByText('alpha sub-query'));
+    await waitFor(() =>
+      expect(screen.getByText(/Generated by openai \/ gpt-4o-mini/i)).toBeDefined()
+    );
+  });
+
+  it('shows empty-state message and Generate CTA when there are no fan-out rows yet', async () => {
+    fetchMock.mockResolvedValue([]);
+    renderSection({ platformId: 'gemini' });
+    fireEvent.click(screen.getByRole('button', { name: /query fan-out/i }));
+    await waitFor(() => expect(screen.getByText(/No fan-out data extracted yet/i)).toBeDefined());
+    expect(screen.getByRole('button', { name: /generate inferred fan-out/i })).toBeDefined();
+  });
+
+  it('renders the no-provider-configured banner when the simulator fails with that reason', async () => {
+    fetchMock.mockResolvedValue([]);
+    simulateMock.mockResolvedValue({
+      failure: { reason: 'no_simulation_provider_configured' },
+    });
+    renderSection({ platformId: 'perplexity' });
+
+    fireEvent.click(screen.getByRole('button', { name: /query fan-out/i }));
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: /generate inferred fan-out/i })).toBeDefined()
+    );
+    fireEvent.click(screen.getByRole('button', { name: /generate inferred fan-out/i }));
+    await waitFor(() =>
+      expect(screen.getByText(/Configure an OpenAI, Anthropic, or Gemini adapter/i)).toBeDefined()
+    );
+    expect(screen.getByRole('link', { name: /configure in settings/i })).toBeDefined();
+  });
+
+  it('disables retry while rate-limited', async () => {
+    fetchMock.mockResolvedValue([]);
+    simulateMock.mockResolvedValue({
+      failure: { reason: 'simulation_rate_limited', retryAfterMs: 30_000 },
+    });
+    renderSection({ platformId: 'perplexity' });
+
+    fireEvent.click(screen.getByRole('button', { name: /query fan-out/i }));
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: /generate inferred fan-out/i })).toBeDefined()
+    );
+    fireEvent.click(screen.getByRole('button', { name: /generate inferred fan-out/i }));
+    await waitFor(() =>
+      expect(screen.getByText(/The simulation provider is rate-limited/i)).toBeDefined()
+    );
+    const generateButton = screen.getByRole('button', { name: /generate inferred fan-out/i });
+    expect((generateButton as HTMLButtonElement).disabled).toBe(true);
+  });
+});

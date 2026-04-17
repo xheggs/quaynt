@@ -1,0 +1,27 @@
+{
+  "integrations": {
+    "gsc": {
+      "title": "Google Search Console",
+      "description": "Connect a Search Console property to import search performance for your AI-cited queries.",
+      "connect": "Connect property",
+      "disconnect": "Disconnect",
+      "status": {
+        "active": "Active",
+        "reauthRequired": "Reconnect required",
+        "forbidden": "Google reports no access",
+        "revoked": "Revoked"
+      },
+      "chooseProperty": {
+        "title": "Choose a property",
+        "subtitle": "Select which Search Console property to connect to this workspace."
+      },
+      "errors": {
+        "oauthCancelled": "Connection cancelled. No changes made.",
+        "stateMismatch": "Security check failed. Please start the connection process again.",
+        "notConfigured": "Google Search Console is not configured on this Quaynt instance.",
+        "tokenExchangeFailed": "Google declined the connection. Please try again.",
+        "workspaceMismatch": "Workspace mismatch during OAuth flow."
+      }
+    }
+  }
+}

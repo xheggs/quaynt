@@ -80,6 +80,23 @@ describe('crawler-log-parser', () => {
       expect(result!.method).toBe('POST');
       expect(result!.statusCode).toBe(201);
     });
+
+    it('captures a populated referer', () => {
+      const line =
+        '1.2.3.4 - - [10/Oct/2025:13:55:36 -0700] "GET /blog HTTP/1.1" 200 1024 "https://chatgpt.com/c/abc" "Mozilla/5.0"';
+      const result = parseApacheLine(line);
+      expect(result).not.toBeNull();
+      expect(result!.referer).toBe('https://chatgpt.com/c/abc');
+      expect(result!.userAgent).toBe('Mozilla/5.0');
+    });
+
+    it('normalizes empty referer ("-") to null', () => {
+      const line =
+        '1.2.3.4 - - [10/Oct/2025:13:55:36 -0700] "GET /blog HTTP/1.1" 200 1024 "-" "Mozilla/5.0"';
+      const result = parseApacheLine(line);
+      expect(result).not.toBeNull();
+      expect(result!.referer).toBeNull();
+    });
   });
 
   describe('parseCloudFrontLine', () => {
@@ -116,6 +133,44 @@ describe('crawler-log-parser', () => {
 
     it('returns null for lines with too few fields', () => {
       expect(parseCloudFrontLine('a\tb\tc')).toBeNull();
+    });
+
+    it('captures a populated referer (URL-decoded)', () => {
+      const fields = [
+        '2025-10-10',
+        '13:55:36',
+        'IAD12',
+        '1234',
+        '66.249.66.1',
+        'GET',
+        'example.com',
+        '/about',
+        '200',
+        'https%3A%2F%2Fchatgpt.com%2Fc%2Fabc',
+        'Mozilla%2F5.0',
+      ];
+      const result = parseCloudFrontLine(fields.join('\t'));
+      expect(result).not.toBeNull();
+      expect(result!.referer).toBe('https://chatgpt.com/c/abc');
+    });
+
+    it('normalizes "-" referer to null', () => {
+      const fields = [
+        '2025-10-10',
+        '13:55:36',
+        'IAD12',
+        '1234',
+        '66.249.66.1',
+        'GET',
+        'example.com',
+        '/about',
+        '200',
+        '-',
+        'Mozilla%2F5.0',
+      ];
+      const result = parseCloudFrontLine(fields.join('\t'));
+      expect(result).not.toBeNull();
+      expect(result!.referer).toBeNull();
     });
   });
 

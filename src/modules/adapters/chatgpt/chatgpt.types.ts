@@ -52,10 +52,16 @@ export interface OpenAIResponsesResponse {
 
 export type OpenAIOutputItem = OpenAIWebSearchCallItem | OpenAIMessageItem;
 
+export interface OpenAIWebSearchAction {
+  type: string;
+  query: string;
+}
+
 export interface OpenAIWebSearchCallItem {
   type: 'web_search_call';
   id: string;
   status: string;
+  action?: OpenAIWebSearchAction;
 }
 
 export interface OpenAIMessageItem {

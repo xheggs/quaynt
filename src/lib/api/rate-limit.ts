@@ -4,24 +4,38 @@ import { env } from '@/lib/config/env';
 import { getAuthContext } from './middleware';
 import { getRequestLogger } from '@/lib/logger';
 import { tooManyRequests } from './response';
-import type { AuthenticatedHandler } from './types';
+import type { ApiHandler, AuthenticatedHandler, RouteContext } from './types';
 
-type RateLimitOptions = {
+type RateLimitOptions<T = Record<string, string>> = {
   points?: number;
   duration?: number;
+  /**
+   * Override the key used for rate limiting. When supplied, replaces the default
+   * authenticated-principal key. Useful for public endpoints that key on IP, site key,
+   * or other request-derived attributes. May be async to perform a DB lookup.
+   */
+  keyExtractor?: (req: Request, ctx: RouteContext<T>) => string | Promise<string>;
+  /**
+   * Prefix for the rate-limit table key. Different prefixes create independent rate-limit
+   * buckets — useful when running multiple withRateLimit wrappers on the same endpoint
+   * (e.g. per-IP AND per-siteKey). Defaults to `rl_api`.
+   */
+  keyPrefix?: string;
+  /** If true, swallow auth lookups — use when wrapping a public/unauthenticated handler. */
+  unauthenticated?: boolean;
 };
 
 const limiters = new Map<string, RateLimiterPostgres>();
 
-function getLimiter(points: number, duration: number): RateLimiterPostgres {
-  const key = `${points}:${duration}`;
+function getLimiter(points: number, duration: number, keyPrefix: string): RateLimiterPostgres {
+  const key = `${keyPrefix}:${points}:${duration}`;
   let limiter = limiters.get(key);
   if (!limiter) {
     limiter = new RateLimiterPostgres({
       storeClient: pool,
       points,
       duration,
-      keyPrefix: `rl_api_${key}`,
+      keyPrefix: key,
       tableCreated: false,
     });
     limiters.set(key, limiter);
@@ -29,24 +43,36 @@ function getLimiter(points: number, duration: number): RateLimiterPostgres {
   return limiter;
 }
 
-function getRateLimitKey(req: Request): string {
+function defaultAuthenticatedKey(req: Request): string {
   const auth = getAuthContext(req);
   return auth.method === 'api-key' ? auth.apiKeyId : auth.userId;
 }
 
 export function withRateLimit<T extends Record<string, string> = Record<string, string>>(
   handler: AuthenticatedHandler<T>,
-  opts?: RateLimitOptions
-): AuthenticatedHandler<T> {
+  opts?: RateLimitOptions<T>
+): AuthenticatedHandler<T>;
+export function withRateLimit<T extends Record<string, string> = Record<string, string>>(
+  handler: ApiHandler<T>,
+  opts: RateLimitOptions<T> & { unauthenticated: true }
+): ApiHandler<T>;
+export function withRateLimit<T extends Record<string, string> = Record<string, string>>(
+  handler: ApiHandler<T> | AuthenticatedHandler<T>,
+  opts?: RateLimitOptions<T>
+): ApiHandler<T> {
+  const points = opts?.points ?? env.RATE_LIMIT_POINTS;
+  const duration = opts?.duration ?? env.RATE_LIMIT_DURATION;
+  const keyPrefix = opts?.keyPrefix ?? 'rl_api';
+
   return async (req, ctx) => {
-    const points = opts?.points ?? env.RATE_LIMIT_POINTS;
-    const duration = opts?.duration ?? env.RATE_LIMIT_DURATION;
-    const limiter = getLimiter(points, duration);
-    const key = getRateLimitKey(req);
+    const limiter = getLimiter(points, duration, keyPrefix);
+    const key = opts?.keyExtractor
+      ? await opts.keyExtractor(req, ctx)
+      : defaultAuthenticatedKey(req);
 
     try {
       const res = await limiter.consume(key, 1);
-      const response = await handler(req, ctx);
+      const response = await (handler as ApiHandler<T>)(req, ctx);
       response.headers.set('X-RateLimit-Limit', String(points));
       response.headers.set('X-RateLimit-Remaining', String(res.remainingPoints));
       response.headers.set(
@@ -60,9 +86,9 @@ export function withRateLimit<T extends Record<string, string> = Record<string, 
         return tooManyRequests(retryAfter);
       }
 
-      // Fail open — DB error should not block requests
+      // Fail open — DB error should not block requests.
       getRequestLogger(req).warn({ err: error }, 'Rate limiter unavailable, allowing request');
-      return handler(req, ctx);
+      return (handler as ApiHandler<T>)(req, ctx);
     }
   };
 }

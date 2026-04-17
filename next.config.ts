@@ -13,6 +13,14 @@ const nextConfig: NextConfig = {
         { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
       ],
     },
+    {
+      source: '/snippet/:version/:file*',
+      headers: [
+        { key: 'Cache-Control', value: 'public, max-age=3600' },
+        { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
+        { key: 'Access-Control-Allow-Origin', value: '*' },
+      ],
+    },
   ],
 };
 

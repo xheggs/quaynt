@@ -14,6 +14,9 @@ import { registerPdfHandlers } from '@/modules/pdf/pdf.handler';
 import { registerScheduledReportHandlers } from '@/modules/scheduled-reports/scheduled-report.handler';
 import { registerCrawlerParseHandler } from '@/modules/crawler/crawler-parse.handler';
 import { registerCrawlerAggregateHandler } from '@/modules/crawler/crawler-aggregate.handler';
+import { registerTrafficHandlers } from '@/modules/traffic/traffic-aggregate.handler';
+import { registerGscSyncHandler } from '@/modules/integrations/gsc-correlation/gsc-sync.handler';
+import { registerQueryFanoutSimulatorHandlers } from '@/modules/query-fanout/query-fanout-simulator.handler';
 
 export async function registerHandlers(boss: PgBoss): Promise<void> {
   await registerWebhookHandlers(boss);
@@ -30,6 +33,9 @@ export async function registerHandlers(boss: PgBoss): Promise<void> {
   await registerScheduledReportHandlers(boss);
   await registerCrawlerParseHandler(boss);
   await registerCrawlerAggregateHandler(boss);
+  await registerTrafficHandlers(boss);
+  await registerGscSyncHandler(boss);
+  await registerQueryFanoutSimulatorHandlers(boss);
 
   // Commercial-only handlers
   if (env.QUAYNT_EDITION !== 'community') {

@@ -1,17 +1,14 @@
 import type { PgBoss } from 'pg-boss';
-import { eq, and, lt, desc, isNull, sql } from 'drizzle-orm';
+import { eq, and, isNull } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { computeDelta } from '@/modules/visibility/trend.stats';
-import { recommendationShare } from '@/modules/visibility/recommendation-share.schema';
-import { sentimentAggregate } from '@/modules/visibility/sentiment-aggregate.schema';
-import { positionAggregate } from '@/modules/visibility/position-aggregate.schema';
-import { crawlerDailyAggregate } from '@/modules/crawler/crawler-aggregate.schema';
 import {
   dispatchAlertEmail,
   dispatchAlertWebhook,
 } from '@/modules/notifications/notification.service';
 import { alertRule, alertEvent } from './alert.schema';
+import { resolveMetricValue } from './alert.metrics';
 import type {
   AlertMetric,
   AlertCondition,
@@ -19,6 +16,8 @@ import type {
   AlertScope,
   AlertEvaluationResult,
 } from './alert.types';
+
+export { resolveMetricValue } from './alert.metrics';
 
 export function evaluateCondition(
   condition: AlertCondition,
@@ -85,278 +84,6 @@ export function isCooldownActive(
   return now < cooldownExpiry;
 }
 
-export async function resolveMetricValue(
-  metric: AlertMetric,
-  workspaceId: string,
-  promptSetId: string | null,
-  scope: AlertScope,
-  date: string
-): Promise<{ currentValue: number | null; previousValue: number | null }> {
-  // Crawler metrics are workspace-scoped — no promptSetId or brandId needed
-  if (metric === 'crawler_visit_count') {
-    return resolveFromCrawlerVisitCount(workspaceId, scope.botName, date);
-  }
-  if (metric === 'crawler_bot_activity') {
-    return resolveFromCrawlerBotActivity(workspaceId, scope.botName, date);
-  }
-
-  // Non-crawler metrics require promptSetId
-  if (!promptSetId) {
-    return { currentValue: null, previousValue: null };
-  }
-
-  const platformId = scope.platformId ?? '_all';
-  const locale = scope.locale ?? '_all';
-  const { brandId } = scope;
-
-  switch (metric) {
-    case 'recommendation_share':
-      return resolveFromRecommendationShare(
-        workspaceId,
-        promptSetId,
-        brandId,
-        platformId,
-        locale,
-        date,
-        'sharePercentage'
-      );
-
-    case 'citation_count':
-      return resolveFromRecommendationShare(
-        workspaceId,
-        promptSetId,
-        brandId,
-        platformId,
-        locale,
-        date,
-        'citationCount'
-      );
-
-    case 'sentiment_score':
-      return resolveFromSentimentAggregate(
-        workspaceId,
-        promptSetId,
-        brandId,
-        platformId,
-        locale,
-        date
-      );
-
-    case 'position_average':
-      return resolveFromPositionAggregate(
-        workspaceId,
-        promptSetId,
-        brandId,
-        platformId,
-        locale,
-        date
-      );
-  }
-}
-
-async function resolveFromRecommendationShare(
-  workspaceId: string,
-  promptSetId: string,
-  brandId: string,
-  platformId: string,
-  locale: string,
-  date: string,
-  column: 'sharePercentage' | 'citationCount'
-): Promise<{ currentValue: number | null; previousValue: number | null }> {
-  const scopeConditions = [
-    eq(recommendationShare.workspaceId, workspaceId),
-    eq(recommendationShare.promptSetId, promptSetId),
-    eq(recommendationShare.brandId, brandId),
-    eq(recommendationShare.platformId, platformId),
-    eq(recommendationShare.locale, locale),
-  ];
-
-  const [current] = await db
-    .select({
-      sharePercentage: recommendationShare.sharePercentage,
-      citationCount: recommendationShare.citationCount,
-    })
-    .from(recommendationShare)
-    .where(and(...scopeConditions, eq(recommendationShare.periodStart, date)))
-    .limit(1);
-
-  const [previous] = await db
-    .select({
-      sharePercentage: recommendationShare.sharePercentage,
-      citationCount: recommendationShare.citationCount,
-    })
-    .from(recommendationShare)
-    .where(and(...scopeConditions, lt(recommendationShare.periodStart, date)))
-    .orderBy(desc(recommendationShare.periodStart))
-    .limit(1);
-
-  return {
-    currentValue: current ? Number(current[column]) : null,
-    previousValue: previous ? Number(previous[column]) : null,
-  };
-}
-
-async function resolveFromSentimentAggregate(
-  workspaceId: string,
-  promptSetId: string,
-  brandId: string,
-  platformId: string,
-  locale: string,
-  date: string
-): Promise<{ currentValue: number | null; previousValue: number | null }> {
-  const scopeConditions = [
-    eq(sentimentAggregate.workspaceId, workspaceId),
-    eq(sentimentAggregate.promptSetId, promptSetId),
-    eq(sentimentAggregate.brandId, brandId),
-    eq(sentimentAggregate.platformId, platformId),
-    eq(sentimentAggregate.locale, locale),
-  ];
-
-  const [current] = await db
-    .select({ netSentimentScore: sentimentAggregate.netSentimentScore })
-    .from(sentimentAggregate)
-    .where(and(...scopeConditions, eq(sentimentAggregate.periodStart, date)))
-    .limit(1);
-
-  const [previous] = await db
-    .select({ netSentimentScore: sentimentAggregate.netSentimentScore })
-    .from(sentimentAggregate)
-    .where(and(...scopeConditions, lt(sentimentAggregate.periodStart, date)))
-    .orderBy(desc(sentimentAggregate.periodStart))
-    .limit(1);
-
-  return {
-    currentValue: current ? Number(current.netSentimentScore) : null,
-    previousValue: previous ? Number(previous.netSentimentScore) : null,
-  };
-}
-
-async function resolveFromPositionAggregate(
-  workspaceId: string,
-  promptSetId: string,
-  brandId: string,
-  platformId: string,
-  locale: string,
-  date: string
-): Promise<{ currentValue: number | null; previousValue: number | null }> {
-  const scopeConditions = [
-    eq(positionAggregate.workspaceId, workspaceId),
-    eq(positionAggregate.promptSetId, promptSetId),
-    eq(positionAggregate.brandId, brandId),
-    eq(positionAggregate.platformId, platformId),
-    eq(positionAggregate.locale, locale),
-  ];
-
-  const [current] = await db
-    .select({ averagePosition: positionAggregate.averagePosition })
-    .from(positionAggregate)
-    .where(and(...scopeConditions, eq(positionAggregate.periodStart, date)))
-    .limit(1);
-
-  const [previous] = await db
-    .select({ averagePosition: positionAggregate.averagePosition })
-    .from(positionAggregate)
-    .where(and(...scopeConditions, lt(positionAggregate.periodStart, date)))
-    .orderBy(desc(positionAggregate.periodStart))
-    .limit(1);
-
-  return {
-    currentValue: current ? Number(current.averagePosition) : null,
-    previousValue: previous ? Number(previous.averagePosition) : null,
-  };
-}
-
-async function resolveFromCrawlerVisitCount(
-  workspaceId: string,
-  botName: string | undefined,
-  date: string
-): Promise<{ currentValue: number | null; previousValue: number | null }> {
-  const targetBot = botName ?? '_all_';
-
-  const [current] = await db
-    .select({ visitCount: crawlerDailyAggregate.visitCount })
-    .from(crawlerDailyAggregate)
-    .where(
-      and(
-        eq(crawlerDailyAggregate.workspaceId, workspaceId),
-        eq(crawlerDailyAggregate.botName, targetBot),
-        eq(crawlerDailyAggregate.periodStart, date)
-      )
-    )
-    .limit(1);
-
-  const [previous] = await db
-    .select({ visitCount: crawlerDailyAggregate.visitCount })
-    .from(crawlerDailyAggregate)
-    .where(
-      and(
-        eq(crawlerDailyAggregate.workspaceId, workspaceId),
-        eq(crawlerDailyAggregate.botName, targetBot),
-        lt(crawlerDailyAggregate.periodStart, date)
-      )
-    )
-    .orderBy(desc(crawlerDailyAggregate.periodStart))
-    .limit(1);
-
-  return {
-    currentValue: current?.visitCount ?? null,
-    previousValue: previous?.visitCount ?? null,
-  };
-}
-
-async function resolveFromCrawlerBotActivity(
-  workspaceId: string,
-  botName: string | undefined,
-  date: string
-): Promise<{ currentValue: number | null; previousValue: number | null }> {
-  // Returns the number of consecutive days with zero visits for the specified bot.
-  // currentValue = consecutive zero-visit days (0 means active today).
-  const targetBot = botName ?? '_all_';
-
-  // Check if there's data for today
-  const [current] = await db
-    .select({ visitCount: crawlerDailyAggregate.visitCount })
-    .from(crawlerDailyAggregate)
-    .where(
-      and(
-        eq(crawlerDailyAggregate.workspaceId, workspaceId),
-        eq(crawlerDailyAggregate.botName, targetBot),
-        eq(crawlerDailyAggregate.periodStart, date)
-      )
-    )
-    .limit(1);
-
-  const currentVisits = current?.visitCount ?? 0;
-
-  // Find last date with visits
-  const [lastActive] = await db
-    .select({ periodStart: crawlerDailyAggregate.periodStart })
-    .from(crawlerDailyAggregate)
-    .where(
-      and(
-        eq(crawlerDailyAggregate.workspaceId, workspaceId),
-        eq(crawlerDailyAggregate.botName, targetBot),
-        sql`${crawlerDailyAggregate.visitCount} > 0`
-      )
-    )
-    .orderBy(desc(crawlerDailyAggregate.periodStart))
-    .limit(1);
-
-  let daysSinceActive = 0;
-  if (lastActive) {
-    const lastDate = new Date(lastActive.periodStart);
-    const currentDate = new Date(date);
-    daysSinceActive = Math.floor(
-      (currentDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
-  }
-
-  return {
-    currentValue: currentVisits > 0 ? 0 : daysSinceActive,
-    previousValue: null,
-  };
-}
-
 export async function evaluateRulesForMetric(
   workspaceId: string,
   promptSetId: string | null,
@@ -367,16 +94,17 @@ export async function evaluateRulesForMetric(
   const log = logger.child({ workspaceId, promptSetId, metric, date });
   const results: AlertEvaluationResult[] = [];
 
-  // Load all enabled rules for this workspace + metric + promptSet
-  const isCrawlerMetric = metric.startsWith('crawler_');
+  // Load all enabled rules for this workspace + metric + promptSet. Workspace-scoped
+  // metrics (crawler and AI traffic) don't carry a promptSetId and match on `is null`.
+  const isWorkspaceMetric = metric.startsWith('crawler_') || metric.startsWith('ai_visit');
   const ruleConditions = [
     eq(alertRule.workspaceId, workspaceId),
     eq(alertRule.metric, metric),
     eq(alertRule.enabled, true),
   ];
-  if (!isCrawlerMetric && promptSetId) {
+  if (!isWorkspaceMetric && promptSetId) {
     ruleConditions.push(eq(alertRule.promptSetId, promptSetId));
-  } else if (isCrawlerMetric) {
+  } else if (isWorkspaceMetric) {
     ruleConditions.push(isNull(alertRule.promptSetId));
   }
 

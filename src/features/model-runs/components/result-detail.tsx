@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 import type { ModelRunResult } from '../model-run.types';
+import { QueryFanoutSection } from './query-fanout/query-fanout-section';
 
 interface ResultDetailProps {
   result: ModelRunResult;
@@ -66,6 +67,13 @@ export function ResultDetail({ result }: ResultDetailProps) {
           )}
         </div>
       )}
+
+      <QueryFanoutSection
+        modelRunId={result.modelRunId}
+        modelRunResultId={result.id}
+        platformId={result.platformId}
+        promptId={result.promptId}
+      />
     </div>
   );
 }

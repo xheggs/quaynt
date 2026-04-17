@@ -1,6 +1,6 @@
 'use client';
 
-import { Building2, Key, Puzzle, User, Users, Webhook, type LucideIcon } from 'lucide-react';
+import { Building2, Globe, Key, Puzzle, User, Users, Webhook, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -35,6 +35,7 @@ const settingsNavGroups: SettingsNavGroup[] = [
     items: [
       { labelKey: 'sidebar.adapters', href: '/settings/adapters', icon: Puzzle },
       { labelKey: 'sidebar.apiKeys', href: '/settings/api-keys', icon: Key },
+      { labelKey: 'sidebar.siteKeys', href: '/settings/site-keys', icon: Globe },
       { labelKey: 'sidebar.webhooks', href: '/settings/webhooks', icon: Webhook },
     ],
   },

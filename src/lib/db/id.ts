@@ -40,6 +40,13 @@ export const PREFIXES = {
   crawlerUpload: 'crup',
   crawlerVisit: 'crvis',
   crawlerAgg: 'crag',
+  trafficSiteKey: 'tsk',
+  aiVisit: 'aivis',
+  trafficAggregate: 'trag',
+  gscConnection: 'gscconn',
+  gscQueryPerformance: 'gscqp',
+  queryFanoutNode: 'qfn',
+  queryFanoutSimulationCache: 'qfsc',
 } as const;
 
 export function generatePrefixedId(model: keyof typeof PREFIXES): string {

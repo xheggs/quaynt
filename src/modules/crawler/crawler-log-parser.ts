@@ -6,7 +6,14 @@ import type { LogFormat, ParsedLogLine } from './crawler.types';
  * Example: 66.249.66.1 - - [10/Oct/2025:13:55:36 -0700] "GET /about HTTP/1.1" 200 1234 "-" "GPTBot/1.0"
  */
 const APACHE_NGINX_REGEX =
-  /^(\S+) \S+ \S+ \[([^\]]+)] "(\w+) (\S+) HTTP\/[\d.]+" (\d+) (\d+|-) "[^"]*" "([^"]*)"/;
+  /^(\S+) \S+ \S+ \[([^\]]+)] "(\w+) (\S+) HTTP\/[\d.]+" (\d+) (\d+|-) "([^"]*)" "([^"]*)"/;
+
+function normalizeReferer(raw: string | undefined | null): string | null {
+  if (raw === undefined || raw === null) return null;
+  const trimmed = raw.trim();
+  if (trimmed === '' || trimmed === '-') return null;
+  return trimmed;
+}
 
 /**
  * Detect log format from the first few non-empty lines.
@@ -45,7 +52,7 @@ export function parseApacheLine(line: string): ParsedLogLine | null {
   const match = line.match(APACHE_NGINX_REGEX);
   if (!match) return null;
 
-  const [, ip, timestampStr, method, path, statusStr, bytesStr, userAgent] = match;
+  const [, ip, timestampStr, method, path, statusStr, bytesStr, refererRaw, userAgent] = match;
 
   const timestamp = parseApacheTimestamp(timestampStr);
   if (!timestamp) return null;
@@ -58,6 +65,7 @@ export function parseApacheLine(line: string): ParsedLogLine | null {
     statusCode: parseInt(statusStr, 10),
     responseBytes: bytesStr === '-' ? 0 : parseInt(bytesStr, 10),
     userAgent,
+    referer: normalizeReferer(refererRaw),
   };
 }
 
@@ -114,6 +122,7 @@ export function parseCloudFrontLine(line: string): ParsedLogLine | null {
   const method = fields[5];
   const path = fields[7];
   const statusStr = fields[8];
+  const refererEncoded = fields[9];
   const userAgentEncoded = fields[10];
 
   if (!dateStr || !timeStr || !ip || !method || !path || !statusStr || !userAgentEncoded) {
@@ -135,6 +144,15 @@ export function parseCloudFrontLine(line: string): ParsedLogLine | null {
     userAgent = userAgentEncoded;
   }
 
+  let refererDecoded: string | undefined;
+  if (refererEncoded) {
+    try {
+      refererDecoded = decodeURIComponent(refererEncoded.replace(/\+/g, ' '));
+    } catch {
+      refererDecoded = refererEncoded;
+    }
+  }
+
   return {
     ip,
     timestamp,
@@ -143,6 +161,7 @@ export function parseCloudFrontLine(line: string): ParsedLogLine | null {
     statusCode,
     responseBytes: isNaN(responseBytes) ? 0 : responseBytes,
     userAgent,
+    referer: normalizeReferer(refererDecoded),
   };
 }
 

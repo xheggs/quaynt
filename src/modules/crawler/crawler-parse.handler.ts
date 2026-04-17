@@ -5,6 +5,7 @@ import type { PgBoss } from 'pg-boss';
 import { logger } from '@/lib/logger';
 import { detectFormat, parseLine } from './crawler-log-parser';
 import { identifyBot } from './crawler-bot-dictionary';
+import { classifyLogLineForAiSource } from './crawler-referrer-classifier';
 import {
   getUpload,
   getStagingPath,
@@ -12,9 +13,13 @@ import {
   deleteStagingFile,
 } from './crawler-upload.service';
 import { batchInsertVisits, getAffectedDates } from './crawler-visit.service';
+import { batchInsertVisits as batchInsertAiVisits } from '@/modules/traffic/ai-visit.service';
+import { detectUserAgentFamily } from '@/modules/traffic/ua-family';
+import type { VisitInsert as AiVisitInsert } from '@/modules/traffic/traffic.types';
 import type { CrawlerParseJobData, VisitInsert, LogFormat } from './crawler.types';
 
 const BATCH_SIZE = 500;
+const AI_BATCH_SIZE = 500;
 const STATUS_CHECK_INTERVAL = 10_000; // Check cancellation every 10k lines
 
 const log = logger.child({ module: 'crawler-parse' });
@@ -50,6 +55,8 @@ async function processUpload(workspaceId: string, uploadId: string, boss: PgBoss
   let linesSkipped = 0;
   let format: LogFormat | null = null;
   const visitBatch: VisitInsert[] = [];
+  const aiVisitBatch: AiVisitInsert[] = [];
+  const aiVisitDates = new Set<string>();
   const formatDetectionLines: string[] = [];
 
   try {
@@ -82,27 +89,45 @@ async function processUpload(workspaceId: string, uploadId: string, boss: PgBoss
           }
 
           // Re-process the detection lines
+          let parsedDetections = 0;
           for (const detectionLine of formatDetectionLines) {
-            processLine(detectionLine, format, workspaceId, uploadId, visitBatch);
+            if (
+              processLine(
+                detectionLine,
+                format,
+                workspaceId,
+                uploadId,
+                visitBatch,
+                aiVisitBatch,
+                aiVisitDates
+              )
+            ) {
+              parsedDetections++;
+            }
           }
-          linesParsed += visitBatch.length;
-          linesSkipped += formatDetectionLines.length - visitBatch.length;
+          linesParsed += parsedDetections;
+          linesSkipped += formatDetectionLines.length - parsedDetections;
         }
         continue;
       }
 
       // Parse line
-      const before = visitBatch.length;
-      processLine(line, format, workspaceId, uploadId, visitBatch);
-      if (visitBatch.length > before) {
+      if (
+        processLine(line, format, workspaceId, uploadId, visitBatch, aiVisitBatch, aiVisitDates)
+      ) {
         linesParsed++;
       } else {
         linesSkipped++;
       }
 
-      // Flush batch when full
+      // Flush crawler batch when full
       if (visitBatch.length >= BATCH_SIZE) {
         await batchInsertVisits(visitBatch.splice(0, visitBatch.length));
+      }
+
+      // Flush AI visit batch when full
+      if (aiVisitBatch.length >= AI_BATCH_SIZE) {
+        await batchInsertAiVisits(aiVisitBatch.splice(0, aiVisitBatch.length));
       }
 
       // Periodic status check + progress update
@@ -126,17 +151,35 @@ async function processUpload(workspaceId: string, uploadId: string, boss: PgBoss
     if (!format && formatDetectionLines.length > 0) {
       format = detectFormat(formatDetectionLines);
       if (format) {
+        let parsedDetections = 0;
         for (const detectionLine of formatDetectionLines) {
-          processLine(detectionLine, format, workspaceId, uploadId, visitBatch);
+          if (
+            processLine(
+              detectionLine,
+              format,
+              workspaceId,
+              uploadId,
+              visitBatch,
+              aiVisitBatch,
+              aiVisitDates
+            )
+          ) {
+            parsedDetections++;
+          }
         }
-        linesParsed += visitBatch.length;
-        linesSkipped += formatDetectionLines.length - visitBatch.length;
+        linesParsed += parsedDetections;
+        linesSkipped += formatDetectionLines.length - parsedDetections;
       }
     }
 
-    // Flush remaining visits
+    // Flush remaining crawler visits
     if (visitBatch.length > 0) {
       await batchInsertVisits(visitBatch);
+    }
+
+    // Flush remaining AI visits
+    if (aiVisitBatch.length > 0) {
+      await batchInsertAiVisits(aiVisitBatch);
     }
 
     // Mark complete
@@ -146,7 +189,7 @@ async function processUpload(workspaceId: string, uploadId: string, boss: PgBoss
       linesSkipped,
     });
 
-    // Enqueue aggregate jobs for each affected date
+    // Enqueue crawler aggregate jobs for each affected date
     const affectedDates = await getAffectedDates(uploadId);
     for (const date of affectedDates) {
       await boss.send(
@@ -159,8 +202,26 @@ async function processUpload(workspaceId: string, uploadId: string, boss: PgBoss
       );
     }
 
+    // Enqueue traffic aggregate jobs for each AI-visit date
+    for (const date of aiVisitDates) {
+      await boss.send(
+        'traffic-aggregate',
+        { workspaceId, date },
+        {
+          singletonKey: `traffic-agg:${workspaceId}:${date}`,
+          singletonSeconds: 120,
+        }
+      );
+    }
+
     log.info(
-      { linesTotal, linesParsed, linesSkipped, affectedDates: affectedDates.length },
+      {
+        linesTotal,
+        linesParsed,
+        linesSkipped,
+        affectedDates: affectedDates.length,
+        aiVisitDates: aiVisitDates.size,
+      },
       'Crawler log parse completed'
     );
   } catch (err) {
@@ -182,24 +243,45 @@ function processLine(
   format: LogFormat,
   workspaceId: string,
   uploadId: string,
-  batch: VisitInsert[]
-): void {
+  batch: VisitInsert[],
+  aiVisitBatch: AiVisitInsert[],
+  aiVisitDates: Set<string>
+): boolean {
   const parsed = parseLine(line, format);
-  if (!parsed) return;
+  if (!parsed) return false;
 
   const bot = identifyBot(parsed.userAgent);
-  if (!bot) return;
+  if (bot) {
+    batch.push({
+      workspaceId,
+      uploadId,
+      botName: bot.name,
+      botCategory: bot.category,
+      userAgent: parsed.userAgent,
+      requestPath: parsed.path,
+      requestMethod: parsed.method,
+      statusCode: parsed.statusCode,
+      responseBytes: parsed.responseBytes,
+      visitedAt: parsed.timestamp,
+    });
+    return true;
+  }
 
-  batch.push({
-    workspaceId,
-    uploadId,
-    botName: bot.name,
-    botCategory: bot.category,
-    userAgent: parsed.userAgent,
-    requestPath: parsed.path,
-    requestMethod: parsed.method,
-    statusCode: parsed.statusCode,
-    responseBytes: parsed.responseBytes,
-    visitedAt: parsed.timestamp,
-  });
+  const aiMatch = classifyLogLineForAiSource(parsed);
+  if (aiMatch) {
+    aiVisitBatch.push({
+      workspaceId,
+      source: 'log',
+      platform: aiMatch.platform,
+      referrerHost: aiMatch.referrerHost,
+      landingPath: parsed.path,
+      userAgentFamily: detectUserAgentFamily(parsed.userAgent),
+      siteKeyId: null,
+      visitedAt: parsed.timestamp,
+    });
+    aiVisitDates.add(parsed.timestamp.toISOString().slice(0, 10));
+    return true;
+  }
+
+  return false;
 }

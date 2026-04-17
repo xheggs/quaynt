@@ -4,7 +4,9 @@ export type AlertMetric =
   | 'sentiment_score'
   | 'position_average'
   | 'crawler_visit_count'
-  | 'crawler_bot_activity';
+  | 'crawler_bot_activity'
+  | 'ai_visit_count'
+  | 'ai_visit_platform_drop';
 
 export type AlertCondition =
   | 'drops_below'
@@ -21,6 +23,8 @@ export interface AlertScope {
   platformId?: string;
   locale?: string;
   botName?: string;
+  /** For AI traffic metrics — which platform slug (e.g., 'chatgpt') to scope to. */
+  platform?: string;
 }
 
 export interface AlertRuleCreate {

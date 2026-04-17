@@ -7,6 +7,7 @@ import {
   Building2,
   FileBarChart,
   FileText,
+  Globe,
   LayoutDashboard,
   Lightbulb,
   Menu,
@@ -54,6 +55,7 @@ const navGroups: NavGroup[] = [
       { labelKey: 'navigation.citations', href: '/citations', icon: Quote },
       { labelKey: 'navigation.opportunities', href: '/opportunities', icon: Lightbulb },
       { labelKey: 'navigation.crawlerAnalytics', href: '/crawler', icon: Bot },
+      { labelKey: 'navigation.aiTraffic', href: '/traffic', icon: Globe },
     ],
   },
   {

@@ -46,4 +46,10 @@ export const queryKeys = {
   members: createQueryKeys('members'),
   crawlerUploads: createQueryKeys('crawlerUploads'),
   crawlerAnalytics: createQueryKeys('crawlerAnalytics'),
+  trafficSiteKeys: createQueryKeys('trafficSiteKeys'),
+  trafficVisits: createQueryKeys('trafficVisits'),
+  trafficAnalytics: createQueryKeys('trafficAnalytics'),
+  gscConnections: createQueryKeys('gscConnections'),
+  gscCorrelation: createQueryKeys('gscCorrelation'),
+  queryFanout: createQueryKeys('queryFanout'),
 } as const;

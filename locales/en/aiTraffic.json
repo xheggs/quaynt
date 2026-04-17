@@ -1,0 +1,124 @@
+{
+  "aiTraffic": {
+    "page": {
+      "title": "AI Traffic",
+      "description": "See visitors arriving from AI platforms like ChatGPT, Perplexity, and Gemini."
+    },
+    "nav": {
+      "label": "AI Traffic"
+    },
+    "empty": {
+      "title": "No AI visits yet",
+      "description": "Add a site key and embed the Quaynt attribution snippet on your site to start tracking visits from AI platforms.",
+      "action": "Set up site key"
+    },
+    "kpi": {
+      "totalVisits": "Total AI Visits",
+      "topPlatform": "Top Platform",
+      "topLandingPage": "Top Landing Page",
+      "distinctPlatforms": "Active Platforms",
+      "ratioUnavailable": "Share of total traffic is unavailable without integrating your general analytics tool."
+    },
+    "filters": {
+      "dateRange": "Date Range",
+      "platform": "Platform",
+      "allPlatforms": "All platforms",
+      "source": "Source",
+      "allSources": "All sources"
+    },
+    "source": {
+      "snippet": "Snippet",
+      "log": "Server logs"
+    },
+    "chart": {
+      "title": "AI Visits Over Time",
+      "visits": "Visits"
+    },
+    "platforms": {
+      "title": "Platform Breakdown",
+      "platform": "Platform",
+      "visits": "Visits",
+      "uniquePages": "Pages touched",
+      "lastVisit": "Last Visit",
+      "trend": "Trend"
+    },
+    "topPages": {
+      "title": "Top Landing Pages",
+      "path": "Path",
+      "visits": "Visits",
+      "platforms": "Platforms"
+    },
+    "recent": {
+      "title": "Recent Visits",
+      "timestamp": "Time",
+      "platform": "Platform",
+      "path": "Page"
+    },
+    "siteKeys": {
+      "title": "Site Keys",
+      "description": "Issue keys to embed in the attribution snippet. Keys are tied to your workspace and can be revoked at any time.",
+      "create": "Create site key",
+      "name": "Name",
+      "prefix": "Prefix",
+      "lastUsed": "Last Used",
+      "status": "Status",
+      "revoke": "Revoke",
+      "revokeConfirm": "Revoke this site key? Existing snippet installations will stop sending data.",
+      "plaintextWarning": "This is the only time you'll see this key. Copy it now.",
+      "copyKey": "Copy key",
+      "copied": "Copied!",
+      "statusActive": "Active",
+      "statusRevoked": "Revoked",
+      "allowedOrigins": "Allowed Origins",
+      "allowedOriginsHelp": "Optional. When set, the snippet is accepted only from these origins.",
+      "addOrigin": "Add origin",
+      "cancel": "Cancel",
+      "done": "Done"
+    },
+    "alert": {
+      "visitCount": "AI Visit Count",
+      "platformDrop": "AI Platform Drop"
+    },
+    "privacy": {
+      "headline": "How Quaynt AI Traffic Attribution handles visitor data",
+      "linkLabel": "Read the full privacy notice"
+    },
+    "gsc": {
+      "title": "Search Console correlation",
+      "description": "GSC search performance for queries where you appear in AI Overviews.",
+      "honestyNotice": "GSC does not yet expose AI Overview clicks as a separate metric. The numbers below show search performance for queries where Quaynt has detected an AI Overview citation — they include all click sources for those queries, not only AI Overviews.",
+      "kpi": {
+        "aiCitedClicks": "Clicks for AI-cited queries",
+        "aiCitedImpressions": "Impressions for AI-cited queries",
+        "avgPosition": "Average position",
+        "distinctQueries": "AI-cited queries with GSC data",
+        "gapQueries": "AI-cited queries without GSC data"
+      },
+      "chart": {
+        "title": "Search performance: AI-cited vs. all queries",
+        "aiCited": "AI-cited queries",
+        "allQueries": "All queries"
+      },
+      "topQueries": {
+        "title": "Top AI-cited queries",
+        "query": "Query",
+        "clicks": "Clicks",
+        "impressions": "Impressions",
+        "ctr": "CTR",
+        "position": "Position",
+        "citations": "AI citations",
+        "aiBadge": "AI Overview"
+      },
+      "empty": {
+        "title": "No GSC data yet",
+        "description": "Connect a Search Console property to import search performance data for your AI-cited queries.",
+        "action": "Connect property"
+      },
+      "lastSync": "Last synced {time}",
+      "sync": {
+        "now": "Sync now",
+        "inProgress": "Syncing\u2026"
+      }
+    }
+  }
+}

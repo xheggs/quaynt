@@ -27,8 +27,12 @@ describe('webhook event registry', () => {
     expect(WEBHOOK_EVENT_TYPES).toContain('alert.acknowledged');
     expect(WEBHOOK_EVENT_TYPES).toContain('report_schedule.delivered');
     expect(WEBHOOK_EVENT_TYPES).toContain('report_schedule.failed');
+    expect(WEBHOOK_EVENT_TYPES).toContain('traffic.daily_summary');
+    expect(WEBHOOK_EVENT_TYPES).toContain('gsc.sync_completed');
+    expect(WEBHOOK_EVENT_TYPES).toContain('query_fanout.extracted');
+    expect(WEBHOOK_EVENT_TYPES).toContain('query_fanout.simulated');
     expect(WEBHOOK_EVENT_TYPES).toContain('webhook.test');
-    expect(WEBHOOK_EVENT_TYPES).toHaveLength(24);
+    expect(WEBHOOK_EVENT_TYPES).toHaveLength(28);
   });
 
   it('has sample payloads for all event types', () => {

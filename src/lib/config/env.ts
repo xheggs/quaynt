@@ -30,6 +30,14 @@ const envSchema = z.object({
   REPORT_STORAGE_PATH: z.string().default('./data/reports'),
   CRAWLER_MAX_UPLOAD_SIZE: z.coerce.number().default(209_715_200), // 200MB
   CRAWLER_VISIT_RETENTION_DAYS: z.coerce.number().default(90),
+  TRAFFIC_COLLECTOR_PUBLIC_URL: z.string().url().default('https://attribution.quaynt.io'),
+  TRAFFIC_VISIT_RETENTION_DAYS: z.coerce.number().default(90),
+  GOOGLE_OAUTH_CLIENT_ID: z.string().optional(),
+  GOOGLE_OAUTH_CLIENT_SECRET: z.string().optional(),
+  GOOGLE_OAUTH_REDIRECT_URI: z.string().url().optional(),
+  QUERY_FANOUT_SIMULATION_PROVIDER: z.enum(['openai', 'anthropic', 'gemini']).default('openai'),
+  QUERY_FANOUT_SIMULATION_MAX_SUB_QUERIES: z.coerce.number().int().positive().default(20),
+  QUERY_FANOUT_SIMULATION_CACHE_TTL_DAYS: z.coerce.number().int().positive().default(90),
 });
 
 export type Env = z.infer<typeof envSchema>;

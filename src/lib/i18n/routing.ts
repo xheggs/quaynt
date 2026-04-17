@@ -29,6 +29,9 @@ export const NAMESPACES = [
   'ui',
   'settings',
   'crawlerAnalytics',
+  'aiTraffic',
+  'integrations',
+  'queryFanout',
 ] as const;
 
 /**

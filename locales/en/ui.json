@@ -21,7 +21,8 @@
       "reports": "Reports",
       "home": "Home",
       "settings": "Settings",
-      "crawlerAnalytics": "Crawlers"
+      "crawlerAnalytics": "Crawlers",
+      "aiTraffic": "AI Traffic"
     },
     "actions": {
       "edit": "Edit",

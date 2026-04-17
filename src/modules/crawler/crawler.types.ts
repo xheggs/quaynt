@@ -23,6 +23,7 @@ export interface ParsedLogLine {
   statusCode: number;
   responseBytes: number;
   userAgent: string;
+  referer: string | null;
 }
 
 export type UploadStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';

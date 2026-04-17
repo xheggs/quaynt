@@ -10,6 +10,7 @@
       "integrations": "Integrations",
       "adapters": "Adapters",
       "apiKeys": "API Keys",
+      "siteKeys": "Site Keys",
       "webhooks": "Webhooks"
     },
     "profile": {
