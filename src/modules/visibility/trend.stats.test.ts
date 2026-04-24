@@ -5,6 +5,7 @@ import {
   computeDelta,
   computeEWMA,
   computeOverallDirection,
+  computeSpearmanRho,
   computeControlLimits,
   detectAnomaly,
   computeSignificance,
@@ -265,5 +266,105 @@ describe('computeCredibleInterval', () => {
     const result = computeCredibleInterval(0, 0);
     expect(result.lower).toBe(0);
     expect(result.upper).toBe(1);
+  });
+});
+
+describe('computeSpearmanRho', () => {
+  it('returns rho=1 for a perfectly positive monotonic relationship', () => {
+    const pairs: Array<[number, number]> = [
+      [1, 10],
+      [2, 20],
+      [3, 30],
+      [4, 45],
+      [5, 80],
+    ];
+    const result = computeSpearmanRho(pairs);
+    expect(result.n).toBe(5);
+    expect(result.rho).toBeCloseTo(1, 12);
+  });
+
+  it('returns rho=-1 for a perfectly negative monotonic relationship', () => {
+    const pairs: Array<[number, number]> = [
+      [1, 100],
+      [2, 80],
+      [3, 60],
+      [4, 40],
+      [5, 20],
+    ];
+    const result = computeSpearmanRho(pairs);
+    expect(result.n).toBe(5);
+    expect(result.rho).toBeCloseTo(-1, 12);
+  });
+
+  it('handles ties using average ranks', () => {
+    // x has a tie at 2; y has a tie at 20.
+    // Ranks of x: [1, 2.5, 2.5, 4]; ranks of y: [4, 2.5, 2.5, 1].
+    const pairs: Array<[number, number]> = [
+      [1, 40],
+      [2, 20],
+      [2, 20],
+      [4, 10],
+    ];
+    const result = computeSpearmanRho(pairs);
+    expect(result.n).toBe(4);
+    expect(result.rho).toBeCloseTo(-1, 12);
+  });
+
+  it('returns rho near zero for unrelated data', () => {
+    const pairs: Array<[number, number]> = [
+      [1, 5],
+      [2, 3],
+      [3, 4],
+      [4, 2],
+      [5, 6],
+      [6, 1],
+    ];
+    const result = computeSpearmanRho(pairs);
+    expect(result.n).toBe(6);
+    expect(Math.abs(result.rho ?? 1)).toBeLessThan(0.5);
+  });
+
+  it('returns { rho: null, n: 0 } for empty input', () => {
+    expect(computeSpearmanRho([])).toEqual({ rho: null, n: 0 });
+  });
+
+  it('returns { rho: null, n } when all x values are identical', () => {
+    const pairs: Array<[number, number]> = [
+      [3, 1],
+      [3, 2],
+      [3, 3],
+    ];
+    const result = computeSpearmanRho(pairs);
+    expect(result.n).toBe(3);
+    expect(result.rho).toBeNull();
+  });
+
+  it('returns { rho: null, n } when all y values are identical', () => {
+    const pairs: Array<[number, number]> = [
+      [1, 7],
+      [2, 7],
+      [3, 7],
+    ];
+    const result = computeSpearmanRho(pairs);
+    expect(result.n).toBe(3);
+    expect(result.rho).toBeNull();
+  });
+
+  it('drops pairs containing non-finite numbers', () => {
+    const pairs: Array<[number, number]> = [
+      [1, 10],
+      [2, Number.NaN],
+      [3, 30],
+      [Number.POSITIVE_INFINITY, 40],
+    ];
+    const result = computeSpearmanRho(pairs);
+    expect(result.n).toBe(2);
+    expect(result.rho).toBeCloseTo(1, 12);
+  });
+
+  it('handles a single-pair input as undefined correlation', () => {
+    const result = computeSpearmanRho([[1, 2]]);
+    expect(result.n).toBe(1);
+    expect(result.rho).toBeNull();
   });
 });

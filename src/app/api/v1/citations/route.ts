@@ -6,6 +6,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { parsePagination, formatPaginatedResponse } from '@/lib/api/pagination';
 import { apiSuccess, badRequest } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { listCitations, CITATION_ALLOWED_SORTS } from '@/modules/citations/citation.service';
 
 const citationTypeEnum = z.enum(['owned', 'earned']);
@@ -20,6 +21,7 @@ export const GET = withRequestId(
           if (pagination instanceof NextResponse) return pagination;
 
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const params = req.nextUrl.searchParams;
 
           // Validate optional citationType filter
@@ -27,7 +29,7 @@ export const GET = withRequestId(
           if (rawCitationType) {
             const parsed = citationTypeEnum.safeParse(rawCitationType);
             if (!parsed.success) {
-              return badRequest("Citation type must be 'owned' or 'earned'");
+              return badRequest(t('validation.invalidCitationType'));
             }
           }
 
@@ -36,7 +38,7 @@ export const GET = withRequestId(
           if (rawSentiment) {
             const parsed = sentimentLabelEnum.safeParse(rawSentiment);
             if (!parsed.success) {
-              return badRequest("Sentiment must be 'positive', 'neutral', or 'negative'");
+              return badRequest(t('validation.invalidSentiment'));
             }
           }
 

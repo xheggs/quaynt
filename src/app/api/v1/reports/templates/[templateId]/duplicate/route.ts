@@ -3,6 +3,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiCreated, apiError, forbidden } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getRequestLogger } from '@/lib/logger';
 import { env } from '@/lib/config/env';
 import type { RouteContext } from '@/lib/api/types';
@@ -20,8 +21,9 @@ export const POST = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req: Request, ctx: RouteContext<Params>) => {
+          const t = await apiErrors();
           if (env.QUAYNT_EDITION === 'community') {
-            return forbidden('Custom report templates require a commercial edition');
+            return forbidden(t('reports.templatesCommercial'));
           }
 
           const auth = getAuthContext(req);
@@ -36,7 +38,7 @@ export const POST = withRequestId(
             return apiCreated({ template });
           } catch (err) {
             if (err instanceof TemplateNotFoundError) {
-              return apiError('NOT_FOUND', 'Report template not found', 404);
+              return apiError('NOT_FOUND', t('resources.reportTemplate'), 404);
             }
             if (err instanceof TemplateLimitError) {
               return apiError('TEMPLATE_LIMIT', err.message, 422, { limit: err.limit });

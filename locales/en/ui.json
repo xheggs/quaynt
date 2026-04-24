@@ -22,7 +22,10 @@
       "home": "Home",
       "settings": "Settings",
       "crawlerAnalytics": "Crawlers",
-      "aiTraffic": "AI Traffic"
+      "aiTraffic": "AI Traffic",
+      "geoScore": "GEO Score",
+      "seoScore": "SEO Score",
+      "dualScore": "SEO + GEO"
     },
     "actions": {
       "edit": "Edit",

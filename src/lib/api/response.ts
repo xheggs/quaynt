@@ -28,10 +28,12 @@ export function apiError(
  * The helpers below default `message` to the error code when no message is
  * supplied. API error codes are machine-readable and do not require i18n
  * (see .claude/rules/i18n.md). For user-facing errors, callers MUST pass an
- * already-translated message, e.g.:
+ * already-translated message. Use the helper in `./errors-i18n.ts`:
  *
- *   const t = await getTranslations('errors.api');
- *   return badRequest(t('badRequest'));
+ *   import { apiErrors } from '@/lib/api/errors-i18n';
+ *   const t = await apiErrors();
+ *   return badRequest(t('validation.required', { field: 'brandId' }));
+ *   return notFound(t('resources.brand'));
  */
 
 export function badRequest(message?: string, details?: unknown): NextResponse {

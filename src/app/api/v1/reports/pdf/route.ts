@@ -3,6 +3,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiCreated, apiError, badRequest, notFound } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getRequestLogger } from '@/lib/logger';
 import { db } from '@/lib/db';
 import { createBoss } from '@/lib/jobs/boss';
@@ -22,6 +23,7 @@ export const POST = withRequestId(
       withRateLimit(
         withScope(async (req) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const log = getRequestLogger(req);
 
           // Parse and validate body
@@ -29,7 +31,7 @@ export const POST = withRequestId(
           try {
             body = await req.json();
           } catch {
-            return badRequest('Invalid JSON body');
+            return badRequest(t('validation.invalidJson'));
           }
 
           const parsed = pdfReportRequestSchema.safeParse(body);
@@ -38,7 +40,7 @@ export const POST = withRequestId(
               field: i.path.map(String).join('.'),
               message: i.message,
             }));
-            return apiError('BAD_REQUEST', 'Invalid report parameters', 400, details);
+            return apiError('BAD_REQUEST', t('reports.invalidParams'), 400, details);
           }
 
           const params = parsed.data;
@@ -50,20 +52,18 @@ export const POST = withRequestId(
           const brandIds = rawBrandIds ?? (params.brandId ? [params.brandId] : undefined);
 
           if (!brandIds || brandIds.length === 0) {
-            return badRequest('At least one brand must be specified (provide brandId or brandIds)');
+            return badRequest(t('visibility.brandsRequired'));
           }
 
           if (brandIds.length > MAX_BRANDS) {
-            return badRequest(
-              `A maximum of ${MAX_BRANDS} brands can be included in a single report`
-            );
+            return badRequest(t('reports.maxBrands', { max: MAX_BRANDS }));
           }
 
           // Validate template if provided
           if (params.templateId) {
             const template = await getTemplate(auth.workspaceId, params.templateId);
             if (!template) {
-              return notFound('report_template');
+              return notFound(t('resources.reportTemplate'));
             }
           }
 

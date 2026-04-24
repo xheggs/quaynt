@@ -3,6 +3,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiCreated, apiError, apiSuccess, badRequest, forbidden } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getRequestLogger } from '@/lib/logger';
 import { env } from '@/lib/config/env';
 import {
@@ -19,8 +20,9 @@ export const GET = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req) => {
+          const t = await apiErrors();
           if (env.QUAYNT_EDITION === 'community') {
-            return forbidden('Custom report templates require a commercial edition');
+            return forbidden(t('reports.templatesCommercial'));
           }
 
           const auth = getAuthContext(req);
@@ -39,8 +41,9 @@ export const POST = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req) => {
+          const t = await apiErrors();
           if (env.QUAYNT_EDITION === 'community') {
-            return forbidden('Custom report templates require a commercial edition');
+            return forbidden(t('reports.templatesCommercial'));
           }
 
           const auth = getAuthContext(req);
@@ -50,7 +53,7 @@ export const POST = withRequestId(
           try {
             body = await req.json();
           } catch {
-            return badRequest('Invalid JSON body');
+            return badRequest(t('validation.invalidJson'));
           }
 
           const parsed = createTemplateSchema.safeParse(body);
@@ -59,7 +62,7 @@ export const POST = withRequestId(
               field: i.path.map(String).join('.'),
               message: i.message,
             }));
-            return apiError('BAD_REQUEST', 'Invalid template parameters', 400, details);
+            return apiError('BAD_REQUEST', t('reports.invalidTemplateParams'), 400, details);
           }
 
           const input = parsed.data;

@@ -21,6 +21,11 @@ import { modelRunResult } from '@/modules/model-runs/model-run.schema';
 import { gscQueryPerformance } from './gsc-query-performance.schema';
 import { listConnections } from '@/modules/integrations/gsc/gsc-connection.service';
 import type { GscConnectionPublic } from '@/modules/integrations/gsc/gsc-connection.service';
+import {
+  lowerTrimGscQuery,
+  lowerTrimInterpolatedPrompt,
+  selectAiCitedQueriesForWorkspace,
+} from './query-set';
 
 const AIO_PLATFORM_ID = 'aio';
 
@@ -73,29 +78,10 @@ function baseGscConditions(workspaceId: string, f: CorrelationFilters): SQL[] {
   return conds;
 }
 
-/**
- * Load the set of distinct queries (lowercased + trimmed) for which the
- * workspace has at least one AIO citation within the date range. Returned
- * array is deduped.
- */
-async function getAiCitedQueries(workspaceId: string, from: string, to: string): Promise<string[]> {
-  const rows = await db
-    .selectDistinct({
-      q: sql<string>`lower(trim(${modelRunResult.interpolatedPrompt}))`,
-    })
-    .from(citation)
-    .innerJoin(modelRunResult, eq(modelRunResult.id, citation.modelRunResultId))
-    .where(
-      and(
-        eq(citation.workspaceId, workspaceId),
-        eq(citation.platformId, AIO_PLATFORM_ID),
-        gte(citation.createdAt, new Date(from)),
-        lte(citation.createdAt, new Date(`${to}T23:59:59.999Z`))
-      )
-    );
-
-  return rows.map((r) => r.q).filter((q): q is string => !!q);
-}
+// The workspace-scoped AI-cited query selector lives in ./query-set.ts and is
+// re-used by 6.5a's SEO score (with a brand-scoped sibling helper). The inline
+// alias below keeps the call sites below unchanged.
+const getAiCitedQueries = selectAiCitedQueriesForWorkspace;
 
 export async function getCorrelationSummary(
   workspaceId: string,
@@ -115,7 +101,7 @@ export async function getCorrelationSummary(
 
   const gscConds = [
     ...baseGscConditions(workspaceId, filters),
-    inArray(sql`lower(trim(${gscQueryPerformance.query}))`, aiCitedQueries),
+    inArray(lowerTrimGscQuery, aiCitedQueries),
   ];
 
   const [agg] = await db
@@ -123,7 +109,7 @@ export async function getCorrelationSummary(
       totalClicks: sql<number>`coalesce(sum(${gscQueryPerformance.clicks}), 0)`,
       totalImpressions: sql<number>`coalesce(sum(${gscQueryPerformance.impressions}), 0)`,
       weightedPositionNumerator: sql<number>`coalesce(sum(${gscQueryPerformance.position} * ${gscQueryPerformance.impressions}), 0)`,
-      distinctQueries: sql<number>`count(distinct lower(trim(${gscQueryPerformance.query})))`,
+      distinctQueries: sql<number>`count(distinct ${lowerTrimGscQuery})`,
     })
     .from(gscQueryPerformance)
     .where(and(...gscConds));
@@ -173,9 +159,7 @@ export async function getCorrelationTimeSeries(
         impressions: sql<number>`sum(${gscQueryPerformance.impressions})`,
       })
       .from(gscQueryPerformance)
-      .where(
-        and(...baseConds, inArray(sql`lower(trim(${gscQueryPerformance.query}))`, aiCitedQueries))
-      )
+      .where(and(...baseConds, inArray(lowerTrimGscQuery, aiCitedQueries)))
       .groupBy(gscQueryPerformance.date)
       .orderBy(gscQueryPerformance.date);
 
@@ -208,13 +192,13 @@ export async function getTopAiCitedQueries(
 
   const gscConds = [
     ...baseGscConditions(workspaceId, filters),
-    inArray(sql`lower(trim(${gscQueryPerformance.query}))`, aiCitedQueries),
+    inArray(lowerTrimGscQuery, aiCitedQueries),
   ];
 
   // Aggregate GSC per normalized query.
   const gscRows = await db
     .select({
-      queryNorm: sql<string>`lower(trim(${gscQueryPerformance.query}))`,
+      queryNorm: lowerTrimGscQuery,
       clicks: sql<number>`sum(${gscQueryPerformance.clicks})`,
       impressions: sql<number>`sum(${gscQueryPerformance.impressions})`,
       weightedPositionNumerator: sql<number>`sum(${gscQueryPerformance.position} * ${gscQueryPerformance.impressions})`,
@@ -222,7 +206,7 @@ export async function getTopAiCitedQueries(
     })
     .from(gscQueryPerformance)
     .where(and(...gscConds))
-    .groupBy(sql`lower(trim(${gscQueryPerformance.query}))`)
+    .groupBy(lowerTrimGscQuery)
     .orderBy(desc(sql`sum(${gscQueryPerformance.clicks})`))
     .limit(pagination.limit)
     .offset(offset);
@@ -235,7 +219,7 @@ export async function getTopAiCitedQueries(
   const matchedQueries = gscRows.map((r) => r.queryNorm);
   const citationRows = await db
     .select({
-      queryNorm: sql<string>`lower(trim(${modelRunResult.interpolatedPrompt}))`,
+      queryNorm: lowerTrimInterpolatedPrompt,
       count: sql<number>`count(*)::int`,
       firstDetectedAt: sql<Date>`min(${citation.createdAt})`,
     })
@@ -245,10 +229,10 @@ export async function getTopAiCitedQueries(
       and(
         eq(citation.workspaceId, workspaceId),
         eq(citation.platformId, AIO_PLATFORM_ID),
-        inArray(sql`lower(trim(${modelRunResult.interpolatedPrompt}))`, matchedQueries)
+        inArray(lowerTrimInterpolatedPrompt, matchedQueries)
       )
     )
-    .groupBy(sql`lower(trim(${modelRunResult.interpolatedPrompt}))`);
+    .groupBy(lowerTrimInterpolatedPrompt);
 
   const citationMap = new Map(
     citationRows.map((r) => [

@@ -29,6 +29,14 @@ const SORT_COLUMNS: Record<string, Column> = {
 export const ALERT_RULE_ALLOWED_SORTS = Object.keys(SORT_COLUMNS);
 
 export async function createAlertRule(workspaceId: string, input: AlertRuleCreate) {
+  const isBrandScoped = input.metric === 'geo_score' || input.metric === 'seo_score';
+  const isWorkspaceScoped =
+    input.metric.startsWith('crawler_') || input.metric.startsWith('ai_visit');
+
+  if (isBrandScoped && !input.scope.brandId) {
+    throw new Error('brandId is required for brand-scoped alert metrics');
+  }
+
   // Validate brand exists in workspace
   const [brandRecord] = await db
     .select({ id: brand.id })
@@ -40,15 +48,20 @@ export async function createAlertRule(workspaceId: string, input: AlertRuleCreat
     throw new Error('Brand not found in this workspace');
   }
 
-  // Validate prompt set exists in workspace
-  const [psRecord] = await db
-    .select({ id: promptSet.id })
-    .from(promptSet)
-    .where(and(eq(promptSet.id, input.promptSetId), eq(promptSet.workspaceId, workspaceId)))
-    .limit(1);
+  // Validate prompt set exists in workspace (only for prompt-set-scoped metrics)
+  if (!isBrandScoped && !isWorkspaceScoped) {
+    if (!input.promptSetId) {
+      throw new Error('promptSetId is required for this metric');
+    }
+    const [psRecord] = await db
+      .select({ id: promptSet.id })
+      .from(promptSet)
+      .where(and(eq(promptSet.id, input.promptSetId), eq(promptSet.workspaceId, workspaceId)))
+      .limit(1);
 
-  if (!psRecord) {
-    throw new Error('Prompt set not found in this workspace');
+    if (!psRecord) {
+      throw new Error('Prompt set not found in this workspace');
+    }
   }
 
   // Check per-workspace rule limit
@@ -70,7 +83,7 @@ export async function createAlertRule(workspaceId: string, input: AlertRuleCreat
       name: input.name,
       description: input.description ?? null,
       metric: input.metric,
-      promptSetId: input.promptSetId,
+      promptSetId: isBrandScoped || isWorkspaceScoped ? null : input.promptSetId,
       scope: input.scope,
       condition: input.condition,
       threshold: String(input.threshold),

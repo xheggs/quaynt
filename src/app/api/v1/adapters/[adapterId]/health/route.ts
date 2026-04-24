@@ -3,6 +3,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiSuccess, notFound, apiError } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getAdapterHealth } from '@/modules/adapters/adapter.service';
 import { getAdapterRegistry } from '@/modules/adapters';
 
@@ -14,12 +15,13 @@ export const GET = withRequestId(
           const { adapterId } = await ctx.params;
           const auth = getAuthContext(req);
           const registry = getAdapterRegistry();
+          const t = await apiErrors();
 
           try {
             const health = await getAdapterHealth(adapterId, auth.workspaceId, registry);
 
             if (!health) {
-              return notFound('Adapter');
+              return notFound(t('resources.adapter'));
             }
 
             return apiSuccess(health);

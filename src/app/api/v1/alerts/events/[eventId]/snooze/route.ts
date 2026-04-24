@@ -5,6 +5,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { apiSuccess, notFound, unprocessable } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { snoozeAlertEvent } from '@/modules/alerts/alert.service';
 
 const snoozeSchema = z
@@ -22,6 +23,7 @@ export const PATCH = withRequestId(
       withRateLimit(
         withScope(async (req, ctx) => {
           const { eventId } = await ctx.params;
+          const t = await apiErrors();
           const validated = await validateRequest(req, ctx, {
             body: snoozeSchema,
           });
@@ -32,7 +34,7 @@ export const PATCH = withRequestId(
           try {
             const result = await snoozeAlertEvent(eventId, auth.workspaceId, validated.data.body);
             if (!result) {
-              return notFound('Alert event');
+              return notFound(t('resources.alertEvent'));
             }
             return apiSuccess(result);
           } catch (err) {

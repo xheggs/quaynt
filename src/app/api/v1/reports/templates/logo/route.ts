@@ -3,6 +3,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiCreated, badRequest, forbidden } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getRequestLogger } from '@/lib/logger';
 import { env } from '@/lib/config/env';
 import {
@@ -16,8 +17,9 @@ export const POST = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req) => {
+          const t = await apiErrors();
           if (env.QUAYNT_EDITION === 'community') {
-            return forbidden('Custom report templates require a commercial edition');
+            return forbidden(t('reports.templatesCommercial'));
           }
 
           const auth = getAuthContext(req);
@@ -28,12 +30,12 @@ export const POST = withRequestId(
           try {
             formData = await req.formData();
           } catch {
-            return badRequest('Expected multipart/form-data with a logo file');
+            return badRequest(t('uploads.logoFileExpected'));
           }
 
           const file = formData.get('logo');
           if (!file || !(file instanceof File)) {
-            return badRequest('Missing logo file in form data');
+            return badRequest(t('uploads.logoFileMissing'));
           }
 
           const fileBuffer = Buffer.from(await file.arrayBuffer());

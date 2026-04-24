@@ -12,6 +12,9 @@ export const REPORT_SECTIONS = [
   'opportunities',
   'citationSources',
   'alertSummary',
+  'geoScore',
+  'seoScore',
+  'dualScore',
 ] as const;
 
 export type ReportSection = (typeof REPORT_SECTIONS)[number];

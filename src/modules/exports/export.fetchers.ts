@@ -26,6 +26,27 @@ function* flattenReportData(
 ): Generator<Record<string, unknown>> {
   for (const brandData of result.brands) {
     for (const metricName of metricNames) {
+      // GEO score is a composite, not a scalar — use a separate row shape.
+      if (metricName === 'geo_score') {
+        const geoBlock = brandData.metrics.geoScore;
+        if (!geoBlock) continue;
+        yield {
+          brandName: brandData.brand.brandName,
+          brandId: brandData.brand.brandId,
+          market: result.market.name,
+          periodFrom: result.period.from,
+          periodTo: result.period.to,
+          platform: result.filters.platformId,
+          locale: result.filters.locale,
+          metric: metricName,
+          currentValue: geoBlock.composite ?? '',
+          previousValue: '',
+          delta: geoBlock.trend.delta ?? '',
+          changeRate: '',
+          direction: geoBlock.trend.direction ?? '',
+        };
+        continue;
+      }
       const metricKey =
         metricName === 'recommendation_share'
           ? 'recommendationShare'
@@ -33,7 +54,7 @@ function* flattenReportData(
             ? 'citationCount'
             : metricName;
       const block = brandData.metrics[metricKey as keyof typeof brandData.metrics];
-      if (!block) continue;
+      if (!block || !('current' in block)) continue;
 
       yield {
         brandName: brandData.brand.brandName,

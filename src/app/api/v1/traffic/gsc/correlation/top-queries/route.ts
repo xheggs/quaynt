@@ -4,6 +4,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiSuccess, badRequest } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getTopAiCitedQueries } from '@/modules/integrations/gsc-correlation/gsc-correlation.service';
 
 const MAX_RANGE_DAYS = 90;
@@ -30,12 +31,13 @@ export const GET = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req) => {
+          const auth = getAuthContext(req);
+          const t = await apiErrors();
           const parsed = filtersSchema.safeParse(
             Object.fromEntries(req.nextUrl.searchParams.entries())
           );
-          if (!parsed.success) return badRequest('Invalid filter parameters');
+          if (!parsed.success) return badRequest(t('validation.invalidFilter'));
 
-          const auth = getAuthContext(req);
           const { from, to, propertyUrl, page, limit } = parsed.data;
           const result = await getTopAiCitedQueries(
             auth.workspaceId,

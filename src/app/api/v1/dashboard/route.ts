@@ -4,6 +4,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiSuccess, apiError, badRequest } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getDashboardData } from '@/modules/dashboard/dashboard.service';
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -28,6 +29,7 @@ export const GET = withRequestId(
       withRateLimit(
         withScope(async (req) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const params = req.nextUrl.searchParams;
 
           const parsed = querySchema.safeParse({
@@ -47,11 +49,11 @@ export const GET = withRequestId(
             const error = err as Error & { code?: string; warnings?: string[] };
 
             if (error.code === 'PROMPT_SET_NOT_FOUND') {
-              return badRequest('Prompt set not found');
+              return badRequest(t('resources.promptSet'));
             }
 
             if (error.code === 'ALL_SECTIONS_FAILED') {
-              return apiError('SERVICE_UNAVAILABLE', 'Unable to load dashboard data', 503, {
+              return apiError('SERVICE_UNAVAILABLE', t('dashboard.unavailable'), 503, {
                 warnings: error.warnings,
               });
             }

@@ -5,6 +5,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { apiSuccess, apiNoContent, notFound, conflict, unprocessable } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import {
   getPromptSet,
   updatePromptSet,
@@ -24,10 +25,11 @@ export const GET = withRequestId(
         withScope(async (req, ctx) => {
           const { promptSetId } = await ctx.params;
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           const result = await getPromptSet(promptSetId, auth.workspaceId);
           if (!result) {
-            return notFound('Prompt set');
+            return notFound(t('resources.promptSet'));
           }
 
           return apiSuccess(result);
@@ -43,6 +45,7 @@ export const PATCH = withRequestId(
       withRateLimit(
         withScope(async (req, ctx) => {
           const { promptSetId } = await ctx.params;
+          const t = await apiErrors();
           const validated = await validateRequest(req, ctx, {
             body: updatePromptSetSchema,
           });
@@ -57,7 +60,7 @@ export const PATCH = withRequestId(
               validated.data.body
             );
             if (!updated) {
-              return notFound('Prompt set');
+              return notFound(t('resources.promptSet'));
             }
             return apiSuccess(updated);
           } catch (err) {
@@ -80,10 +83,11 @@ export const DELETE = withRequestId(
         withScope(async (req, ctx) => {
           const { promptSetId } = await ctx.params;
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           const deleted = await deletePromptSet(promptSetId, auth.workspaceId);
           if (!deleted) {
-            return notFound('Prompt set');
+            return notFound(t('resources.promptSet'));
           }
 
           return apiNoContent();

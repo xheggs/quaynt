@@ -4,6 +4,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiSuccess, badRequest } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getTopLandingPages } from '@/modules/traffic/traffic-analytics.service';
 
 const schema = z.object({
@@ -19,11 +20,12 @@ export const GET = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req) => {
+          const auth = getAuthContext(req);
+          const t = await apiErrors();
           const parsed = schema.safeParse(Object.fromEntries(req.nextUrl.searchParams.entries()));
-          if (!parsed.success) return badRequest('Invalid filter parameters');
+          if (!parsed.success) return badRequest(t('validation.invalidFilter'));
 
           const { limit, ...filters } = parsed.data;
-          const auth = getAuthContext(req);
           const rows = await getTopLandingPages(auth.workspaceId, filters, limit);
           return apiSuccess(rows);
         }, 'read')

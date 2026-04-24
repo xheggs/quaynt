@@ -1,0 +1,124 @@
+{
+  "geoScore": {
+    "page": {
+      "title": "GEO Score",
+      "description": "Composite readiness score for your brand's AI visibility"
+    },
+    "headline": {
+      "label": "GEO Score",
+      "out_of": "out of 100",
+      "deltaLabel": {
+        "weekly": "vs previous week",
+        "monthly": "vs previous month"
+      },
+      "periodLabel": "for {from} – {to}",
+      "cap": {
+        "label": "Core factors only",
+        "tooltip": "Accuracy is not yet measured. The composite is shown capped at 95 until the Accuracy factor is live.",
+        "methodologyLink": "How the score is calculated"
+      }
+    },
+    "granularity": {
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "factor": {
+      "citation_frequency": {
+        "name": "Citation Frequency",
+        "description": "How often the brand is cited across AI platforms"
+      },
+      "source_diversity": {
+        "name": "Source Diversity",
+        "description": "Number of distinct domains citing the brand"
+      },
+      "sentiment_balance": {
+        "name": "Sentiment Balance",
+        "description": "Net sentiment across AI-generated mentions"
+      },
+      "position_stability": {
+        "name": "Position Stability",
+        "description": "First-mention rate and consistency over time"
+      },
+      "accuracy": {
+        "name": "Accuracy",
+        "description": "Rate of factually correct AI statements about the brand"
+      },
+      "coverage_breadth": {
+        "name": "Coverage Breadth",
+        "description": "Presence across monitored platforms and locales"
+      },
+      "weight": "Weight: {weight}%",
+      "status": {
+        "active": "Active",
+        "notYetScored": "Not yet scored",
+        "insufficientData": "Insufficient data"
+      },
+      "notYetScoredHint": "This factor will be scored when accuracy tracking ships",
+      "insufficientDataHint": "Collect more data over the selected period to score this factor"
+    },
+    "trend": {
+      "title": "Score over time",
+      "compositeLabel": "Composite",
+      "direction": {
+        "up": "Trending up",
+        "down": "Trending down",
+        "flat": "Stable"
+      }
+    },
+    "recommendations": {
+      "title": "Recommendations",
+      "empty": "No recommendations — your score is strong across every factor",
+      "estDelta": "~+{delta} pts if remediated",
+      "estDeltaTooltip": "Estimated composite lift if this factor alone reaches 75, with all other factors held constant. Actual impact depends on how factors interact.",
+      "severity": {
+        "low": "Minor",
+        "medium": "Moderate",
+        "high": "Priority"
+      },
+      "citation_frequency": {
+        "title": "Increase citation frequency",
+        "description": "Your share of AI citations is below the category benchmark. Focus on publishing authoritative content around priority prompts."
+      },
+      "source_diversity": {
+        "title": "Broaden your citing sources",
+        "description": "AI platforms cite you from only a few domains. Earn coverage across more publications, directories, and reference sites."
+      },
+      "sentiment_balance": {
+        "title": "Improve sentiment balance",
+        "description": "Net sentiment is negative or neutral. Address sources of negative mentions and surface positive case studies."
+      },
+      "position_stability": {
+        "title": "Stabilize your position",
+        "description": "Your position swings widely between runs. Strengthen canonical references so AI models anchor on them."
+      },
+      "coverage_breadth": {
+        "title": "Expand platform and locale coverage",
+        "description": "Your brand appears in only some of the monitored platforms or locales. Extend visibility to the missing combinations."
+      }
+    },
+    "empty": {
+      "title": "No GEO score yet",
+      "description": "Once prompt runs produce citations, sentiment, and position data we can compute your composite score.",
+      "action": "View setup guide"
+    },
+    "errors": {
+      "brandRequired": "Select a brand to see its GEO score",
+      "insufficientFactors": "Not enough data yet to compute a composite score",
+      "recomputeFailed": "Recompute failed. Please try again."
+    },
+    "alert": {
+      "metricLabel": "GEO Score",
+      "thresholdHint": "Alert when composite score drops below this value"
+    },
+    "report": {
+      "sectionTitle": "GEO Score"
+    },
+    "formula": {
+      "version": "Formula v{version}",
+      "linkToDocs": "View methodology"
+    }
+  },
+  "navigation": {
+    "geoScore": "GEO Score"
+  }
+}

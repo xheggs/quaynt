@@ -3,6 +3,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiSuccess, notFound } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { rotateWebhookEndpointSecret } from '@/modules/webhooks/webhook.service';
 
 export const POST = withRequestId(
@@ -10,12 +11,13 @@ export const POST = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req, ctx) => {
-          const { webhookId } = await ctx.params;
           const auth = getAuthContext(req);
+          const t = await apiErrors();
+          const { webhookId } = await ctx.params;
 
           const result = await rotateWebhookEndpointSecret(webhookId, auth.workspaceId);
           if (!result) {
-            return notFound('Webhook endpoint');
+            return notFound(t('resources.webhook'));
           }
 
           return apiSuccess(result);

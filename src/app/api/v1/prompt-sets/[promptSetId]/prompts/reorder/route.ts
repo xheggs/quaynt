@@ -5,6 +5,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { apiSuccess, notFound, badRequest } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { reorderPrompts } from '@/modules/prompt-sets/prompt-set.service';
 
 const reorderPromptsSchema = z.object({
@@ -17,6 +18,7 @@ export const PUT = withRequestId(
       withRateLimit(
         withScope(async (req, ctx) => {
           const { promptSetId } = await ctx.params;
+          const t = await apiErrors();
           const validated = await validateRequest(req, ctx, {
             body: reorderPromptsSchema,
           });
@@ -31,7 +33,7 @@ export const PUT = withRequestId(
               validated.data.body.promptIds
             );
             if (result === null) {
-              return notFound('Prompt set');
+              return notFound(t('resources.promptSet'));
             }
             return apiSuccess({ reordered: true });
           } catch (err) {

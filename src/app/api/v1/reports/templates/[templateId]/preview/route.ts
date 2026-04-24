@@ -3,6 +3,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiCreated, forbidden, notFound } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getRequestLogger } from '@/lib/logger';
 import { env } from '@/lib/config/env';
 import { db } from '@/lib/db';
@@ -24,8 +25,9 @@ export const POST = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req: Request, ctx: RouteContext<Params>) => {
+          const t = await apiErrors();
           if (env.QUAYNT_EDITION === 'community') {
-            return forbidden('Custom report templates require a commercial edition');
+            return forbidden(t('reports.templatesCommercial'));
           }
 
           const auth = getAuthContext(req);
@@ -34,7 +36,7 @@ export const POST = withRequestId(
 
           // Verify template exists and belongs to workspace
           const template = await getTemplate(auth.workspaceId, templateId);
-          if (!template) return notFound('report_template');
+          if (!template) return notFound(t('resources.reportTemplate'));
 
           // Get workspace info
           const ws = await getWorkspaceById(auth.workspaceId);

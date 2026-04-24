@@ -4,6 +4,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiSuccess, badRequest } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getBenchmarks } from '@/modules/visibility/benchmark.service';
 
 const comparisonPeriodEnum = z.enum(['previous_period', 'previous_week', 'previous_month']);
@@ -14,20 +15,21 @@ export const GET = withRequestId(
       withRateLimit(
         withScope(async (req) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const params = req.nextUrl.searchParams;
 
           const promptSetId = params.get('promptSetId');
           if (!promptSetId) {
-            return badRequest('A prompt set (market) is required to view competitor benchmarks');
+            return badRequest(
+              t('visibility.promptSetRequired', { scope: 'competitor benchmarks' })
+            );
           }
 
           const rawComparisonPeriod = params.get('comparisonPeriod');
           if (rawComparisonPeriod) {
             const parsed = comparisonPeriodEnum.safeParse(rawComparisonPeriod);
             if (!parsed.success) {
-              return badRequest(
-                "comparisonPeriod must be 'previous_period', 'previous_week', or 'previous_month'"
-              );
+              return badRequest(t('reports.invalidComparisonPeriod'));
             }
           }
 

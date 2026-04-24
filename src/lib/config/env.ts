@@ -38,6 +38,10 @@ const envSchema = z.object({
   QUERY_FANOUT_SIMULATION_PROVIDER: z.enum(['openai', 'anthropic', 'gemini']).default('openai'),
   QUERY_FANOUT_SIMULATION_MAX_SUB_QUERIES: z.coerce.number().int().positive().default(20),
   QUERY_FANOUT_SIMULATION_CACHE_TTL_DAYS: z.coerce.number().int().positive().default(90),
+  GEO_SCORE_SNAPSHOT_CRON: z.string().default('0 5 * * *'),
+  // SEO score daily snapshot runs at 07:00 UTC by default, after the GSC
+  // daily sync (06:00 UTC) so it sees fresh impression/CTR/position data.
+  SEO_SCORE_SNAPSHOT_CRON: z.string().default('0 7 * * *'),
 });
 
 export type Env = z.infer<typeof envSchema>;

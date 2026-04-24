@@ -172,7 +172,10 @@ export type ReportSection =
   | 'competitorBenchmarks'
   | 'opportunities'
   | 'citationSources'
-  | 'alertSummary';
+  | 'alertSummary'
+  | 'geoScore'
+  | 'seoScore'
+  | 'dualScore';
 
 // Source: @/modules/report-templates/report-template.types
 export type FontFamily = 'noto-sans' | 'noto-serif';
@@ -244,6 +247,9 @@ export const REPORT_SECTIONS: ReportSection[] = [
   'opportunities',
   'citationSources',
   'alertSummary',
+  'geoScore',
+  'seoScore',
+  'dualScore',
 ];
 
 export const FONT_FAMILIES: FontFamily[] = ['noto-sans', 'noto-serif'];

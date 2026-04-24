@@ -5,6 +5,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { parsePagination, formatPaginatedResponse } from '@/lib/api/pagination';
 import { apiSuccess, badRequest } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getPresenceMatrix } from '@/modules/visibility/benchmark.service';
 
 const PRESENCE_ALLOWED_SORTS: string[] = [];
@@ -18,11 +19,14 @@ export const GET = withRequestId(
           if (pagination instanceof NextResponse) return pagination;
 
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const params = req.nextUrl.searchParams;
 
           const promptSetId = params.get('promptSetId');
           if (!promptSetId) {
-            return badRequest('A prompt set (market) is required to view competitor benchmarks');
+            return badRequest(
+              t('visibility.promptSetRequired', { scope: 'competitor benchmarks' })
+            );
           }
 
           const rawBrandIds = params.get('brandIds');

@@ -4,6 +4,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { apiSuccess, apiNoContent, notFound } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getRequestLogger } from '@/lib/logger';
 import {
   scheduleIdParamSchema,
@@ -26,9 +27,10 @@ export const GET = withRequestId(
           if (!validated.success) return validated.response;
 
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const schedule = await getSchedule(auth.workspaceId, validated.data.params.scheduleId);
 
-          if (!schedule) return notFound('Schedule');
+          if (!schedule) return notFound(t('resources.schedule'));
 
           return apiSuccess(schedule);
         }, 'read')
@@ -49,6 +51,7 @@ export const PATCH = withRequestId(
           if (!validated.success) return validated.response;
 
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const log = getRequestLogger(req);
 
           const result = await updateSchedule(
@@ -57,7 +60,7 @@ export const PATCH = withRequestId(
             validated.data.body
           );
 
-          if (!result) return notFound('Schedule');
+          if (!result) return notFound(t('resources.schedule'));
 
           log.info({ scheduleId: validated.data.params.scheduleId }, 'Report schedule updated');
           return apiSuccess(result);
@@ -78,10 +81,11 @@ export const DELETE = withRequestId(
           if (!validated.success) return validated.response;
 
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const log = getRequestLogger(req);
 
           const deleted = await deleteSchedule(auth.workspaceId, validated.data.params.scheduleId);
-          if (!deleted) return notFound('Schedule');
+          if (!deleted) return notFound(t('resources.schedule'));
 
           log.info({ scheduleId: validated.data.params.scheduleId }, 'Report schedule deleted');
           return apiNoContent();

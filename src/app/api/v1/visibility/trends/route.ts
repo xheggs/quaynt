@@ -5,6 +5,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiSuccess, badRequest, notFound } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { db } from '@/lib/db';
 import { brand } from '@/modules/brands/brand.schema';
 import { promptSet } from '@/modules/prompt-sets/prompt-set.schema';
@@ -29,26 +30,29 @@ export const GET = withRequestId(
       withRateLimit(
         withScope(async (req) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const params = req.nextUrl.searchParams;
 
           // Required params
           const rawMetric = params.get('metric');
           if (!rawMetric) {
-            return badRequest('metric is required');
+            return badRequest(t('validation.required', { field: 'metric' }));
           }
           const metricParsed = metricEnum.safeParse(rawMetric);
           if (!metricParsed.success) {
-            return badRequest(`Invalid metric. Must be one of: ${metricEnum.options.join(', ')}`);
+            return badRequest(
+              t('validation.invalidMetricEnum', { allowed: metricEnum.options.join(', ') })
+            );
           }
 
           const promptSetId = params.get('promptSetId');
           if (!promptSetId) {
-            return badRequest('promptSetId is required');
+            return badRequest(t('validation.required', { field: 'promptSetId' }));
           }
 
           const brandId = params.get('brandId');
           if (!brandId) {
-            return badRequest('brandId is required');
+            return badRequest(t('validation.required', { field: 'brandId' }));
           }
 
           // Optional params
@@ -56,18 +60,18 @@ export const GET = withRequestId(
           if (rawPeriod) {
             const periodParsed = periodEnum.safeParse(rawPeriod);
             if (!periodParsed.success) {
-              return badRequest("period must be 'weekly' or 'monthly'");
+              return badRequest(t('validation.invalidPeriod'));
             }
           }
 
           const rawFrom = params.get('from');
           if (rawFrom && !dateSchema.safeParse(rawFrom).success) {
-            return badRequest('from must be a valid date (YYYY-MM-DD)');
+            return badRequest(t('validation.invalidDateFormat', { field: 'from' }));
           }
 
           const rawTo = params.get('to');
           if (rawTo && !dateSchema.safeParse(rawTo).success) {
-            return badRequest('to must be a valid date (YYYY-MM-DD)');
+            return badRequest(t('validation.invalidDateFormat', { field: 'to' }));
           }
 
           // Verify brand and prompt set exist in workspace
@@ -97,10 +101,10 @@ export const GET = withRequestId(
           ]);
 
           if (!brandRow[0]) {
-            return notFound('Brand');
+            return notFound(t('resources.brand'));
           }
           if (!promptSetRow[0]) {
-            return notFound('Prompt set');
+            return notFound(t('resources.promptSet'));
           }
 
           const includeMovingAverage = params.get('includeMovingAverage') !== 'false';

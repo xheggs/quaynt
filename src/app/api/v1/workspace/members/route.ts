@@ -14,6 +14,7 @@ import {
   notFound,
   unprocessable,
 } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import {
   listWorkspaceMembers,
   addMemberByEmail,
@@ -54,15 +55,16 @@ export const POST = withRequestId(
       withRateLimit(
         withScope(async (req, ctx) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           if (!auth.userId) {
-            return forbidden('Member management requires session authentication');
+            return forbidden(t('workspace.membersSessionRequired'));
           }
 
           try {
             await requireWorkspaceRole(auth.workspaceId, auth.userId, 'admin');
           } catch {
-            return forbidden('Only admins can add members');
+            return forbidden(t('workspace.onlyAdminsAddMembers'));
           }
 
           const validated = await validateRequest(req, ctx, {
@@ -80,10 +82,10 @@ export const POST = withRequestId(
           } catch (err) {
             const message = err instanceof Error ? err.message : 'Failed to add member';
             if (message === 'USER_NOT_FOUND') {
-              return notFound('User');
+              return notFound(t('resources.user'));
             }
             if (message === 'ALREADY_A_MEMBER') {
-              return conflict('This user is already a member of this workspace');
+              return conflict(t('workspace.duplicateMember'));
             }
             return unprocessable([{ field: 'email', message }]);
           }

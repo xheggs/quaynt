@@ -6,6 +6,7 @@ import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { parsePagination, formatPaginatedResponse } from '@/lib/api/pagination';
 import { apiSuccess, apiCreated, conflict } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getRequestLogger } from '@/lib/logger';
 import { createScheduleSchema } from '@/modules/scheduled-reports/scheduled-report.types';
 import {
@@ -46,6 +47,7 @@ export const POST = withRequestId(
           if (!validated.success) return validated.response;
 
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const log = getRequestLogger(req);
           const userId = auth.method === 'session' ? auth.userId : auth.apiKeyId;
 
@@ -56,7 +58,7 @@ export const POST = withRequestId(
           } catch (err) {
             const message = err instanceof Error ? err.message : 'Failed to create schedule';
             if (message === 'SCHEDULE_LIMIT_EXCEEDED') {
-              return conflict('Maximum of 25 schedules per workspace reached');
+              return conflict(t('reports.maxSchedules'));
             }
             throw err;
           }

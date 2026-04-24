@@ -5,6 +5,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { parsePagination, formatPaginatedResponse } from '@/lib/api/pagination';
 import { apiSuccess, notFound } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { listDeliveries, WEBHOOK_DELIVERY_ALLOWED_SORTS } from '@/modules/webhooks/webhook.service';
 
 export const GET = withRequestId(
@@ -12,14 +13,14 @@ export const GET = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req, ctx) => {
+          const auth = getAuthContext(req);
+          const t = await apiErrors();
           const { webhookId } = await ctx.params;
           const pagination = parsePagination(
             req.nextUrl.searchParams,
             WEBHOOK_DELIVERY_ALLOWED_SORTS
           );
           if (pagination instanceof NextResponse) return pagination;
-
-          const auth = getAuthContext(req);
 
           try {
             const { items, total } = await listDeliveries(webhookId, auth.workspaceId, pagination);
@@ -30,7 +31,7 @@ export const GET = withRequestId(
           } catch (err) {
             const message = err instanceof Error ? err.message : '';
             if (message.includes('not found')) {
-              return notFound('Webhook endpoint');
+              return notFound(t('resources.webhook'));
             }
             throw err;
           }

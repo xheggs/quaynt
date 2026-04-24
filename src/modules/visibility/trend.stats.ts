@@ -43,6 +43,76 @@ export function computeOverallDirection(first: number, last: number): 'up' | 'do
   return 'stable';
 }
 
+/**
+ * Spearman's rank correlation coefficient with tie-aware average ranks.
+ *
+ * Returns `{ rho: null, n: 0 }` when the input is empty or has no valid numeric
+ * pairs. Returns `{ rho: null, n }` when all x values (or all y values) are
+ * identical — the coefficient is mathematically undefined because the variance
+ * of the ranks is zero.
+ *
+ * Sign is preserved; callers may use it to derive a direction.
+ */
+export function computeSpearmanRho(pairs: Array<[number, number]>): {
+  rho: number | null;
+  n: number;
+} {
+  const cleaned = pairs.filter(([x, y]) => Number.isFinite(x) && Number.isFinite(y));
+  const n = cleaned.length;
+  if (n === 0) return { rho: null, n: 0 };
+
+  const xs = cleaned.map(([x]) => x);
+  const ys = cleaned.map(([, y]) => y);
+
+  const xRanks = rankWithTies(xs);
+  const yRanks = rankWithTies(ys);
+
+  const meanX = xRanks.reduce((a, b) => a + b, 0) / n;
+  const meanY = yRanks.reduce((a, b) => a + b, 0) / n;
+
+  let num = 0;
+  let varX = 0;
+  let varY = 0;
+  for (let i = 0; i < n; i++) {
+    const dx = xRanks[i] - meanX;
+    const dy = yRanks[i] - meanY;
+    num += dx * dy;
+    varX += dx * dx;
+    varY += dy * dy;
+  }
+
+  if (varX === 0 || varY === 0) {
+    return { rho: null, n };
+  }
+
+  return { rho: num / Math.sqrt(varX * varY), n };
+}
+
+/**
+ * Assign average ranks (1-based) to an array of numbers. Tied values receive
+ * the mean of the tied rank positions.
+ */
+function rankWithTies(values: number[]): number[] {
+  const n = values.length;
+  const indexed = values.map((v, i) => ({ v, i }));
+  indexed.sort((a, b) => a.v - b.v);
+
+  const ranks = new Array<number>(n);
+  let i = 0;
+  while (i < n) {
+    let j = i;
+    while (j + 1 < n && indexed[j + 1].v === indexed[i].v) {
+      j++;
+    }
+    const avg = (i + j + 2) / 2; // 1-based average rank across [i..j]
+    for (let k = i; k <= j; k++) {
+      ranks[indexed[k].i] = avg;
+    }
+    i = j + 1;
+  }
+  return ranks;
+}
+
 // --- Commercial functions ---
 
 export function computeControlLimits(

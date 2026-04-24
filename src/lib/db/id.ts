@@ -47,6 +47,8 @@ export const PREFIXES = {
   gscQueryPerformance: 'gscqp',
   queryFanoutNode: 'qfn',
   queryFanoutSimulationCache: 'qfsc',
+  geoScoreSnapshot: 'geoss',
+  seoScoreSnapshot: 'seoss',
 } as const;
 
 export function generatePrefixedId(model: keyof typeof PREFIXES): string {

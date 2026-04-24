@@ -4,6 +4,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { apiSuccess, notFound } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getRequestLogger } from '@/lib/logger';
 import { createBoss } from '@/lib/jobs/boss';
 import { scheduleIdParamSchema } from '@/modules/scheduled-reports/scheduled-report.types';
@@ -20,6 +21,7 @@ export const POST = withRequestId(
           if (!validated.success) return validated.response;
 
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const log = getRequestLogger(req);
           const boss = createBoss();
 
@@ -29,7 +31,7 @@ export const POST = withRequestId(
             boss
           );
 
-          if (!triggered) return notFound('Schedule');
+          if (!triggered) return notFound(t('resources.schedule'));
 
           const schedule = await getSchedule(auth.workspaceId, validated.data.params.scheduleId);
 

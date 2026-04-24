@@ -204,6 +204,20 @@
       "when": 1776424709345,
       "tag": "0028_simulated_query_fanout",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1777015806551,
+      "tag": "0029_little_alice",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1777030601423,
+      "tag": "0030_supreme_orphan",
+      "breakpoints": true
     }
   ]
 }

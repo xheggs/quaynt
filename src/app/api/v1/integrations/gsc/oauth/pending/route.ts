@@ -10,6 +10,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiSuccess, notFound } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import {
   GSC_PENDING_COOKIE_NAME,
   verifyPendingCookie,
@@ -21,17 +22,18 @@ export const GET = withRequestId(
       withRateLimit(
         withScope(async (req) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const cookie = req.cookies.get(GSC_PENDING_COOKIE_NAME)?.value;
-          if (!cookie) return notFound('No pending GSC OAuth session');
+          if (!cookie) return notFound(t('gsc.noPendingSessionShort'));
 
           try {
             const pending = verifyPendingCookie(cookie);
             if (pending.workspaceId !== auth.workspaceId) {
-              return notFound('No pending GSC OAuth session');
+              return notFound(t('gsc.noPendingSessionShort'));
             }
             return apiSuccess({ sites: pending.sites });
           } catch {
-            return notFound('No pending GSC OAuth session');
+            return notFound(t('gsc.noPendingSessionShort'));
           }
         }, 'read-write')
       )

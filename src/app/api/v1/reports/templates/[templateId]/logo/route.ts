@@ -3,6 +3,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiNoContent, forbidden, notFound } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getRequestLogger } from '@/lib/logger';
 import { env } from '@/lib/config/env';
 import type { RouteContext } from '@/lib/api/types';
@@ -17,8 +18,9 @@ export const DELETE = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req: Request, ctx: RouteContext<Params>) => {
+          const t = await apiErrors();
           if (env.QUAYNT_EDITION === 'community') {
-            return forbidden('Custom report templates require a commercial edition');
+            return forbidden(t('reports.templatesCommercial'));
           }
 
           const auth = getAuthContext(req);
@@ -26,7 +28,7 @@ export const DELETE = withRequestId(
           const { templateId } = await ctx.params;
 
           const template = await getTemplate(auth.workspaceId, templateId);
-          if (!template) return notFound('report_template');
+          if (!template) return notFound(t('resources.reportTemplate'));
 
           // Delete file from disk
           if (template.branding.logoPath) {

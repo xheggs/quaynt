@@ -6,6 +6,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { parsePagination, formatPaginatedResponse } from '@/lib/api/pagination';
 import { apiSuccess, badRequest } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import {
   getSentimentAggregates,
   getLatestSentiment,
@@ -26,18 +27,19 @@ export const GET = withRequestId(
           if (pagination instanceof NextResponse) return pagination;
 
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const params = req.nextUrl.searchParams;
 
           const promptSetId = params.get('promptSetId');
           if (!promptSetId) {
-            return badRequest('A prompt set (market) is required to view sentiment data');
+            return badRequest(t('visibility.promptSetRequired', { scope: 'sentiment data' }));
           }
 
           const rawGranularity = params.get('granularity');
           if (rawGranularity) {
             const parsed = granularityEnum.safeParse(rawGranularity);
             if (!parsed.success) {
-              return badRequest("Granularity must be 'day', 'week', or 'month'");
+              return badRequest(t('validation.invalidGranularity'));
             }
           }
 

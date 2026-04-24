@@ -14,6 +14,7 @@ import { useDashboardQuery, usePromptSetOptions } from '../use-dashboard-query';
 import { AlertsSection } from './alerts-section';
 import { DashboardFilterBar } from './dashboard-filters';
 import { DashboardSkeleton } from './dashboard-skeleton';
+import { DualKpiCard } from '@/features/dual-score/components/dual-kpi-card';
 import { KpiCard } from './kpi-card';
 import { MoversSection } from './movers-section';
 import { OpportunitiesSection } from './opportunities-section';
@@ -161,6 +162,7 @@ function DashboardContent() {
             direction={data.kpis.averageSentiment.direction}
             sparkline={data.kpis.averageSentiment.sparkline}
           />
+          <DualKpiCard className="col-span-12 md:col-span-6 lg:col-span-8" />
         </div>
       )}
 

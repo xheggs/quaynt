@@ -4,6 +4,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { badRequest, apiError } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getRequestLogger } from '@/lib/logger';
 import { formatCsv } from '@/modules/exports/csv-formatter.service';
 import { exportColumns } from '@/modules/exports/export.columns';
@@ -50,13 +51,17 @@ export const GET = withRequestId(
         withScope(async (req) => {
           const auth = getAuthContext(req);
           const log = getRequestLogger(req);
+          const t = await apiErrors();
           const params = req.nextUrl.searchParams;
 
           // Validate format
           const format = params.get('format') as ExportFormat | null;
           if (!format || !STREAMING_EXPORT_FORMATS.includes(format)) {
             return badRequest(
-              `Unsupported export format: ${format ?? 'none'}. Supported formats: ${STREAMING_EXPORT_FORMATS.join(', ')}`
+              t('exports.unsupportedFormat', {
+                format: format ?? 'none',
+                allowed: STREAMING_EXPORT_FORMATS.join(', '),
+              })
             );
           }
 
@@ -64,7 +69,10 @@ export const GET = withRequestId(
           const type = params.get('type') as ExportType | null;
           if (!type || !EXPORT_TYPES.includes(type)) {
             return badRequest(
-              `Unsupported export type: ${type ?? 'none'}. Supported types: ${EXPORT_TYPES.join(', ')}`
+              t('exports.unsupportedType', {
+                type: type ?? 'none',
+                allowed: EXPORT_TYPES.join(', '),
+              })
             );
           }
 
@@ -84,7 +92,7 @@ export const GET = withRequestId(
               field: i.path.map(String).join('.'),
               message: i.message,
             }));
-            return apiError('BAD_REQUEST', 'Invalid export parameters', 400, details);
+            return apiError('BAD_REQUEST', t('exports.invalidParams'), 400, details);
           }
 
           let result;
@@ -92,7 +100,7 @@ export const GET = withRequestId(
             result = await fetchExportData(type, auth.workspaceId, fetcherParams);
           } catch (error) {
             log.error({ err: error }, 'Export data fetch failed');
-            return apiError('INTERNAL_SERVER_ERROR', 'Export generation failed', 500);
+            return apiError('INTERNAL_SERVER_ERROR', t('exports.generationFailed'), 500);
           }
 
           // Build format-specific stream

@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterAll } from 'vitest';
 
 // Mock DB
 const mockInsert = vi.fn();
@@ -118,6 +118,15 @@ function setupInsertChain() {
   mockOnConflict.mockReturnValue({ returning: mockReturning });
   mockReturning.mockResolvedValue([{ id: 'tsnap_test' }]);
 }
+
+// Pin "now" so the 12-week history window in computeTrendSnapshots deterministically
+// contains the fixture rows (which start 2026-01-05).
+vi.useFakeTimers();
+vi.setSystemTime(new Date('2026-03-15T00:00:00Z'));
+
+afterAll(() => {
+  vi.useRealTimers();
+});
 
 beforeEach(() => {
   vi.clearAllMocks();

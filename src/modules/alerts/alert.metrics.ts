@@ -5,6 +5,8 @@ import { sentimentAggregate } from '@/modules/visibility/sentiment-aggregate.sch
 import { positionAggregate } from '@/modules/visibility/position-aggregate.schema';
 import { crawlerDailyAggregate } from '@/modules/crawler/crawler-aggregate.schema';
 import { trafficDailyAggregate } from '@/modules/traffic/traffic-aggregate.schema';
+import { geoScoreSnapshot } from '@/modules/visibility/geo-score-snapshot.schema';
+import { seoScoreSnapshot } from '@/modules/visibility/seo-score-snapshot.schema';
 import type { AlertMetric, AlertScope } from './alert.types';
 
 export async function resolveMetricValue(
@@ -27,6 +29,14 @@ export async function resolveMetricValue(
   }
   if (metric === 'ai_visit_platform_drop') {
     return resolveFromAiVisitPlatformDrop(workspaceId, scope.platform, date);
+  }
+  // Brand-scoped GEO score — reads geo_score_snapshot for the brand in scope.
+  if (metric === 'geo_score') {
+    return resolveFromGeoScore(workspaceId, scope.brandId);
+  }
+  // Brand-scoped SEO score — reads seo_score_snapshot for the brand in scope.
+  if (metric === 'seo_score') {
+    return resolveFromSeoScore(workspaceId, scope.brandId);
   }
 
   // Non-crawler metrics require promptSetId
@@ -80,7 +90,72 @@ export async function resolveMetricValue(
         locale,
         date
       );
+    default:
+      return { currentValue: null, previousValue: null };
   }
+}
+
+async function resolveFromSeoScore(
+  workspaceId: string,
+  brandId: string
+): Promise<{ currentValue: number | null; previousValue: number | null }> {
+  const rows = await db
+    .select({
+      composite: seoScoreSnapshot.composite,
+      periodStart: seoScoreSnapshot.periodStart,
+    })
+    .from(seoScoreSnapshot)
+    .where(
+      and(
+        eq(seoScoreSnapshot.workspaceId, workspaceId),
+        eq(seoScoreSnapshot.brandId, brandId),
+        eq(seoScoreSnapshot.granularity, 'monthly'),
+        eq(seoScoreSnapshot.platformId, '_all'),
+        eq(seoScoreSnapshot.locale, '_all')
+      )
+    )
+    .orderBy(desc(seoScoreSnapshot.periodStart))
+    .limit(2);
+
+  if (rows.length === 0) return { currentValue: null, previousValue: null };
+
+  const currentValue = rows[0].composite === null ? null : Number(rows[0].composite);
+  const previousValue =
+    rows.length > 1 && rows[1].composite !== null ? Number(rows[1].composite) : null;
+
+  return { currentValue, previousValue };
+}
+
+async function resolveFromGeoScore(
+  workspaceId: string,
+  brandId: string
+): Promise<{ currentValue: number | null; previousValue: number | null }> {
+  // Brand-scoped: read the latest and previous monthly snapshots (_all/_all platform/locale)
+  const rows = await db
+    .select({
+      composite: geoScoreSnapshot.composite,
+      periodStart: geoScoreSnapshot.periodStart,
+    })
+    .from(geoScoreSnapshot)
+    .where(
+      and(
+        eq(geoScoreSnapshot.workspaceId, workspaceId),
+        eq(geoScoreSnapshot.brandId, brandId),
+        eq(geoScoreSnapshot.granularity, 'monthly'),
+        eq(geoScoreSnapshot.platformId, '_all'),
+        eq(geoScoreSnapshot.locale, '_all')
+      )
+    )
+    .orderBy(desc(geoScoreSnapshot.periodStart))
+    .limit(2);
+
+  if (rows.length === 0) return { currentValue: null, previousValue: null };
+
+  const currentValue = rows[0].composite === null ? null : Number(rows[0].composite);
+  const previousValue =
+    rows.length > 1 && rows[1].composite !== null ? Number(rows[1].composite) : null;
+
+  return { currentValue, previousValue };
 }
 
 async function resolveFromRecommendationShare(

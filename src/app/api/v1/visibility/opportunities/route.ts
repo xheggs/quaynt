@@ -6,6 +6,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { parsePagination, formatPaginatedResponse } from '@/lib/api/pagination';
 import { apiSuccess, badRequest } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import {
   getOpportunities,
   OPPORTUNITY_ALLOWED_SORTS,
@@ -23,16 +24,17 @@ export const GET = withRequestId(
           if (pagination instanceof NextResponse) return pagination;
 
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const params = req.nextUrl.searchParams;
 
           const promptSetId = params.get('promptSetId');
           if (!promptSetId) {
-            return badRequest('A prompt set (market) is required to view opportunities');
+            return badRequest(t('visibility.promptSetRequired', { scope: 'opportunities' }));
           }
 
           const brandId = params.get('brandId');
           if (!brandId) {
-            return badRequest('A brand is required to view opportunities');
+            return badRequest(t('visibility.brandRequired', { scope: 'opportunities' }));
           }
 
           // Validate optional type filter
@@ -40,7 +42,7 @@ export const GET = withRequestId(
           if (rawType) {
             const parsed = typeEnum.safeParse(rawType);
             if (!parsed.success) {
-              return badRequest("Type must be 'missing' or 'weak'");
+              return badRequest(t('validation.invalidOpportunityType'));
             }
           }
 
@@ -50,7 +52,7 @@ export const GET = withRequestId(
           if (rawMinCompetitors) {
             const parsed = z.coerce.number().int().min(1).safeParse(rawMinCompetitors);
             if (!parsed.success) {
-              return badRequest('minCompetitorCount must be a positive integer');
+              return badRequest(t('validation.mustBePositiveInt', { field: 'minCompetitorCount' }));
             }
             minCompetitorCount = parsed.data;
           }

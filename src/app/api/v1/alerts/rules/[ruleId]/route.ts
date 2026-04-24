@@ -5,6 +5,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { apiSuccess, apiNoContent, notFound, unprocessable } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getAlertRule, updateAlertRule, deleteAlertRule } from '@/modules/alerts/alert.service';
 
 const updateAlertRuleSchema = z.object({
@@ -34,10 +35,11 @@ export const GET = withRequestId(
         withScope(async (req, ctx) => {
           const { ruleId } = await ctx.params;
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           const result = await getAlertRule(ruleId, auth.workspaceId);
           if (!result) {
-            return notFound('Alert rule');
+            return notFound(t('resources.alertRule'));
           }
 
           return apiSuccess(result);
@@ -53,6 +55,7 @@ export const PATCH = withRequestId(
       withRateLimit(
         withScope(async (req, ctx) => {
           const { ruleId } = await ctx.params;
+          const t = await apiErrors();
           const validated = await validateRequest(req, ctx, {
             body: updateAlertRuleSchema,
           });
@@ -63,7 +66,7 @@ export const PATCH = withRequestId(
           try {
             const updated = await updateAlertRule(ruleId, auth.workspaceId, validated.data.body);
             if (!updated) {
-              return notFound('Alert rule');
+              return notFound(t('resources.alertRule'));
             }
             return apiSuccess(updated);
           } catch (err) {
@@ -89,10 +92,11 @@ export const DELETE = withRequestId(
         withScope(async (req, ctx) => {
           const { ruleId } = await ctx.params;
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           const deleted = await deleteAlertRule(ruleId, auth.workspaceId);
           if (!deleted) {
-            return notFound('Alert rule');
+            return notFound(t('resources.alertRule'));
           }
 
           return apiNoContent();

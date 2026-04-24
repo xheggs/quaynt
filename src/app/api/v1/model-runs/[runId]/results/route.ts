@@ -5,6 +5,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { parsePagination, formatPaginatedResponse } from '@/lib/api/pagination';
 import { apiSuccess, notFound } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import {
   listModelRunResults,
   MODEL_RUN_RESULT_ALLOWED_SORTS,
@@ -23,6 +24,7 @@ export const GET = withRequestId(
           if (pagination instanceof NextResponse) return pagination;
 
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           const filters = {
             status: req.nextUrl.searchParams.get('status') ?? undefined,
@@ -32,7 +34,7 @@ export const GET = withRequestId(
           const result = await listModelRunResults(runId, auth.workspaceId, pagination, filters);
 
           if (!result) {
-            return notFound('Model run');
+            return notFound(t('resources.modelRun'));
           }
 
           return apiSuccess(

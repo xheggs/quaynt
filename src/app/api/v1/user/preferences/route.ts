@@ -5,6 +5,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { apiSuccess, forbidden } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { routing } from '@/lib/i18n/routing';
 import {
   getOrCreateUserPreference,
@@ -28,9 +29,10 @@ export const GET = withRequestId(
       withRateLimit(
         withScope(async (req) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           if (!auth.userId) {
-            return forbidden('User preferences require session authentication');
+            return forbidden(t('user.preferencesSessionRequired'));
           }
 
           const preference = await getOrCreateUserPreference(auth.userId);
@@ -47,9 +49,10 @@ export const PATCH = withRequestId(
       withRateLimit(
         withScope(async (req, ctx) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           if (!auth.userId) {
-            return forbidden('User preferences require session authentication');
+            return forbidden(t('user.preferencesSessionRequired'));
           }
 
           const validated = await validateRequest(req, ctx, {

@@ -5,6 +5,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { apiSuccess, forbidden, notFound } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import {
   getWorkspaceById,
   updateWorkspace,
@@ -21,10 +22,11 @@ export const GET = withRequestId(
       withRateLimit(
         withScope(async (req) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           const ws = await getWorkspaceById(auth.workspaceId);
           if (!ws) {
-            return notFound('Workspace');
+            return notFound(t('resources.workspace'));
           }
 
           return apiSuccess(ws);
@@ -40,15 +42,16 @@ export const PATCH = withRequestId(
       withRateLimit(
         withScope(async (req, ctx) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           if (!auth.userId) {
-            return forbidden('Workspace updates require session authentication');
+            return forbidden(t('workspace.updatesSessionRequired'));
           }
 
           try {
             await requireWorkspaceRole(auth.workspaceId, auth.userId, 'admin');
           } catch {
-            return forbidden('Only admins can update workspace settings');
+            return forbidden(t('workspace.onlyAdminsUpdateSettings'));
           }
 
           const validated = await validateRequest(req, ctx, {
@@ -58,7 +61,7 @@ export const PATCH = withRequestId(
 
           const updated = await updateWorkspace(auth.workspaceId, validated.data.body);
           if (!updated) {
-            return notFound('Workspace');
+            return notFound(t('resources.workspace'));
           }
 
           return apiSuccess(updated);

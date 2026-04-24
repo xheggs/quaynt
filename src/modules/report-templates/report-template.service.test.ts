@@ -147,9 +147,9 @@ describe('report-template.service', () => {
       const result = await getTemplate('ws_1', 'tmpl_abc123');
       expect(result).not.toBeNull();
 
-      // Original layout had 3 sections, REPORT_SECTIONS has 7
-      // Backfill should add 4 missing sections with visible: false
-      expect(result!.layout.sections.length).toBe(7);
+      // Original layout had 3 sections; REPORT_SECTIONS has 10.
+      // Backfill should add the 7 missing sections with visible: false.
+      expect(result!.layout.sections.length).toBe(10);
 
       const missingSection = result!.layout.sections.find((s) => s.id === 'opportunities');
       expect(missingSection).toBeDefined();

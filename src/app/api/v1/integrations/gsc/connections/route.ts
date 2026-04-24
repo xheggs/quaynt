@@ -11,6 +11,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { apiSuccess, apiCreated, badRequest, unprocessable } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import {
   createConnection,
   listConnections,
@@ -44,23 +45,24 @@ export const POST = withRequestId(
       withRateLimit(
         withScope(async (req, ctx) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const validated = await validateRequest(req, ctx, { body: createSchema });
           if (!validated.success) return validated.response;
 
           const pendingCookieValue = req.cookies.get(GSC_PENDING_COOKIE_NAME)?.value;
           if (!pendingCookieValue) {
-            return badRequest('No pending GSC OAuth session. Start the connect flow first.');
+            return badRequest(t('gsc.noPendingSession'));
           }
 
           let pending;
           try {
             pending = verifyPendingCookie(pendingCookieValue);
           } catch {
-            return badRequest('Pending GSC OAuth session is invalid or expired.');
+            return badRequest(t('gsc.sessionInvalid'));
           }
 
           if (pending.workspaceId !== auth.workspaceId) {
-            return badRequest('Pending GSC OAuth session does not match this workspace.');
+            return badRequest(t('gsc.sessionWorkspaceMismatch'));
           }
 
           const chosenProperty = validated.data.body.propertyUrl;

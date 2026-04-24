@@ -37,6 +37,9 @@ const mockTemplate: ReportTemplate = {
     opportunities: true,
     citationSources: true,
     alertSummary: false,
+    geoScore: false,
+    seoScore: false,
+    dualScore: false,
     sectionOrder: [
       'cover',
       'executiveSummary',
@@ -101,7 +104,7 @@ describe('TemplateFormDialog', () => {
     await screen.findByRole('heading', { name: 'Create template' });
     const dialog = screen.getByRole('dialog');
     const checkboxes = dialog.querySelectorAll('[id^="section-"]');
-    expect(checkboxes.length).toBe(7);
+    expect(checkboxes.length).toBe(10);
   });
 
   it('renders without accessibility violations', async () => {

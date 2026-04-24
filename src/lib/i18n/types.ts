@@ -21,6 +21,9 @@ import type enCrawlerAnalytics from '../../../locales/en/crawlerAnalytics.json';
 import type enAiTraffic from '../../../locales/en/aiTraffic.json';
 import type enIntegrations from '../../../locales/en/integrations.json';
 import type enQueryFanout from '../../../locales/en/queryFanout.json';
+import type enGeoScore from '../../../locales/en/geoScore.json';
+import type enSeoScore from '../../../locales/en/seoScore.json';
+import type enDualScore from '../../../locales/en/dualScore.json';
 
 type Messages = typeof en &
   typeof enErrors &
@@ -43,7 +46,10 @@ type Messages = typeof en &
   typeof enCrawlerAnalytics &
   typeof enAiTraffic &
   typeof enIntegrations &
-  typeof enQueryFanout;
+  typeof enQueryFanout &
+  typeof enGeoScore &
+  typeof enSeoScore &
+  typeof enDualScore;
 
 declare module 'next-intl' {
   interface AppConfig {

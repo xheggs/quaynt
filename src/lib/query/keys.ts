@@ -52,4 +52,7 @@ export const queryKeys = {
   gscConnections: createQueryKeys('gscConnections'),
   gscCorrelation: createQueryKeys('gscCorrelation'),
   queryFanout: createQueryKeys('queryFanout'),
+  geoScore: createQueryKeys('geoScore'),
+  seoScore: createQueryKeys('seoScore'),
+  dualScore: createQueryKeys('dualScore'),
 } as const;

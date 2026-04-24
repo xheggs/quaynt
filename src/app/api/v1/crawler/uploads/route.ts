@@ -4,6 +4,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiCreated, apiSuccess, badRequest, conflict } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { parsePagination, formatPaginatedResponse } from '@/lib/api/pagination';
 import { getRequestLogger } from '@/lib/logger';
 import { env } from '@/lib/config/env';
@@ -30,18 +31,19 @@ export const POST = withRequestId(
       withRateLimit(
         withScope(async (req) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const log = getRequestLogger(req);
 
           let formData: FormData;
           try {
             formData = await req.formData();
           } catch {
-            return badRequest('Expected multipart/form-data with a logFile field');
+            return badRequest(t('uploads.logFileExpected'));
           }
 
           const file = formData.get('logFile');
           if (!file || !(file instanceof File)) {
-            return badRequest('Missing logFile in form data');
+            return badRequest(t('uploads.logFileMissing'));
           }
 
           const filename = file.name;
@@ -49,7 +51,7 @@ export const POST = withRequestId(
             filename.toLowerCase().endsWith(ext)
           );
           if (!hasValidExtension) {
-            return badRequest('Invalid file type. Supported: .log, .txt, .gz');
+            return badRequest(t('uploads.invalidLogFileType'));
           }
 
           if (file.size > env.CRAWLER_MAX_UPLOAD_SIZE) {
@@ -68,7 +70,7 @@ export const POST = withRequestId(
           // Check for duplicate
           const existing = await findByContentHash(auth.workspaceId, contentHash);
           if (existing) {
-            return conflict(`Duplicate file. Existing upload: ${existing.id}`);
+            return conflict(t('uploads.duplicate', { existingId: existing.id }));
           }
 
           // Detect format (or use override)

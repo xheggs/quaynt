@@ -10,6 +10,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { apiNoContent, notFound } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { deleteConnection } from '@/modules/integrations/gsc/gsc-connection.service';
 
 const paramsSchema = z.object({ id: z.string().min(1) });
@@ -20,11 +21,12 @@ export const DELETE = withRequestId(
       withRateLimit(
         withScope(async (req, ctx) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const validated = await validateRequest(req, ctx, { params: paramsSchema });
           if (!validated.success) return validated.response;
 
           const deleted = await deleteConnection(auth.workspaceId, validated.data.params.id);
-          if (!deleted) return notFound('GSC connection not found');
+          if (!deleted) return notFound(t('resources.gscConnection'));
           return apiNoContent();
         }, 'read-write')
       )

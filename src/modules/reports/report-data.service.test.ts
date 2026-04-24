@@ -27,6 +27,20 @@ vi.mock('@/modules/visibility/opportunity.service', () => ({
 vi.mock('@/modules/visibility/citation-source-aggregate.service', () => ({
   getCitationSources: (...args: unknown[]) => mockGetCitationSources(...args),
 }));
+vi.mock('@/modules/visibility/geo-score.service', () => ({
+  getScoreTrend: vi.fn().mockResolvedValue({
+    snapshots: [],
+    trend: { delta: null, changeRate: null, direction: null, ewma: [], overallDirection: null },
+    formulaVersionChanges: [],
+  }),
+}));
+vi.mock('@/modules/visibility/seo-score.service', () => ({
+  getScoreTrend: vi.fn().mockResolvedValue({
+    snapshots: [],
+    trend: { delta: null, changeRate: null, direction: null, ewma: [], overallDirection: null },
+    formulaVersionChanges: [],
+  }),
+}));
 vi.mock('@/lib/db', () => ({
   db: { select: (...a: unknown[]) => mockDbSelect(...a) },
 }));

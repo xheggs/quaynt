@@ -4,6 +4,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiSuccess, badRequest } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getReportData } from '@/modules/reports/report-data.service';
 import { VALID_REPORT_METRICS } from '@/modules/reports/report-data.types';
 import type { ReportMetric } from '@/modules/reports/report-data.types';
@@ -26,11 +27,12 @@ export const GET = withRequestId(
       withRateLimit(
         withScope(async (req) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const params = req.nextUrl.searchParams;
 
           const promptSetId = params.get('promptSetId');
           if (!promptSetId) {
-            return badRequest('A prompt set (market) is required to generate a report');
+            return badRequest(t('reports.promptSetRequired'));
           }
 
           const brandId = params.get('brandId') ?? undefined;
@@ -38,26 +40,24 @@ export const GET = withRequestId(
           const brandIds = rawBrandIds ? rawBrandIds.split(',').filter(Boolean) : undefined;
 
           if (!brandId && !brandIds) {
-            return badRequest('At least one brand must be specified (provide brandId or brandIds)');
+            return badRequest(t('visibility.brandsRequired'));
           }
 
           if (brandId && brandIds) {
-            return badRequest('Provide either brandId or brandIds, not both');
+            return badRequest(
+              t('validation.provideEitherNotBoth', { a: 'brandId', b: 'brandIds' })
+            );
           }
 
           if (brandIds && brandIds.length > MAX_BRANDS) {
-            return badRequest(
-              `A maximum of ${MAX_BRANDS} brands can be included in a single report`
-            );
+            return badRequest(t('reports.maxBrands', { max: MAX_BRANDS }));
           }
 
           const rawComparisonPeriod = params.get('comparisonPeriod');
           if (rawComparisonPeriod) {
             const parsed = comparisonPeriodEnum.safeParse(rawComparisonPeriod);
             if (!parsed.success) {
-              return badRequest(
-                "comparisonPeriod must be 'previous_period', 'previous_week', or 'previous_month'"
-              );
+              return badRequest(t('reports.invalidComparisonPeriod'));
             }
           }
 
@@ -69,7 +69,10 @@ export const GET = withRequestId(
               const parsed = reportMetricEnum.safeParse(m);
               if (!parsed.success) {
                 return badRequest(
-                  `Invalid metric: ${m}. Valid metrics are: ${VALID_REPORT_METRICS.join(', ')}`
+                  t('reports.invalidMetric', {
+                    metric: m,
+                    allowed: VALID_REPORT_METRICS.join(', '),
+                  })
                 );
               }
             }

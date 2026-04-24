@@ -32,6 +32,9 @@ export const NAMESPACES = [
   'aiTraffic',
   'integrations',
   'queryFanout',
+  'geoScore',
+  'seoScore',
+  'dualScore',
 ] as const;
 
 /**

@@ -3,6 +3,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiSuccess, badRequest } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import {
   getFanoutByModelRun,
   type FanoutSourceFilter,
@@ -31,11 +32,12 @@ export const GET = withRequestId(
       withRateLimit(
         withScope(async (req) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const params = req.nextUrl.searchParams;
 
           const modelRunId = params.get('modelRunId');
           if (!modelRunId) {
-            return badRequest('A modelRunId is required to view query fan-out');
+            return badRequest(t('visibility.modelRunRequired'));
           }
 
           const rawSource = params.get('source');

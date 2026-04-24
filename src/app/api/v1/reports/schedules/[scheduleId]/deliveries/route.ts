@@ -6,6 +6,7 @@ import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { parsePagination, formatPaginatedResponse } from '@/lib/api/pagination';
 import { apiSuccess, notFound } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { scheduleIdParamSchema } from '@/modules/scheduled-reports/scheduled-report.types';
 import { listDeliveries } from '@/modules/scheduled-reports/scheduled-report.service';
 
@@ -25,13 +26,14 @@ export const GET = withRequestId(
           if (pagination instanceof NextResponse) return pagination;
 
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const result = await listDeliveries(
             auth.workspaceId,
             validated.data.params.scheduleId,
             pagination
           );
 
-          if (!result) return notFound('Schedule');
+          if (!result) return notFound(t('resources.schedule'));
 
           return apiSuccess(
             formatPaginatedResponse(result.items, result.total, pagination.page, pagination.limit)

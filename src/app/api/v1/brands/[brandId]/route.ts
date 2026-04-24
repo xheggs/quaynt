@@ -5,6 +5,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { apiSuccess, apiNoContent, notFound, conflict, unprocessable } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getBrand, updateBrand, deleteBrand } from '@/modules/brands/brand.service';
 
 const updateBrandSchema = z.object({
@@ -22,10 +23,11 @@ export const GET = withRequestId(
         withScope(async (req, ctx) => {
           const { brandId } = await ctx.params;
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           const result = await getBrand(brandId, auth.workspaceId);
           if (!result) {
-            return notFound('Brand');
+            return notFound(t('resources.brand'));
           }
 
           return apiSuccess(result);
@@ -47,11 +49,12 @@ export const PATCH = withRequestId(
           if (!validated.success) return validated.response;
 
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           try {
             const updated = await updateBrand(brandId, auth.workspaceId, validated.data.body);
             if (!updated) {
-              return notFound('Brand');
+              return notFound(t('resources.brand'));
             }
             return apiSuccess(updated);
           } catch (err) {
@@ -74,10 +77,11 @@ export const DELETE = withRequestId(
         withScope(async (req, ctx) => {
           const { brandId } = await ctx.params;
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           const deleted = await deleteBrand(brandId, auth.workspaceId);
           if (!deleted) {
-            return notFound('Brand');
+            return notFound(t('resources.brand'));
           }
 
           return apiNoContent();

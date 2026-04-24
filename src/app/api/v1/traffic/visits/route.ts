@@ -6,6 +6,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { parsePagination, formatPaginatedResponse } from '@/lib/api/pagination';
 import { apiSuccess, badRequest } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { listVisits } from '@/modules/traffic/ai-visit.service';
 
 const visitFiltersSchema = z.object({
@@ -21,14 +22,15 @@ export const GET = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req) => {
+          const auth = getAuthContext(req);
+          const t = await apiErrors();
           const pagination = parsePagination(req.nextUrl.searchParams, ['visitedAt']);
           if (pagination instanceof NextResponse) return pagination;
 
           const rawFilters = Object.fromEntries(req.nextUrl.searchParams.entries());
           const filtersParsed = visitFiltersSchema.safeParse(rawFilters);
-          if (!filtersParsed.success) return badRequest('Invalid filter parameters');
+          if (!filtersParsed.success) return badRequest(t('validation.invalidFilter'));
 
-          const auth = getAuthContext(req);
           const { items, total } = await listVisits(
             auth.workspaceId,
             filtersParsed.data,

@@ -1,0 +1,126 @@
+{
+  "seoScore": {
+    "page": {
+      "title": "SEO Score",
+      "description": "Composite traditional-search score for your brand across the queries we track"
+    },
+    "headline": {
+      "label": "SEO Score",
+      "out_of": "out of 100",
+      "deltaLabel": {
+        "weekly": "vs previous week",
+        "monthly": "vs previous month"
+      },
+      "periodLabel": "for {from} – {to}",
+      "methodologyLink": "How the score is calculated"
+    },
+    "granularity": {
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "factor": {
+      "impression_volume": {
+        "name": "Impression Volume",
+        "description": "Total search impressions across the brand's tracked queries"
+      },
+      "click_through_rate": {
+        "name": "Click-Through Rate",
+        "description": "Impression-weighted CTR across the brand's tracked queries"
+      },
+      "rank_quality": {
+        "name": "Rank Quality",
+        "description": "Impression-weighted average position across the brand's tracked queries"
+      },
+      "aio_presence": {
+        "name": "AI Overview Presence",
+        "description": "Share of the brand's tracked queries where Quaynt detected an AI Overview citation"
+      },
+      "weight": "Weight: {weight}%",
+      "status": {
+        "active": "Active",
+        "insufficientData": "Insufficient data"
+      },
+      "insufficientDataHint": "Collect more data over the selected period to score this factor"
+    },
+    "trend": {
+      "title": "Score over time",
+      "compositeLabel": "Composite",
+      "direction": {
+        "up": "Trending up",
+        "down": "Trending down",
+        "flat": "Stable"
+      }
+    },
+    "recommendations": {
+      "title": "Recommendations",
+      "empty": "No recommendations — your score is strong across every factor",
+      "estDelta": "~+{delta} pts if remediated",
+      "estDeltaTooltip": "Estimated composite lift if this factor alone reaches 75, with all other factors held constant. Actual impact depends on how factors interact.",
+      "severity": {
+        "low": "Minor",
+        "medium": "Moderate",
+        "high": "Priority"
+      },
+      "impression_volume": {
+        "title": "Increase search impression volume",
+        "description": "Your tracked queries drew few impressions in this period. Expand indexable coverage for these topics."
+      },
+      "click_through_rate": {
+        "title": "Improve click-through rate",
+        "description": "Your listings are being shown but not clicked. Strengthen titles, meta descriptions, and structured data."
+      },
+      "rank_quality": {
+        "title": "Improve average position",
+        "description": "Your average rank is outside the first page. Address the content and authority gaps behind your weakest queries."
+      },
+      "aio_presence": {
+        "title": "Increase AI Overview presence",
+        "description": "Few of your tracked queries trigger an AI Overview citation for your brand. Earn coverage from authoritative sources and use structured answers."
+      }
+    },
+    "empty": {
+      "NO_GSC_CONNECTION": {
+        "title": "Connect Google Search Console",
+        "description": "Connect a GSC property to start computing your SEO score",
+        "action": "Connect Search Console"
+      },
+      "NO_ENABLED_PROMPT_SETS": {
+        "title": "No prompt sets tracking this brand",
+        "description": "Enable a prompt set that tracks this brand to compute its SEO score"
+      },
+      "NO_BRAND_QUERY_SET": {
+        "title": "No tracked queries yet",
+        "description": "Once prompt runs produce citations, we can correlate them with your GSC data"
+      },
+      "INSUFFICIENT_FACTORS": {
+        "title": "Not enough data yet",
+        "description": "Fewer than three factors had enough data to score this period"
+      }
+    },
+    "advisory": {
+      "GSC_IMPRESSION_BUG_2025_2026": {
+        "title": "GSC data quality notice",
+        "body": "Google disclosed an impression-logging bug affecting data from 13 May 2025 to 3 April 2026. Scores covering this window may under- or over-report traffic."
+      },
+      "methodologyLink": "Read the full advisory"
+    },
+    "errors": {
+      "brandRequired": "Select a brand to see its SEO score",
+      "recomputeFailed": "Recompute failed. Please try again."
+    },
+    "alert": {
+      "metricLabel": "SEO Score",
+      "thresholdHint": "Alert when composite score drops below this value"
+    },
+    "report": {
+      "sectionTitle": "SEO Score"
+    },
+    "formula": {
+      "version": "Formula v{version}",
+      "linkToDocs": "View methodology"
+    }
+  },
+  "navigation": {
+    "seoScore": "SEO Score"
+  }
+}

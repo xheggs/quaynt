@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiSuccess, badRequest } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import {
   validateUnsubscribeToken,
   updatePreference,
@@ -9,17 +10,18 @@ import {
 
 export const GET = withRequestId(
   withRequestLog(async (req: NextRequest) => {
+    const t = await apiErrors();
     const token = req.nextUrl.searchParams.get('token');
     if (!token) {
-      return badRequest('Token is required');
+      return badRequest(t('validation.tokenRequired'));
     }
 
     const result = await validateUnsubscribeToken(token);
     if (!result.valid) {
       return badRequest(
         result.error === 'NOT_MEMBER'
-          ? 'User is not a member of this workspace'
-          : 'Invalid unsubscribe token',
+          ? t('notifications.userNotMember')
+          : t('notifications.invalidToken'),
         { code: result.error }
       );
     }
@@ -34,6 +36,7 @@ export const GET = withRequestId(
 
 export const POST = withRequestId(
   withRequestLog(async (req: NextRequest) => {
+    const t = await apiErrors();
     // Support token from query string (RFC 8058 one-click) or JSON body
     let token = req.nextUrl.searchParams.get('token');
 
@@ -47,15 +50,15 @@ export const POST = withRequestId(
     }
 
     if (!token) {
-      return badRequest('Token is required');
+      return badRequest(t('validation.tokenRequired'));
     }
 
     const result = await validateUnsubscribeToken(token);
     if (!result.valid) {
       return badRequest(
         result.error === 'NOT_MEMBER'
-          ? 'User is not a member of this workspace'
-          : 'Invalid unsubscribe token',
+          ? t('notifications.userNotMember')
+          : t('notifications.invalidToken'),
         { code: result.error }
       );
     }

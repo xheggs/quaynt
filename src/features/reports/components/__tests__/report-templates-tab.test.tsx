@@ -41,6 +41,9 @@ const mockTemplate = {
     opportunities: true,
     citationSources: true,
     alertSummary: false,
+    geoScore: false,
+    seoScore: false,
+    dualScore: false,
     sectionOrder: [
       'cover',
       'executiveSummary',

@@ -10,6 +10,7 @@ import {
   forbidden,
   notFound,
 } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getRequestLogger } from '@/lib/logger';
 import { env } from '@/lib/config/env';
 import type { RouteContext } from '@/lib/api/types';
@@ -29,15 +30,16 @@ export const GET = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req: Request, ctx: RouteContext<Params>) => {
+          const t = await apiErrors();
           if (env.QUAYNT_EDITION === 'community') {
-            return forbidden('Custom report templates require a commercial edition');
+            return forbidden(t('reports.templatesCommercial'));
           }
 
           const auth = getAuthContext(req);
           const { templateId } = await ctx.params;
 
           const template = await getTemplate(auth.workspaceId, templateId);
-          if (!template) return notFound('report_template');
+          if (!template) return notFound(t('resources.reportTemplate'));
 
           return apiSuccess({ template });
         }, 'read'),
@@ -53,8 +55,9 @@ export const PATCH = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req: Request, ctx: RouteContext<Params>) => {
+          const t = await apiErrors();
           if (env.QUAYNT_EDITION === 'community') {
-            return forbidden('Custom report templates require a commercial edition');
+            return forbidden(t('reports.templatesCommercial'));
           }
 
           const auth = getAuthContext(req);
@@ -65,7 +68,7 @@ export const PATCH = withRequestId(
           try {
             body = await req.json();
           } catch {
-            return badRequest('Invalid JSON body');
+            return badRequest(t('validation.invalidJson'));
           }
 
           const parsed = updateTemplateSchema.safeParse(body);
@@ -74,7 +77,7 @@ export const PATCH = withRequestId(
               field: i.path.map(String).join('.'),
               message: i.message,
             }));
-            return apiError('BAD_REQUEST', 'Invalid template parameters', 400, details);
+            return apiError('BAD_REQUEST', t('reports.invalidTemplateParams'), 400, details);
           }
 
           const input = parsed.data;
@@ -83,7 +86,7 @@ export const PATCH = withRequestId(
           if (input.branding?.logoUploadId) {
             // Get existing template to check for existing logo
             const existing = await getTemplate(auth.workspaceId, templateId);
-            if (!existing) return notFound('report_template');
+            if (!existing) return notFound(t('resources.reportTemplate'));
 
             // Delete old logo if present
             if (existing.branding.logoPath) {
@@ -100,7 +103,7 @@ export const PATCH = withRequestId(
           }
 
           const template = await updateTemplate(auth.workspaceId, templateId, input);
-          if (!template) return notFound('report_template');
+          if (!template) return notFound(t('resources.reportTemplate'));
 
           log.info({ templateId }, 'Template updated');
           return apiSuccess({ template });
@@ -117,8 +120,9 @@ export const DELETE = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req: Request, ctx: RouteContext<Params>) => {
+          const t = await apiErrors();
           if (env.QUAYNT_EDITION === 'community') {
-            return forbidden('Custom report templates require a commercial edition');
+            return forbidden(t('reports.templatesCommercial'));
           }
 
           const auth = getAuthContext(req);
@@ -126,7 +130,7 @@ export const DELETE = withRequestId(
           const { templateId } = await ctx.params;
 
           const deleted = await deleteTemplate(auth.workspaceId, templateId);
-          if (!deleted) return notFound('report_template');
+          if (!deleted) return notFound(t('resources.reportTemplate'));
 
           log.info({ templateId }, 'Template deleted');
           return apiNoContent();

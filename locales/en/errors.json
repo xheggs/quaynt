@@ -41,16 +41,124 @@
       "invalidCondition": "Invalid alert condition. Allowed: drops_below, exceeds, changes_by_percent, changes_by_absolute",
       "invalidSeverity": "Invalid alert severity. Allowed: info, warning, critical",
       "invalidDirection": "Invalid alert direction. Allowed: any, increase, decrease",
+      "invalidSeverityFilter": "Invalid severity filter. Allowed: {allowed}",
+      "invalidStatusFilter": "Invalid status filter. Allowed: {allowed}",
       "brandNotFound": "Brand not found in this workspace",
       "promptSetNotFound": "Prompt set not found in this workspace",
       "ruleNotFound": "Alert rule not found",
+      "eventNotFound": "Alert event not found",
       "limitReached": "Workspace alert rule limit reached (maximum {max, number})",
       "immutableField": "Cannot change {field} after rule creation"
     },
     "validation": {
+      "failed": "Validation failed",
+      "invalidBody": "Invalid body",
+      "invalidCitationType": "Citation type must be 'owned' or 'earned'",
+      "invalidDateFormat": "{field} must be a valid date (YYYY-MM-DD)",
+      "invalidEnum": "{field} must be one of: {allowed}",
+      "invalidFilter": "Invalid filter parameters",
+      "invalidGranularity": "Granularity must be 'day', 'week', or 'month'",
+      "invalidJson": "Invalid JSON body",
       "invalidLocale": "Invalid locale format. Expected BCP 47 tag with region (e.g., {example})",
+      "invalidMetricEnum": "Invalid metric. Must be one of: {allowed}",
+      "invalidOpportunityType": "Type must be 'missing' or 'weak'",
+      "invalidPeriod": "period must be 'weekly' or 'monthly'",
+      "invalidQuery": "Invalid query parameters",
+      "invalidSentiment": "Sentiment must be 'positive', 'neutral', or 'negative'",
+      "mustBePositiveInt": "{field} must be a positive integer",
+      "provideEitherNotBoth": "Provide either {a} or {b}, not both",
       "required": "{field} is required",
+      "tokenRequired": "Token is required",
       "tooLong": "{field} must be at most {max, plural, one {# character} other {# characters}}"
+    },
+    "resources": {
+      "adapter": "Adapter not found",
+      "alertEvent": "Alert event not found",
+      "alertRule": "Alert rule not found",
+      "apiKey": "API key not found",
+      "brand": "Brand not found",
+      "citation": "Citation not found",
+      "gscConnection": "GSC connection not found",
+      "member": "Member not found",
+      "modelRun": "Model run not found",
+      "noSnapshot": "No snapshot available",
+      "prompt": "Prompt not found",
+      "promptSet": "Prompt set not found",
+      "report": "Report not found",
+      "reportTemplate": "Report template not found",
+      "schedule": "Schedule not found",
+      "siteKey": "Site key not found",
+      "upload": "Upload not found",
+      "user": "User not found",
+      "webhook": "Webhook endpoint not found",
+      "workspace": "Workspace not found"
+    },
+    "visibility": {
+      "brandRequired": "A brand is required to view {scope}",
+      "brandsRequired": "At least one brand must be specified (provide brandId or brandIds)",
+      "combinedRecommendationsFailed": "Failed to compute combined recommendations",
+      "modelRunRequired": "A modelRunId is required to view query fan-out",
+      "periodMisalignedMonthly": "periodStart must be aligned to the 1st of the month",
+      "periodMisalignedWeekly": "periodStart must be aligned to Monday",
+      "promptSetRequired": "A prompt set (market) is required to view {scope}"
+    },
+    "workspace": {
+      "duplicateMember": "This user is already a member of this workspace",
+      "membersSessionRequired": "Member management requires session authentication",
+      "onlyAdminsAddMembers": "Only admins can add members",
+      "onlyAdminsChangeRoles": "Only admins can change member roles",
+      "onlyAdminsRemoveMembers": "Only admins can remove members",
+      "onlyAdminsUpdateSettings": "Only admins can update workspace settings",
+      "selfRemove": "You cannot remove yourself from the workspace",
+      "selfRoleChange": "You cannot change your own role",
+      "soleOwnerDemote": "Cannot demote the sole workspace owner",
+      "soleOwnerRemove": "Cannot remove the sole workspace owner",
+      "updatesSessionRequired": "Workspace updates require session authentication"
+    },
+    "user": {
+      "preferencesSessionRequired": "User preferences require session authentication"
+    },
+    "reports": {
+      "expired": "This report has expired and is no longer available",
+      "fileUnavailable": "Report file is no longer available",
+      "notReady": "Report is not ready for download. Current status: {status}",
+      "invalidComparisonPeriod": "comparisonPeriod must be 'previous_period', 'previous_week', or 'previous_month'",
+      "invalidMetric": "Invalid metric: {metric}. Valid metrics are: {allowed}",
+      "invalidParams": "Invalid report parameters",
+      "invalidTemplateParams": "Invalid template parameters",
+      "maxBrands": "A maximum of {max, number} brands can be included in a single report",
+      "maxSchedules": "Maximum of 25 schedules per workspace reached",
+      "promptSetRequired": "A prompt set (market) is required to generate a report",
+      "templatesCommercial": "Custom report templates require a commercial edition"
+    },
+    "exports": {
+      "generationFailed": "Export generation failed",
+      "invalidParams": "Invalid export parameters",
+      "unsupportedFormat": "Unsupported export format: {format}. Supported formats: {allowed}",
+      "unsupportedType": "Unsupported export type: {type}. Supported types: {allowed}"
+    },
+    "dashboard": {
+      "unavailable": "Unable to load dashboard data"
+    },
+    "notifications": {
+      "userNotMember": "User is not a member of this workspace",
+      "invalidToken": "Invalid unsubscribe token"
+    },
+    "gsc": {
+      "connectionNotFound": "GSC connection not found",
+      "noPendingSession": "No pending GSC OAuth session. Start the connect flow first.",
+      "noPendingSessionShort": "No pending GSC OAuth session",
+      "sessionInvalid": "Pending GSC OAuth session is invalid or expired.",
+      "sessionWorkspaceMismatch": "Pending GSC OAuth session does not match this workspace."
+    },
+    "uploads": {
+      "cannotCancel": "Upload cannot be cancelled (not pending or processing)",
+      "duplicate": "Duplicate file. Existing upload: {existingId}",
+      "invalidLogFileType": "Invalid file type. Supported: .log, .txt, .gz",
+      "logFileExpected": "Expected multipart/form-data with a logFile field",
+      "logFileMissing": "Missing logFile in form data",
+      "logoFileExpected": "Expected multipart/form-data with a logo file",
+      "logoFileMissing": "Missing logo file in form data"
     }
   }
 }

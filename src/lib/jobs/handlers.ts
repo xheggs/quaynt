@@ -8,6 +8,8 @@ import { registerSentimentAggregateHandlers } from '@/modules/visibility/sentime
 import { registerCitationSourceHandlers } from '@/modules/visibility/citation-source-aggregate.handler';
 import { registerOpportunityHandlers } from '@/modules/visibility/opportunity.handler';
 import { registerPositionAggregateHandlers } from '@/modules/visibility/position-aggregate.handler';
+import { registerGeoScoreHandlers } from '@/modules/visibility/geo-score.handler';
+import { registerSeoScoreHandlers } from '@/modules/visibility/seo-score.handler';
 import { registerAlertHandlers } from '@/modules/alerts/alert.handler';
 import { registerNotificationHandlers } from '@/modules/notifications/notification.handler';
 import { registerPdfHandlers } from '@/modules/pdf/pdf.handler';
@@ -27,6 +29,8 @@ export async function registerHandlers(boss: PgBoss): Promise<void> {
   await registerCitationSourceHandlers(boss);
   await registerOpportunityHandlers(boss);
   await registerPositionAggregateHandlers(boss);
+  await registerGeoScoreHandlers(boss);
+  await registerSeoScoreHandlers(boss);
   await registerAlertHandlers(boss);
   await registerNotificationHandlers(boss);
   await registerPdfHandlers(boss);

@@ -6,6 +6,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { notFound, apiError } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { db } from '@/lib/db';
 import { reportJob } from '@/modules/pdf/report-job.schema';
 
@@ -15,6 +16,7 @@ export const GET = withRequestId(
       withRateLimit(
         withScope(async (req, { params }: { params: Promise<{ jobId: string }> }) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const { jobId } = await params;
 
           const [job] = await db
@@ -24,7 +26,7 @@ export const GET = withRequestId(
             .limit(1);
 
           if (!job) {
-            return notFound('Report not found');
+            return notFound(t('resources.report'));
           }
 
           // Check if expired
@@ -32,21 +34,17 @@ export const GET = withRequestId(
             job.status === 'expired' ||
             (job.expiresAt && job.expiresAt < new Date() && job.status === 'completed')
           ) {
-            return apiError('GONE', 'This report has expired and is no longer available', 410);
+            return apiError('GONE', t('reports.expired'), 410);
           }
 
           // Must be completed
           if (job.status !== 'completed') {
-            return apiError(
-              'CONFLICT',
-              `Report is not ready for download. Current status: ${job.status}`,
-              409
-            );
+            return apiError('CONFLICT', t('reports.notReady', { status: job.status }), 409);
           }
 
           // Check file exists
           if (!job.filePath || !existsSync(job.filePath)) {
-            return apiError('GONE', 'Report file is no longer available', 410);
+            return apiError('GONE', t('reports.fileUnavailable'), 410);
           }
 
           // Read and serve PDF

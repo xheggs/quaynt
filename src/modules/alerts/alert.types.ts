@@ -6,7 +6,9 @@ export type AlertMetric =
   | 'crawler_visit_count'
   | 'crawler_bot_activity'
   | 'ai_visit_count'
-  | 'ai_visit_platform_drop';
+  | 'ai_visit_platform_drop'
+  | 'geo_score'
+  | 'seo_score';
 
 export type AlertCondition =
   | 'drops_below'
@@ -31,7 +33,8 @@ export interface AlertRuleCreate {
   name: string;
   description?: string;
   metric: AlertMetric;
-  promptSetId: string;
+  /** Null for workspace-scoped (crawler_*, ai_visit_*) and brand-scoped (geo_score, seo_score) metrics. */
+  promptSetId: string | null;
   scope: AlertScope;
   condition: AlertCondition;
   threshold: number;

@@ -16,6 +16,8 @@ export * from '@/modules/visibility/citation-source-aggregate.schema';
 export * from '@/modules/visibility/opportunity.schema';
 export * from '@/modules/visibility/position-aggregate.schema';
 export * from '@/modules/visibility/trend-snapshot.schema';
+export * from '@/modules/visibility/geo-score-snapshot.schema';
+export * from '@/modules/visibility/seo-score-snapshot.schema';
 export * from '@/modules/alerts/alert.schema';
 export * from '@/modules/notifications/notification.schema';
 export * from '@/modules/pdf/report-job.schema';

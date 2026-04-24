@@ -32,7 +32,9 @@ describe('webhook event registry', () => {
     expect(WEBHOOK_EVENT_TYPES).toContain('query_fanout.extracted');
     expect(WEBHOOK_EVENT_TYPES).toContain('query_fanout.simulated');
     expect(WEBHOOK_EVENT_TYPES).toContain('webhook.test');
-    expect(WEBHOOK_EVENT_TYPES).toHaveLength(28);
+    expect(WEBHOOK_EVENT_TYPES).toContain('visibility.geo_score_computed');
+    expect(WEBHOOK_EVENT_TYPES).toContain('visibility.seo_score_computed');
+    expect(WEBHOOK_EVENT_TYPES).toHaveLength(30);
   });
 
   it('has sample payloads for all event types', () => {

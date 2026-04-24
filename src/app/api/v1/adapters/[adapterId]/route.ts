@@ -5,6 +5,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { apiSuccess, apiNoContent, notFound, unprocessable, apiError } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import {
   getAdapterConfig,
   updateAdapterConfig,
@@ -32,10 +33,11 @@ export const GET = withRequestId(
         withScope(async (req, ctx) => {
           const { adapterId } = await ctx.params;
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           const result = await getAdapterConfig(adapterId, auth.workspaceId);
           if (!result) {
-            return notFound('Adapter');
+            return notFound(t('resources.adapter'));
           }
 
           return apiSuccess(result);
@@ -58,6 +60,7 @@ export const PATCH = withRequestId(
 
           const auth = getAuthContext(req);
           const registry = getAdapterRegistry();
+          const t = await apiErrors();
 
           try {
             const updated = await updateAdapterConfig(
@@ -67,7 +70,7 @@ export const PATCH = withRequestId(
               registry
             );
             if (!updated) {
-              return notFound('Adapter');
+              return notFound(t('resources.adapter'));
             }
             return apiSuccess(updated);
           } catch (err) {
@@ -91,10 +94,11 @@ export const DELETE = withRequestId(
         withScope(async (req, ctx) => {
           const { adapterId } = await ctx.params;
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           const deleted = await deleteAdapterConfig(adapterId, auth.workspaceId);
           if (!deleted) {
-            return notFound('Adapter');
+            return notFound(t('resources.adapter'));
           }
 
           return apiNoContent();

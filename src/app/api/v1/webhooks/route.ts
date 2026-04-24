@@ -7,6 +7,7 @@ import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { parsePagination, formatPaginatedResponse } from '@/lib/api/pagination';
 import { apiSuccess, apiCreated, conflict, unprocessable } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { WEBHOOK_EVENT_TYPES } from '@/modules/webhooks/webhook.events';
 import {
   createWebhookEndpoint,
@@ -31,12 +32,13 @@ export const POST = withRequestId(
           if (!validated.success) return validated.response;
 
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           // Validate event types
           for (const event of validated.data.body.events) {
             if (event !== '*' && !(WEBHOOK_EVENT_TYPES as readonly string[]).includes(event)) {
               return unprocessable([
-                { field: 'events', message: `${event} is not a valid event type` },
+                { field: 'events', message: t('webhook.eventInvalid', { event }) },
               ]);
             }
           }

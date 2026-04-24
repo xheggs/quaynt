@@ -12,13 +12,12 @@ import {
   fetchSourcesMetric,
   fetchOpportunitiesMetric,
 } from './report-data.metrics';
+import { fetchGeoScoreMetric, fetchSeoScoreMetric } from './report-data.score-metrics';
 import type {
   ReportMetric,
   ReportDataFilters,
   ReportDataResponse,
   BrandReportData,
-  SourceMetricBlock,
-  OpportunityMetricBlock,
 } from './report-data.types';
 import { VALID_REPORT_METRICS } from './report-data.types';
 
@@ -174,18 +173,42 @@ async function fetchMetricsForBrand(
           return null;
         })
       : null,
+    metrics.includes('geo_score')
+      ? fetchGeoScoreMetric(workspaceId, brandId, currentPeriod).catch((err) => {
+          warnings.push(`geo_score: ${(err as Error).message}`);
+          return null;
+        })
+      : null,
+    metrics.includes('seo_score')
+      ? fetchSeoScoreMetric(workspaceId, brandId, currentPeriod).catch((err) => {
+          warnings.push(`seo_score: ${(err as Error).message}`);
+          return null;
+        })
+      : null,
   ];
 
-  const [recShare, citations, sentiment, positions, sources, opportunities] =
-    await Promise.all(fetchers);
+  const fetchResults = (await Promise.all(fetchers)) as [
+    Awaited<ReturnType<typeof fetchRecommendationShareMetric>> | null,
+    Awaited<ReturnType<typeof fetchCitationCountMetric>> | null,
+    Awaited<ReturnType<typeof fetchSentimentMetric>> | null,
+    Awaited<ReturnType<typeof fetchPositionsMetric>> | null,
+    Awaited<ReturnType<typeof fetchSourcesMetric>> | null,
+    Awaited<ReturnType<typeof fetchOpportunitiesMetric>> | null,
+    Awaited<ReturnType<typeof fetchGeoScoreMetric>> | null,
+    Awaited<ReturnType<typeof fetchSeoScoreMetric>> | null,
+  ];
+  const [recShare, citations, sentiment, positions, sources, opportunities, geoScore, seoScore] =
+    fetchResults;
 
   const result: BrandReportData['metrics'] = {};
   if (recShare) result.recommendationShare = recShare;
   if (citations) result.citationCount = citations;
   if (sentiment) result.sentiment = sentiment;
   if (positions) result.positions = positions;
-  if (sources) result.sources = sources as SourceMetricBlock;
-  if (opportunities) result.opportunities = opportunities as OpportunityMetricBlock;
+  if (sources) result.sources = sources;
+  if (opportunities) result.opportunities = opportunities;
+  if (geoScore) result.geoScore = geoScore;
+  if (seoScore) result.seoScore = seoScore;
 
   return result;
 }

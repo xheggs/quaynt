@@ -4,6 +4,7 @@ import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiCreated, badRequest } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { getRequestLogger } from '@/lib/logger';
 import { createBoss } from '@/lib/jobs/boss';
 import { pushVisits } from '@/modules/crawler/crawler-visit.service';
@@ -29,18 +30,19 @@ export const POST = withRequestId(
       withRateLimit(
         withScope(async (req) => {
           const auth = getAuthContext(req);
+          const t = await apiErrors();
           const log = getRequestLogger(req);
 
           let body: unknown;
           try {
             body = await req.json();
           } catch {
-            return badRequest('Invalid JSON body');
+            return badRequest(t('validation.invalidJson'));
           }
 
           const parsed = pushSchema.safeParse(body);
           if (!parsed.success) {
-            return badRequest('Validation failed', parsed.error.flatten().fieldErrors);
+            return badRequest(t('validation.failed'), parsed.error.flatten().fieldErrors);
           }
 
           const result = await pushVisits(auth.workspaceId, parsed.data.visits);

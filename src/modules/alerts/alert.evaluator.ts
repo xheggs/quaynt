@@ -95,16 +95,20 @@ export async function evaluateRulesForMetric(
   const results: AlertEvaluationResult[] = [];
 
   // Load all enabled rules for this workspace + metric + promptSet. Workspace-scoped
-  // metrics (crawler and AI traffic) don't carry a promptSetId and match on `is null`.
+  // metrics (crawler and AI traffic) and brand-scoped metrics (geo_score, seo_score)
+  // don't carry a promptSetId and match on `is null`.
+  const BRAND_SCOPED_METRICS = new Set<AlertMetric>(['geo_score', 'seo_score']);
+  const isBrandScopedMetric = BRAND_SCOPED_METRICS.has(metric);
   const isWorkspaceMetric = metric.startsWith('crawler_') || metric.startsWith('ai_visit');
+  const isPromptSetScopedMetric = !isWorkspaceMetric && !isBrandScopedMetric;
   const ruleConditions = [
     eq(alertRule.workspaceId, workspaceId),
     eq(alertRule.metric, metric),
     eq(alertRule.enabled, true),
   ];
-  if (!isWorkspaceMetric && promptSetId) {
+  if (isPromptSetScopedMetric && promptSetId) {
     ruleConditions.push(eq(alertRule.promptSetId, promptSetId));
-  } else if (isWorkspaceMetric) {
+  } else if (isWorkspaceMetric || isBrandScopedMetric) {
     ruleConditions.push(isNull(alertRule.promptSetId));
   }
 

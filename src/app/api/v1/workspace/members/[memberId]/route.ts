@@ -12,6 +12,7 @@ import {
   conflict,
   unprocessable,
 } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import {
   updateMemberRole,
   removeMember,
@@ -29,15 +30,16 @@ export const PATCH = withRequestId(
         withScope(async (req, ctx) => {
           const { memberId } = await ctx.params;
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           if (!auth.userId) {
-            return forbidden('Member management requires session authentication');
+            return forbidden(t('workspace.membersSessionRequired'));
           }
 
           try {
             await requireWorkspaceRole(auth.workspaceId, auth.userId, 'admin');
           } catch {
-            return forbidden('Only admins can change member roles');
+            return forbidden(t('workspace.onlyAdminsChangeRoles'));
           }
 
           const validated = await validateRequest(req, ctx, {
@@ -56,13 +58,13 @@ export const PATCH = withRequestId(
           } catch (err) {
             const message = err instanceof Error ? err.message : 'Failed to update role';
             if (message === 'MEMBER_NOT_FOUND') {
-              return notFound('Member');
+              return notFound(t('resources.member'));
             }
             if (message === 'CANNOT_CHANGE_OWN_ROLE') {
-              return conflict('You cannot change your own role');
+              return conflict(t('workspace.selfRoleChange'));
             }
             if (message === 'CANNOT_REMOVE_SOLE_OWNER') {
-              return conflict('Cannot demote the sole workspace owner');
+              return conflict(t('workspace.soleOwnerDemote'));
             }
             return unprocessable([{ field: 'role', message }]);
           }
@@ -79,15 +81,16 @@ export const DELETE = withRequestId(
         withScope(async (req, ctx) => {
           const { memberId } = await ctx.params;
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           if (!auth.userId) {
-            return forbidden('Member management requires session authentication');
+            return forbidden(t('workspace.membersSessionRequired'));
           }
 
           try {
             await requireWorkspaceRole(auth.workspaceId, auth.userId, 'admin');
           } catch {
-            return forbidden('Only admins can remove members');
+            return forbidden(t('workspace.onlyAdminsRemoveMembers'));
           }
 
           try {
@@ -96,13 +99,13 @@ export const DELETE = withRequestId(
           } catch (err) {
             const message = err instanceof Error ? err.message : 'Failed to remove member';
             if (message === 'MEMBER_NOT_FOUND') {
-              return notFound('Member');
+              return notFound(t('resources.member'));
             }
             if (message === 'CANNOT_REMOVE_SELF') {
-              return conflict('You cannot remove yourself from the workspace');
+              return conflict(t('workspace.selfRemove'));
             }
             if (message === 'CANNOT_REMOVE_SOLE_OWNER') {
-              return conflict('Cannot remove the sole workspace owner');
+              return conflict(t('workspace.soleOwnerRemove'));
             }
             return unprocessable([{ field: 'memberId', message }]);
           }

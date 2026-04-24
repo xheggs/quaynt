@@ -5,6 +5,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { apiSuccess, apiNoContent, notFound } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import { updatePrompt, deletePrompt } from '@/modules/prompt-sets/prompt-set.service';
 
 const updatePromptSchema = z.object({
@@ -18,6 +19,7 @@ export const PATCH = withRequestId(
       withRateLimit(
         withScope(async (req, ctx) => {
           const { promptSetId, promptId } = await ctx.params;
+          const t = await apiErrors();
           const validated = await validateRequest(req, ctx, {
             body: updatePromptSchema,
           });
@@ -32,7 +34,7 @@ export const PATCH = withRequestId(
             validated.data.body
           );
           if (!updated) {
-            return notFound('Prompt');
+            return notFound(t('resources.prompt'));
           }
 
           return apiSuccess(updated);
@@ -49,10 +51,11 @@ export const DELETE = withRequestId(
         withScope(async (req, ctx) => {
           const { promptSetId, promptId } = await ctx.params;
           const auth = getAuthContext(req);
+          const t = await apiErrors();
 
           const deleted = await deletePrompt(promptId, promptSetId, auth.workspaceId);
           if (!deleted) {
-            return notFound('Prompt');
+            return notFound(t('resources.prompt'));
           }
 
           return apiNoContent();

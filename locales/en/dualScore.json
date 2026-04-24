@@ -1,0 +1,117 @@
+{
+  "dualScore": {
+    "page": {
+      "title": "SEO + GEO",
+      "description": "See your traditional search and AI visibility scores side-by-side, and how they move together"
+    },
+    "rings": {
+      "seoLabel": "SEO",
+      "geoLabel": "GEO",
+      "deltaLabel": {
+        "weekly": "vs previous week",
+        "monthly": "vs previous month"
+      }
+    },
+    "correlation": {
+      "title": "Are they moving together?",
+      "rhoLabel": "Spearman ρ: {rho}",
+      "sampleSize": "over {n} aligned {granularity} snapshots",
+      "label": {
+        "strong": "Strong correlation",
+        "moderate": "Moderate correlation",
+        "weak": "Weak correlation",
+        "none": "No meaningful correlation",
+        "insufficientData": "Not enough aligned data yet",
+        "earlyReading": "Early reading — not yet statistically reliable"
+      },
+      "earlyReadingHint": "We have {n} aligned {granularity} snapshots. We need at least 10 before we label this relationship",
+      "direction": {
+        "positive": "Scores tend to rise and fall together",
+        "negative": "Scores tend to move in opposite directions",
+        "flat": "Scores do not track together"
+      },
+      "caveat": "Correlation is not causation. Many factors can move both scores in the same direction.",
+      "methodologyLink": "How this is calculated",
+      "insufficientDataHint": "We need at least 6 aligned {granularity} snapshots to compute a coefficient"
+    },
+    "factors": {
+      "title": "Factor comparison",
+      "seoHeader": "SEO factors",
+      "geoHeader": "GEO factors",
+      "mapping": {
+        "hint": "Lines mark factors with conceptually similar inputs",
+        "none": "No direct counterpart"
+      }
+    },
+    "queries": {
+      "title": "Per-query view",
+      "description": "Queries ranked by the gap between traditional-search signal and AI-citation signal",
+      "columns": {
+        "query": "Query",
+        "impressions": "Impressions",
+        "clicks": "Clicks",
+        "ctr": "CTR",
+        "avgPosition": "Avg. position",
+        "aioCitations": "AIO citations",
+        "brandMentionRate": "Brand mention rate",
+        "gapSignal": "Gap signal"
+      },
+      "gapSignal": {
+        "high_seo_no_ai": "Strong SEO, no AI",
+        "high_ai_no_seo": "AI presence, little SEO",
+        "balanced": "Balanced",
+        "no_signal": "No signal"
+      },
+      "gapSignalHint": {
+        "high_seo_no_ai": "Visitors are finding you via search — but AI Overviews aren't citing you on this query yet",
+        "high_ai_no_seo": "AI Overviews cite you — but your traditional search listing isn't drawing traffic",
+        "balanced": "Both channels are working — protect your position",
+        "no_signal": "Not enough data yet to categorize this query"
+      },
+      "empty": {
+        "title": "No query data yet",
+        "description": "Once GSC has synced and prompts have produced citations in the selected period, queries will appear here"
+      },
+      "filter": {
+        "all": "All gap signals"
+      }
+    },
+    "recommendations": {
+      "title": "Top recommendations",
+      "description": "Interleaved from both the SEO and GEO engines and sorted by estimated lift",
+      "source": {
+        "seo": "SEO",
+        "geo": "GEO"
+      },
+      "empty": "No recommendations — both scores are strong",
+      "partialFailure": "Showing recommendations from one side only — we couldn't compute the other side"
+    },
+    "advisory": {
+      "title": "Data quality notice",
+      "methodologyLink": "Read the full advisory"
+    },
+    "empty": {
+      "NO_SEO_SNAPSHOTS": {
+        "title": "SEO score not available yet",
+        "description": "Compute an SEO score for this brand to see the dual view"
+      },
+      "NO_GEO_SNAPSHOTS": {
+        "title": "GEO score not available yet",
+        "description": "Compute a GEO score for this brand to see the dual view"
+      },
+      "NO_SNAPSHOTS": {
+        "title": "No scores yet",
+        "description": "Once SEO and GEO snapshots exist for this brand, the dual view will appear here"
+      }
+    },
+    "report": {
+      "sectionTitle": "SEO + GEO"
+    },
+    "methodology": {
+      "linkLabel": "View methodology"
+    }
+  },
+  "navigation": {
+    "dualScore": "SEO + GEO"
+  }
+}

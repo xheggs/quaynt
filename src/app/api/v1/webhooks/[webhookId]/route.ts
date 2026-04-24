@@ -5,6 +5,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { validateRequest } from '@/lib/api/validation';
 import { apiSuccess, apiNoContent, notFound, unprocessable } from '@/lib/api/response';
+import { apiErrors } from '@/lib/api/errors-i18n';
 import {
   getWebhookEndpoint,
   updateWebhookEndpoint,
@@ -23,12 +24,13 @@ export const GET = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req, ctx) => {
-          const { webhookId } = await ctx.params;
           const auth = getAuthContext(req);
+          const t = await apiErrors();
+          const { webhookId } = await ctx.params;
 
           const endpoint = await getWebhookEndpoint(webhookId, auth.workspaceId);
           if (!endpoint) {
-            return notFound('Webhook endpoint');
+            return notFound(t('resources.webhook'));
           }
 
           return apiSuccess(endpoint);
@@ -43,13 +45,13 @@ export const PUT = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req, ctx) => {
+          const auth = getAuthContext(req);
+          const t = await apiErrors();
           const { webhookId } = await ctx.params;
           const validated = await validateRequest(req, ctx, {
             body: updateWebhookSchema,
           });
           if (!validated.success) return validated.response;
-
-          const auth = getAuthContext(req);
 
           try {
             const updated = await updateWebhookEndpoint(
@@ -58,7 +60,7 @@ export const PUT = withRequestId(
               validated.data.body
             );
             if (!updated) {
-              return notFound('Webhook endpoint');
+              return notFound(t('resources.webhook'));
             }
             return apiSuccess(updated);
           } catch (err) {
@@ -76,12 +78,13 @@ export const DELETE = withRequestId(
     withAuth(
       withRateLimit(
         withScope(async (req, ctx) => {
-          const { webhookId } = await ctx.params;
           const auth = getAuthContext(req);
+          const t = await apiErrors();
+          const { webhookId } = await ctx.params;
 
           const deleted = await deleteWebhookEndpoint(webhookId, auth.workspaceId);
           if (!deleted) {
-            return notFound('Webhook endpoint');
+            return notFound(t('resources.webhook'));
           }
 
           return apiNoContent();
