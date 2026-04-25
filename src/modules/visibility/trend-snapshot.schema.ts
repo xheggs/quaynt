@@ -8,7 +8,7 @@ import {
   index,
   uniqueIndex,
 } from 'drizzle-orm/pg-core';
-import { eq } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { generatePrefixedId } from '@/lib/db/id';
 import { timestamps } from '@/lib/db/helpers';
 import { workspace } from '@/modules/workspace/workspace.schema';
@@ -70,6 +70,6 @@ export const trendSnapshot = pgTable(
     ),
     index('trend_snapshot_anomaly_idx')
       .on(table.workspaceId, table.isAnomaly)
-      .where(eq(table.isAnomaly, true)),
+      .where(sql`${table.isAnomaly} = true`),
   ]
 );

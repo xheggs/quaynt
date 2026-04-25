@@ -32,4 +32,4 @@ ALTER TABLE "trend_snapshot" ADD CONSTRAINT "trend_snapshot_brand_id_brand_id_fk
 ALTER TABLE "trend_snapshot" ADD CONSTRAINT "trend_snapshot_prompt_set_id_prompt_set_id_fk" FOREIGN KEY ("prompt_set_id") REFERENCES "public"."prompt_set"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "trend_snapshot_unique_idx" ON "trend_snapshot" USING btree ("workspace_id","prompt_set_id","brand_id","platform_id","locale","metric","period","period_start");--> statement-breakpoint
 CREATE INDEX "trend_snapshot_workspace_brand_idx" ON "trend_snapshot" USING btree ("workspace_id","brand_id","period_start");--> statement-breakpoint
-CREATE INDEX "trend_snapshot_anomaly_idx" ON "trend_snapshot" USING btree ("workspace_id","is_anomaly") WHERE "trend_snapshot"."is_anomaly" = $1;
+CREATE INDEX "trend_snapshot_anomaly_idx" ON "trend_snapshot" USING btree ("workspace_id","is_anomaly") WHERE "trend_snapshot"."is_anomaly" = true;

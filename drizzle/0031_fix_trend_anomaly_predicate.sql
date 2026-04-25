@@ -1,0 +1,2 @@
+DROP INDEX "trend_snapshot_anomaly_idx";--> statement-breakpoint
+CREATE INDEX "trend_snapshot_anomaly_idx" ON "trend_snapshot" USING btree ("workspace_id","is_anomaly") WHERE "trend_snapshot"."is_anomaly" = true;
