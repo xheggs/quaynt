@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { useTheme } from 'next-themes';
 import { useTranslations } from 'next-intl';
 
 type Props = {
@@ -12,12 +11,26 @@ type Props = {
 
 export function Logo({ className, width = 120, height = 32 }: Props) {
   const t = useTranslations('ui');
-  const { resolvedTheme } = useTheme();
   const alt = t('brand.logoAlt');
 
-  // Dark logo (dark text) for light backgrounds, light logo (light text) for dark backgrounds
-  const src =
-    resolvedTheme === 'dark' ? '/brand/quaynt-logo-light.png' : '/brand/quaynt-logo-dark.png';
-
-  return <Image src={src} alt={alt} width={width} height={height} priority className={className} />;
+  return (
+    <>
+      <Image
+        src="/brand/quaynt-logo-dark.png"
+        alt={alt}
+        width={width}
+        height={height}
+        priority
+        className={`${className ?? ''} dark:hidden`.trim()}
+      />
+      <Image
+        src="/brand/quaynt-logo-light.png"
+        alt=""
+        aria-hidden="true"
+        width={width}
+        height={height}
+        className={`${className ?? ''} hidden dark:block`.trim()}
+      />
+    </>
+  );
 }
