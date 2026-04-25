@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3 } from 'lucide-react';
+import { AlertTriangle, BarChart3 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { parseAsString, useQueryStates } from 'nuqs';
 
@@ -13,6 +13,7 @@ import type { DashboardFilters } from '../dashboard.types';
 import { useDashboardQuery, usePromptSetOptions } from '../use-dashboard-query';
 import { AlertsSection } from './alerts-section';
 import { DashboardFilterBar } from './dashboard-filters';
+import { DashboardHero } from './dashboard-hero';
 import { DashboardSkeleton } from './dashboard-skeleton';
 import { DualKpiCard } from '@/features/dual-score/components/dual-kpi-card';
 import { KpiCard } from './kpi-card';
@@ -84,7 +85,7 @@ function DashboardContent() {
   if (isEmptyWorkspace) {
     return (
       <div className="space-y-8">
-        <h1 className="type-page">{t('header.title')}</h1>
+        <DashboardHero empty />
         <EmptyState
           variant="page"
           icon={BarChart3}
@@ -99,43 +100,27 @@ function DashboardContent() {
     );
   }
 
-  const dateFormatter = new Intl.DateTimeFormat(locale, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  });
+  // TODO: replace with dedicated brandCount from API when available.
+  const brandCount = data.movers?.length ?? 0;
 
   return (
     <div className="space-y-8">
-      {/* Page header */}
-      <div className="space-y-1">
-        <h1 className="type-page">{t('header.title')}</h1>
-      </div>
+      <DashboardHero
+        brandCount={brandCount}
+        promptSetCount={promptSetOptions.length}
+        promptSetName={data.promptSet?.name}
+        dataAsOf={data.dataAsOf}
+      />
 
-      {/* Filters + data freshness */}
-      <div className="space-y-2">
-        <DashboardFilterBar
-          filters={filters}
-          onFiltersChange={handleFiltersChange}
-          promptSetOptions={promptSetOptions}
-          promptSetLoading={promptSetLoading}
-        />
-        <p className="type-caption text-muted-foreground">
-          {t('dataAsOf', { date: dateFormatter.format(new Date(data.dataAsOf)) })}
-        </p>
-      </div>
+      <DashboardFilterBar
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
+        promptSetOptions={promptSetOptions}
+        promptSetLoading={promptSetLoading}
+      />
 
-      {/* Warnings */}
-      {data.warnings && data.warnings.length > 0 && (
-        <div className="space-y-1">
-          {data.warnings.map((warning, i) => (
-            <div key={i} className="rounded-md bg-warning-bg px-3 py-2">
-              <p className="type-caption text-warning">{warning}</p>
-            </div>
-          ))}
-        </div>
-      )}
+      {data.warnings && data.warnings.length > 0 && <WarningStack warnings={data.warnings} />}
 
-      {/* KPI row */}
       {data.kpis && (
         <div className="grid grid-cols-12 gap-4">
           <KpiCard
@@ -162,17 +147,35 @@ function DashboardContent() {
             direction={data.kpis.averageSentiment.direction}
             sparkline={data.kpis.averageSentiment.sparkline}
           />
-          <DualKpiCard className="col-span-12 md:col-span-6 lg:col-span-8" />
+          <DualKpiCard className="col-span-12" />
         </div>
       )}
 
-      {/* Section grid */}
       <div className="grid grid-cols-12 gap-4">
-        <MoversSection movers={data.movers} />
-        <OpportunitiesSection opportunities={data.opportunities} />
-        <PlatformsSection platforms={data.platforms} />
-        <AlertsSection alerts={data.alerts} />
+        <MoversSection movers={data.movers} className="col-span-12 lg:col-span-6" />
+        <OpportunitiesSection
+          opportunities={data.opportunities}
+          className="col-span-12 lg:col-span-6"
+        />
+        <PlatformsSection platforms={data.platforms} className="col-span-12 lg:col-span-6" />
+        <AlertsSection alerts={data.alerts} className="col-span-12 lg:col-span-6" />
       </div>
+    </div>
+  );
+}
+
+function WarningStack({ warnings }: { warnings: string[] }) {
+  return (
+    <div role="alert" className="space-y-2">
+      {warnings.map((w, i) => (
+        <div
+          key={i}
+          className="flex items-start gap-2 rounded-md border border-warning/30 bg-warning-bg/50 px-3 py-2"
+        >
+          <AlertTriangle aria-hidden className="mt-0.5 size-4 shrink-0 text-warning" />
+          <p className="type-caption text-warning">{w}</p>
+        </div>
+      ))}
     </div>
   );
 }

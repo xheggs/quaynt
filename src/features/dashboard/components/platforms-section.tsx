@@ -4,86 +4,85 @@ import { Activity } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { EmptyState } from '@/components/empty-state';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ErrorState } from '@/components/error-state';
+import { MonoChip } from '@/components/ui/mono-chip';
+import { SectionCard } from '@/components/ui/section-card';
 import { cn } from '@/lib/utils';
 import type { PlatformStatus } from '../dashboard.types';
 
 interface PlatformsSectionProps {
   platforms: PlatformStatus[] | null;
+  className?: string;
 }
 
-const statusConfig: Record<string, { dot: string; labelKey: string }> = {
-  healthy: { dot: 'bg-emerald-500', labelKey: 'platforms.healthy' },
-  degraded: { dot: 'bg-amber-500', labelKey: 'platforms.degraded' },
-  unhealthy: { dot: 'bg-red-500', labelKey: 'platforms.unhealthy' },
+const statusDot: Record<string, string> = {
+  healthy: 'bg-success',
+  degraded: 'bg-warning',
+  unhealthy: 'bg-destructive',
 };
 
-export function PlatformsSection({ platforms }: PlatformsSectionProps) {
+const statusLabelKey: Record<
+  string,
+  'platforms.healthy' | 'platforms.degraded' | 'platforms.unhealthy'
+> = {
+  healthy: 'platforms.healthy',
+  degraded: 'platforms.degraded',
+  unhealthy: 'platforms.unhealthy',
+};
+
+export function PlatformsSection({ platforms, className }: PlatformsSectionProps) {
   const t = useTranslations('dashboard');
   const locale = useLocale();
   const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short' });
 
   return (
-    <Card className="col-span-12 md:col-span-6">
-      <CardHeader>
-        <CardTitle className="type-section">{t('sections.platforms')}</CardTitle>
-      </CardHeader>
-      <CardContent className="p-0 px-5 pb-5">
-        {platforms === null ? (
-          <ErrorState
-            variant="inline"
-            description={t('warnings.sectionFailed', { section: t('sections.platforms') })}
-          />
-        ) : platforms.length === 0 ? (
-          <EmptyState variant="inline" icon={Activity} title={t('platforms.empty')} />
-        ) : (
-          <div
-            className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3"
-            data-testid="platforms-grid"
-          >
-            {platforms.map((platform) => {
-              const isDisabled = !platform.enabled;
-              const status = isDisabled ? null : platform.lastHealthStatus;
-              const config = status ? statusConfig[status] : null;
+    <SectionCard
+      index="03"
+      title={t('sections.platforms')}
+      indexLabel={t('sections.indexLabel', { index: '03' })}
+      className={className}
+    >
+      {platforms === null ? (
+        <ErrorState
+          variant="inline"
+          description={t('warnings.sectionFailed', { section: t('sections.platforms') })}
+        />
+      ) : platforms.length === 0 ? (
+        <EmptyState variant="inline" icon={Activity} title={t('platforms.empty')} />
+      ) : (
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2" data-testid="platforms-grid">
+          {platforms.map((platform) => {
+            const isDisabled = !platform.enabled;
+            const status = isDisabled ? null : platform.lastHealthStatus;
+            const dotClass = status ? statusDot[status] : 'bg-muted-foreground/40';
+            const labelKey = status ? statusLabelKey[status] : null;
+            const statusLabel = isDisabled ? null : labelKey ? t(labelKey) : t('platforms.unknown');
 
-              return (
-                <div
-                  key={platform.adapterId}
-                  className={cn('flex items-center gap-2.5', isDisabled && 'opacity-50')}
-                >
-                  <span
-                    className={cn(
-                      'size-2 shrink-0 rounded-full',
-                      config?.dot ?? 'bg-muted-foreground/50'
-                    )}
-                    aria-hidden="true"
-                  />
-                  <div className="min-w-0">
-                    <p className="text-sm text-foreground">{platform.displayName}</p>
-                    <p className="type-caption text-muted-foreground">
-                      {isDisabled
-                        ? t('platforms.disabled')
-                        : config
-                          ? t(config.labelKey as 'platforms.healthy')
-                          : t('platforms.unknown')}
-                      {platform.lastHealthCheckedAt && !isDisabled && (
-                        <>
-                          {' '}
-                          &middot;{' '}
-                          {t('platforms.lastChecked', {
+            return (
+              <div
+                key={platform.adapterId}
+                className={cn('flex items-center gap-2.5', isDisabled && 'opacity-50')}
+              >
+                <span className={cn('size-2 shrink-0 rounded-full', dotClass)} aria-hidden="true" />
+                <div className="min-w-0 space-y-0.5">
+                  <p className="text-sm text-foreground">{platform.displayName}</p>
+                  {isDisabled ? (
+                    <MonoChip tone="muted">{t('platforms.disabled')}</MonoChip>
+                  ) : (
+                    <MonoChip tone="muted">
+                      {platform.lastHealthCheckedAt
+                        ? `${statusLabel} · ${t('platforms.lastChecked', {
                             date: dateFormatter.format(new Date(platform.lastHealthCheckedAt)),
-                          })}
-                        </>
-                      )}
-                    </p>
-                  </div>
+                          })}`
+                        : statusLabel}
+                    </MonoChip>
+                  )}
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </SectionCard>
   );
 }

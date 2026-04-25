@@ -1,11 +1,10 @@
 'use client';
 
-import { Minus, TrendingDown, TrendingUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Sparkline } from '@/components/ui/sparkline';
+import { StatBlock } from '@/components/ui/stat-block';
 import { cn } from '@/lib/utils';
 import type { SparklinePoint } from '../dashboard.types';
 
@@ -18,25 +17,9 @@ interface KpiCardProps {
   sparkline?: SparklinePoint[];
   loading?: boolean;
   className?: string;
+  /** When true, sparkline draws using `--primary`; otherwise trend color. Defaults false. */
+  highlight?: boolean;
 }
-
-const trendConfig = {
-  up: {
-    icon: TrendingUp,
-    color: 'text-emerald-600 dark:text-emerald-400',
-    sparkline: 'var(--color-emerald-500)',
-  },
-  down: {
-    icon: TrendingDown,
-    color: 'text-red-600 dark:text-red-400',
-    sparkline: 'var(--color-red-500)',
-  },
-  stable: {
-    icon: Minus,
-    color: 'text-muted-foreground',
-    sparkline: 'var(--color-muted-foreground)',
-  },
-} as const;
 
 export function KpiCard({
   label,
@@ -47,24 +30,22 @@ export function KpiCard({
   sparkline,
   loading,
   className,
+  highlight,
 }: KpiCardProps) {
   const t = useTranslations('dashboard');
 
   if (loading) {
     return (
-      <Card className={cn('border-l-2 border-l-primary bg-card p-5', className)}>
-        <CardContent className="space-y-3 p-0">
+      <Card className={cn('p-5', className)}>
+        <div className="flex flex-col gap-3">
           <Skeleton className="h-3 w-24" />
-          <Skeleton className="h-8 w-20" />
+          <Skeleton className="h-9 w-24" />
           <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-6 w-full" />
-        </CardContent>
+          <Skeleton className="h-7 w-full" />
+        </div>
       </Card>
     );
   }
-
-  const trend = direction && direction in trendConfig ? trendConfig[direction] : null;
-  const TrendIcon = trend?.icon;
 
   const ariaLabel =
     direction && delta
@@ -79,35 +60,18 @@ export function KpiCard({
       : t('kpiCards.ariaLabelNoTrend', { label, value });
 
   return (
-    <Card
-      className={cn('border-l-2 border-l-primary bg-card p-5', className)}
-      aria-label={ariaLabel}
-    >
-      <CardContent className="space-y-3 p-0">
-        <p className="type-overline text-muted-foreground">{label}</p>
-        <div className="flex items-baseline gap-2">
-          <span className="type-kpi text-foreground">{value}</span>
-          {unit && <span className="text-sm text-muted-foreground">{unit}</span>}
-        </div>
-        {trend && (
-          <div className="flex items-center gap-1.5">
-            {TrendIcon && <TrendIcon className={cn('size-3.5', trend.color)} aria-hidden="true" />}
-            {delta && (
-              <span className={cn('text-sm font-medium tabular-nums', trend.color)}>{delta}</span>
-            )}
-            <span className="text-xs text-muted-foreground">{t('kpiCards.vsPrevious')}</span>
-          </div>
-        )}
-        {sparkline && sparkline.length > 0 && (
-          <Sparkline
-            data={sparkline}
-            width={200}
-            height={28}
-            color={trend?.sparkline ?? 'var(--primary)'}
-            className="w-full"
-          />
-        )}
-      </CardContent>
+    <Card className={cn('p-5', className)}>
+      <StatBlock
+        label={label}
+        value={value}
+        unit={unit}
+        delta={delta}
+        direction={direction}
+        sparkline={sparkline}
+        comparisonLabel={t('kpiCards.vsPrevious')}
+        ariaLabel={ariaLabel}
+        highlight={highlight}
+      />
     </Card>
   );
 }

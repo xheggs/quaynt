@@ -59,8 +59,9 @@ describe('AlertsSection', () => {
   it('shows active count badge', () => {
     const { container } = renderWithDashboardProviders(<AlertsSection alerts={mockAlerts} />);
     const badge = container.querySelector('[data-slot="badge"]');
-    expect(badge).toBeDefined();
-    expect(badge?.textContent).toBe('3');
+    expect(badge).not.toBeNull();
+    // Badge now uses the localized "{count} active alerts" string; assert the count is present.
+    expect(badge?.textContent).toContain('3');
   });
 
   it('shows warning for null', () => {

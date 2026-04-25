@@ -81,10 +81,21 @@ const navGroups: NavGroup[] = [
   },
 ];
 
-// Monitoring items shown as direct tabs
-const directTabs = navGroups[0].items;
-// Configuration and Reporting collapsed into dropdowns
-const dropdownGroups = navGroups.slice(1);
+// First 5 Monitoring items shown as direct tabs in the desktop nav.
+const directTabs = navGroups[0].items.slice(0, 5);
+// Remaining Monitoring items collapse into a "More" dropdown to avoid
+// horizontal overflow at narrow desktop widths (~1280px).
+const moreItems = navGroups[0].items.slice(5);
+
+// Desktop dropdown groups: synthetic "More" overflow group, then the
+// existing Configuration and Reporting groups. The titleKey on the
+// synthetic group is intentionally distinct from the static sidebar keys
+// so it can be detected when rendering trigger labels.
+const moreGroup: NavGroup = {
+  titleKey: 'topNav.more',
+  items: moreItems,
+};
+const desktopDropdownGroups: NavGroup[] = [moreGroup, ...navGroups.slice(1)];
 
 export function TopNav() {
   const t = useTranslations('ui');
@@ -95,7 +106,7 @@ export function TopNav() {
   const isGroupActive = (group: NavGroup) => group.items.some((item) => isActive(item.href));
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
+    <header className="glass-surface sticky top-0 z-50 border-x-0 border-t-0 border-b border-border/60">
       <nav
         aria-label={t('a11y.mainNavigation')}
         className="mx-auto flex h-14 max-w-[1280px] items-center gap-6 px-4 lg:px-8"
@@ -107,14 +118,14 @@ export function TopNav() {
 
         {/* Desktop navigation */}
         <div className="hidden items-center gap-1 lg:flex">
-          {/* Direct tabs for Monitoring items */}
+          {/* Direct tabs for the first 5 Monitoring items */}
           {directTabs.map((item) => (
             <Link
               key={item.href}
               href={`/${locale}${item.href}`}
-              className={`relative inline-flex h-14 items-center px-3 text-sm font-medium transition-colors hover:text-foreground ${
+              className={`relative inline-flex h-14 items-center px-3 text-[13px] font-medium transition-colors hover:text-foreground ${
                 isActive(item.href)
-                  ? 'text-foreground after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:bg-primary'
+                  ? 'text-foreground after:absolute after:inset-x-3 after:bottom-0 after:h-px after:rounded-full after:bg-primary'
                   : 'text-muted-foreground'
               }`}
             >
@@ -122,21 +133,23 @@ export function TopNav() {
             </Link>
           ))}
 
-          {/* Dropdown groups for Configuration and Reporting */}
+          {/* Dropdown groups: More (overflow), Configuration, Reporting */}
           <NavigationMenu>
             <NavigationMenuList>
-              {dropdownGroups.map((group) => (
+              {desktopDropdownGroups.map((group) => (
                 <NavigationMenuItem key={group.titleKey}>
                   <NavigationMenuTrigger
-                    className={`relative h-14 rounded-none border-b-2 px-3 text-sm font-medium transition-colors hover:bg-transparent hover:text-foreground focus:bg-transparent data-open:bg-transparent ${
+                    className={`relative h-14 rounded-none border-b border-transparent px-3 text-[13px] font-medium transition-colors hover:bg-transparent hover:text-foreground focus:bg-transparent data-open:bg-transparent ${
                       isGroupActive(group)
                         ? 'border-primary text-foreground'
-                        : 'border-transparent text-muted-foreground'
+                        : 'text-muted-foreground'
                     }`}
                   >
-                    {group.titleKey === 'sidebar.configuration'
-                      ? t('topNav.configure')
-                      : t('topNav.reporting')}
+                    {group.titleKey === 'topNav.more'
+                      ? t('topNav.more')
+                      : group.titleKey === 'sidebar.configuration'
+                        ? t('topNav.configure')
+                        : t('topNav.reporting')}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[200px] gap-0.5 p-1.5">

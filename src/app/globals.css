@@ -354,16 +354,41 @@ h1, h2, h3 {
 }
 
 /*
+ * Tighter dot grid for narrow hero bands — same color treatment as .dot-grid
+ * but on a 16px lattice with a slightly smaller dot, keeping the texture
+ * legible when the band height is short.
+ */
+.dot-grid-band {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--foreground) 30%, transparent) 0.75px,
+    transparent 1px
+  );
+  background-size: 16px 16px;
+  background-position: 0 0;
+}
+
+.dark .dot-grid-band {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--foreground) 18%, transparent) 0.75px,
+    transparent 1px
+  );
+}
+
+/*
  * Interactive dot grid — a brand-tinted dot layer aligned to the same 22px
  * grid as .dot-grid, masked to a soft circle that follows the cursor (--mx,
  * --my). Outside that circle the layer is invisible, so most of the panel is
  * unchanged at any given moment. Defaults centre the glow so SSR/no-JS still
- * produces a sensible static composition.
+ * produces a sensible static composition. --glow-r-band is an opt-in wider
+ * radius for band-density backdrops; consumers swap it in via inline style.
  */
 .dot-grid-wrap {
   --mx: 50%;
   --my: 50%;
   --glow-r: 220px;
+  --glow-r-band: 320px;
 }
 
 .dot-grid-glow {
@@ -442,6 +467,18 @@ h1, h2, h3 {
   animation-name: engine-cycle;
   animation-timing-function: ease;
   animation-iteration-count: infinite;
+}
+
+/*
+ * Live pulse — gentle opacity oscillation used by MonoChip's live indicator
+ * dot. Consumed via Tailwind's arbitrary animation syntax
+ * (animate-[live-pulse_1.2s_ease-in-out_infinite]). The global
+ * prefers-reduced-motion block at the bottom of this file already neutralizes
+ * all animations, so no per-keyframe reduced-motion guard is required here.
+ */
+@keyframes live-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 
 /* ── Reduced Motion ────────────────────────────────────────────── */

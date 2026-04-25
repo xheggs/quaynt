@@ -31,11 +31,12 @@ describe('OpportunitiesSection', () => {
   });
 
   it('renders type badges', () => {
-    const { container } = renderWithDashboardProviders(
-      <OpportunitiesSection opportunities={mockOpportunities} />
-    );
-    const badges = container.querySelectorAll('[data-slot="badge"]');
-    expect(badges.length).toBe(2);
+    renderWithDashboardProviders(<OpportunitiesSection opportunities={mockOpportunities} />);
+    // Type tags are rendered as MonoChips with the localized type label
+    // (Missing/Weak). Use getAllByText since the same text may appear
+    // elsewhere via a11y labels in MonoChip's pulse markup.
+    expect(screen.getAllByText('Missing').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Weak').length).toBeGreaterThan(0);
   });
 
   it('renders competitor count', () => {

@@ -2,7 +2,17 @@
   "dashboard": {
     "pageTitle": "Dashboard",
     "header": {
-      "title": "AI Visibility Dashboard"
+      "title": "AI Visibility Dashboard",
+      "eyebrow": "AI Visibility",
+      "live": "Live",
+      "welcome": "Welcome back.",
+      "subtitle": "See how AI sees your brand right now.",
+      "tracking": "Now tracking",
+      "brands": "{count, plural, one {# brand} other {# brands}}",
+      "promptSets": "{count, plural, one {# prompt set} other {# prompt sets}}",
+      "updatedAt": "Updated {date}",
+      "emptyWelcome": "Let's get you set up.",
+      "emptySubtitle": "Add a brand and a prompt set to start seeing how AI describes you."
     },
     "filters": {
       "promptSet": "Prompt Set",
@@ -25,7 +35,8 @@
       "movers": "Top Movers",
       "opportunities": "Top Opportunities",
       "platforms": "Platform Health",
-      "alerts": "Recent Alerts"
+      "alerts": "Recent Alerts",
+      "indexLabel": "Section {index}"
     },
     "movers": {
       "empty": "No brand data available yet",

@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 
 const mockCollectVisit = vi.fn();
@@ -56,6 +56,19 @@ function buildRequest(
   return { req, params: Promise.resolve({ siteKey }) };
 }
 
+// Hoist the route import so the module graph (next/server, zod, middleware,
+// etc.) is loaded once during beforeAll instead of inside each `it`. Under
+// heavy concurrent test load the per-test dynamic import was occasionally
+// exceeding the 5 s default timeout, then the handler's deferred resolution
+// leaked a `mockCollectVisit` call into the next test.
+let POST: typeof import('./route').POST;
+let OPTIONS: typeof import('./route').OPTIONS;
+let GET: typeof import('./route').GET;
+
+beforeAll(async () => {
+  ({ POST, OPTIONS, GET } = await import('./route'));
+});
+
 describe('POST /api/v1/traffic/collect/:siteKey', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -63,7 +76,6 @@ describe('POST /api/v1/traffic/collect/:siteKey', () => {
   });
 
   it('returns 204 on a valid snippet POST (application/json)', async () => {
-    const { POST } = await import('./route');
     const validSiteKey = 'tsk_' + 'a'.repeat(32);
     const { req, params } = buildRequest(validSiteKey, {
       body: { referrer: 'https://chatgpt.com', landingPath: '/blog' },
@@ -74,7 +86,6 @@ describe('POST /api/v1/traffic/collect/:siteKey', () => {
   });
 
   it('returns 204 on a text/plain body (sendBeacon default)', async () => {
-    const { POST } = await import('./route');
     const validSiteKey = 'tsk_' + 'a'.repeat(32);
     const { req, params } = buildRequest(validSiteKey, {
       body: { referrer: 'https://chatgpt.com', landingPath: '/blog' },
@@ -86,7 +97,6 @@ describe('POST /api/v1/traffic/collect/:siteKey', () => {
   });
 
   it('returns 204 and skips DB for malformed siteKey path', async () => {
-    const { POST } = await import('./route');
     const { req, params } = buildRequest('malformed_key', {
       body: { referrer: 'https://chatgpt.com', landingPath: '/' },
     });
@@ -96,7 +106,6 @@ describe('POST /api/v1/traffic/collect/:siteKey', () => {
   });
 
   it('returns 204 for DNT: 1', async () => {
-    const { POST } = await import('./route');
     const validSiteKey = 'tsk_' + 'a'.repeat(32);
     const { req, params } = buildRequest(validSiteKey, {
       body: { referrer: 'https://chatgpt.com', landingPath: '/' },
@@ -108,7 +117,6 @@ describe('POST /api/v1/traffic/collect/:siteKey', () => {
   });
 
   it('returns 204 for Sec-GPC: 1', async () => {
-    const { POST } = await import('./route');
     const validSiteKey = 'tsk_' + 'a'.repeat(32);
     const { req, params } = buildRequest(validSiteKey, {
       body: { referrer: 'https://chatgpt.com', landingPath: '/' },
@@ -120,7 +128,6 @@ describe('POST /api/v1/traffic/collect/:siteKey', () => {
   });
 
   it('returns 400 for malformed body', async () => {
-    const { POST } = await import('./route');
     const validSiteKey = 'tsk_' + 'a'.repeat(32);
     const { req, params } = buildRequest(validSiteKey, {
       body: { landingPath: 42 /* invalid type */ } as unknown as object,
@@ -131,7 +138,6 @@ describe('POST /api/v1/traffic/collect/:siteKey', () => {
 
   it('returns 204 when collector drops the visit (privacy: response code does not leak drop reason)', async () => {
     mockCollectVisit.mockResolvedValueOnce({ accepted: false, reason: 'not_ai_source' });
-    const { POST } = await import('./route');
     const validSiteKey = 'tsk_' + 'a'.repeat(32);
     const { req, params } = buildRequest(validSiteKey, {
       body: { referrer: 'https://example.com', landingPath: '/' },
@@ -141,7 +147,6 @@ describe('POST /api/v1/traffic/collect/:siteKey', () => {
   });
 
   it('does not return the client IP or any sensitive header in the response', async () => {
-    const { POST } = await import('./route');
     const validSiteKey = 'tsk_' + 'a'.repeat(32);
     const { req, params } = buildRequest(validSiteKey, {
       body: { referrer: 'https://chatgpt.com', landingPath: '/' },
@@ -156,7 +161,6 @@ describe('POST /api/v1/traffic/collect/:siteKey', () => {
 
 describe('OPTIONS /api/v1/traffic/collect/:siteKey', () => {
   it('returns 204 with CORS headers', async () => {
-    const { OPTIONS } = await import('./route');
     const response = await OPTIONS();
     expect(response.status).toBe(204);
     expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*');
@@ -166,7 +170,6 @@ describe('OPTIONS /api/v1/traffic/collect/:siteKey', () => {
 
 describe('GET /api/v1/traffic/collect/:siteKey', () => {
   it('returns 405', async () => {
-    const { GET } = await import('./route');
     const response = await GET();
     expect(response.status).toBe(405);
   });

@@ -133,8 +133,8 @@ describe('DashboardView', () => {
     expect(screen.getByText('Platform Health')).toBeDefined();
     expect(screen.getByText('Recent Alerts')).toBeDefined();
 
-    // Data freshness
-    expect(screen.getByText((t) => t.includes('Last updated'))).toBeDefined();
+    // Data freshness — hero now uses "Updated {date}" instead of "Last updated".
+    expect(screen.getByText((t) => t.includes('Updated'))).toBeDefined();
   });
 
   it('shows loading skeleton during fetch', async () => {
