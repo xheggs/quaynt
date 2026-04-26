@@ -220,6 +220,7 @@
       "scheduleRequired": "A schedule is required",
       "recipientsRequired": "At least one recipient is required",
       "recipientInvalid": "Invalid email address",
+      "disposableEmailNotAllowed": "This email provider isn't allowed. Please use a permanent address.",
       "formatRequired": "A format is required",
       "dateRangeInvalid": "End date must be after start date"
     },

@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, useWatch, Controller } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 
 import { queryKeys } from '@/lib/query/keys';
@@ -131,9 +131,9 @@ function PreferencesForm({ data }: { data: NotificationPreferencesResponse }) {
     });
   }
 
-  const emailEnabled = form.watch('email.enabled');
-  const digestFrequency = form.watch('email.digestFrequency');
-  const webhookEnabled = form.watch('webhook.enabled');
+  const emailEnabled = useWatch({ control: form.control, name: 'email.enabled' });
+  const digestFrequency = useWatch({ control: form.control, name: 'email.digestFrequency' });
+  const webhookEnabled = useWatch({ control: form.control, name: 'webhook.enabled' });
 
   const showTimingFields = digestFrequency === 'daily' || digestFrequency === 'weekly';
   const showTimezone = digestFrequency !== 'immediate';

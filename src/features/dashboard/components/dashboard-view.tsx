@@ -8,6 +8,8 @@ import { EmptyState } from '@/components/empty-state';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { ErrorState } from '@/components/error-state';
 import { useDelayedLoading } from '@/hooks/use-delayed-loading';
+import { OnboardingChecklist } from '@/features/onboarding/components/onboarding-checklist';
+import { DashboardWowHost } from './dashboard-wow-host';
 
 import type { DashboardFilters } from '../dashboard.types';
 import { useDashboardQuery, usePromptSetOptions } from '../use-dashboard-query';
@@ -85,6 +87,7 @@ function DashboardContent() {
   if (isEmptyWorkspace) {
     return (
       <div className="space-y-8">
+        <OnboardingChecklist />
         <DashboardHero empty />
         <EmptyState
           variant="page"
@@ -105,6 +108,7 @@ function DashboardContent() {
 
   return (
     <div className="space-y-8">
+      <OnboardingChecklist />
       <DashboardHero
         brandCount={brandCount}
         promptSetCount={promptSetOptions.length}
@@ -121,8 +125,10 @@ function DashboardContent() {
 
       {data.warnings && data.warnings.length > 0 && <WarningStack warnings={data.warnings} />}
 
+      <DashboardWowHost />
+
       {data.kpis && (
-        <div className="grid grid-cols-12 gap-4">
+        <div className="grid grid-cols-12 gap-4" data-tour="dashboard-kpis">
           <KpiCard
             className="col-span-12 md:col-span-6 lg:col-span-4"
             label={t('kpiCards.recommendationShare')}
@@ -153,12 +159,13 @@ function DashboardContent() {
 
       <div className="grid grid-cols-12 gap-4">
         <MoversSection movers={data.movers} className="col-span-12 lg:col-span-6" />
-        <OpportunitiesSection
-          opportunities={data.opportunities}
-          className="col-span-12 lg:col-span-6"
-        />
+        <div className="col-span-12 lg:col-span-6" data-tour="dashboard-opportunities">
+          <OpportunitiesSection opportunities={data.opportunities} />
+        </div>
         <PlatformsSection platforms={data.platforms} className="col-span-12 lg:col-span-6" />
-        <AlertsSection alerts={data.alerts} className="col-span-12 lg:col-span-6" />
+        <div className="col-span-12 lg:col-span-6" data-tour="dashboard-alerts">
+          <AlertsSection alerts={data.alerts} />
+        </div>
       </div>
     </div>
   );

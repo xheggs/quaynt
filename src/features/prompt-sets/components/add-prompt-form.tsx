@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -38,7 +38,7 @@ export function AddPromptForm({ promptSetId }: AddPromptFormProps) {
     onSuccess: () => form.reset(),
   });
 
-  const templateValue = form.watch('template');
+  const templateValue = useWatch({ control: form.control, name: 'template' });
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {

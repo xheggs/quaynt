@@ -19,6 +19,7 @@ import { registerCrawlerAggregateHandler } from '@/modules/crawler/crawler-aggre
 import { registerTrafficHandlers } from '@/modules/traffic/traffic-aggregate.handler';
 import { registerGscSyncHandler } from '@/modules/integrations/gsc-correlation/gsc-sync.handler';
 import { registerQueryFanoutSimulatorHandlers } from '@/modules/query-fanout/query-fanout-simulator.handler';
+import { registerOnboardingSuggestHandler } from '@/modules/onboarding/onboarding-suggest.handler';
 
 export async function registerHandlers(boss: PgBoss): Promise<void> {
   await registerWebhookHandlers(boss);
@@ -40,6 +41,7 @@ export async function registerHandlers(boss: PgBoss): Promise<void> {
   await registerTrafficHandlers(boss);
   await registerGscSyncHandler(boss);
   await registerQueryFanoutSimulatorHandlers(boss);
+  await registerOnboardingSuggestHandler(boss);
 
   // Commercial-only handlers
   if (env.QUAYNT_EDITION !== 'community') {

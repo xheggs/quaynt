@@ -49,6 +49,8 @@ export const PREFIXES = {
   queryFanoutSimulationCache: 'qfsc',
   geoScoreSnapshot: 'geoss',
   seoScoreSnapshot: 'seoss',
+  onboardingRow: 'onb',
+  onboardingSuggestion: 'onbsug',
 } as const;
 
 export function generatePrefixedId(model: keyof typeof PREFIXES): string {

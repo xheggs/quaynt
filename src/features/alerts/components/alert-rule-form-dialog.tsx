@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, useWatch, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 
@@ -184,9 +184,9 @@ function AlertRuleForm({ rule, onOpenChange, brandOptions, promptSetOptions }: A
   }
 
   // Watch values for conditional rendering
-  const watchedCondition = form.watch('condition');
-  const watchedMetric = form.watch('metric');
-  const watchedThreshold = form.watch('threshold');
+  const watchedCondition = useWatch({ control: form.control, name: 'condition' });
+  const watchedMetric = useWatch({ control: form.control, name: 'metric' });
+  const watchedThreshold = useWatch({ control: form.control, name: 'threshold' });
 
   const isChangeBased =
     watchedCondition === 'changes_by_percent' || watchedCondition === 'changes_by_absolute';

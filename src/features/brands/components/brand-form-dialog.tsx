@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, useWatch, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 
@@ -112,7 +112,7 @@ function BrandForm({ mode, brand, onOpenChange }: BrandFormProps) {
     }
   }
 
-  const descriptionValue = form.watch('description') ?? '';
+  const descriptionValue = useWatch({ control: form.control, name: 'description' }) ?? '';
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
+import { isDisposableEmail } from '@/lib/email/disposable-email-checker';
 import { withAuth, withScope, getAuthContext } from '@/lib/api/middleware';
 import { withRateLimit } from '@/lib/api/rate-limit';
 import { withRequestId } from '@/lib/api/request-id';
@@ -23,7 +24,12 @@ import {
 } from '@/modules/workspace/workspace.service';
 
 const addMemberSchema = z.object({
-  email: z.string().email(),
+  email: z
+    .string()
+    .email()
+    .refine((email) => !isDisposableEmail(email), {
+      message: 'Disposable email addresses are not allowed',
+    }),
   role: z.enum(['admin', 'member']),
 });
 

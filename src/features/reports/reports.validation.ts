@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isDisposableEmail } from '@/lib/email/disposable-email-checker';
 
 /**
  * Client-side report form validation schemas.
@@ -54,7 +55,14 @@ export const reportScheduleCreateSchema = z.object({
     .max(25, { message: 'validation.brandsTooMany' }),
   schedule: z.string().min(1, { message: 'validation.scheduleRequired' }),
   recipients: z
-    .array(z.string().email({ message: 'validation.recipientInvalid' }))
+    .array(
+      z
+        .string()
+        .email({ message: 'validation.recipientInvalid' })
+        .refine((email) => !isDisposableEmail(email), {
+          message: 'validation.disposableEmailNotAllowed',
+        })
+    )
     .min(1, { message: 'validation.recipientsRequired' })
     .max(50),
   format: z.enum(['pdf'] as const, { message: 'validation.formatRequired' }),

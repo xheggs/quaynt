@@ -3,6 +3,8 @@ import { EmailLayout } from '@/modules/notifications/email/templates/layout';
 
 export interface ScheduledReportEmailProps {
   locale: string;
+  appUrl: string;
+  tagline: string;
   translations: {
     preview: string;
     heading: string;
@@ -31,6 +33,8 @@ export interface ScheduledReportEmailProps {
 
 export function ScheduledReportEmail({
   locale,
+  appUrl,
+  tagline,
   translations: t,
   isPdfAttached,
   downloadUrl,
@@ -44,6 +48,8 @@ export function ScheduledReportEmail({
     <EmailLayout
       locale={locale}
       preview={t.preview}
+      appUrl={appUrl}
+      tagline={tagline}
       footer={{
         ...footer,
         preferencesUrl,
@@ -152,7 +158,7 @@ const ctaSection = {
 };
 
 const ctaButton = {
-  backgroundColor: '#6d28d9',
+  backgroundColor: '#7C5CBA',
   color: '#ffffff',
   fontSize: '16px',
   fontWeight: '600' as const,
@@ -164,12 +170,12 @@ const ctaButton = {
 
 const secondaryButton = {
   backgroundColor: 'transparent',
-  color: '#6d28d9',
+  color: '#7C5CBA',
   fontSize: '14px',
   fontWeight: '500' as const,
   padding: '10px 24px',
   borderRadius: '6px',
-  border: '1px solid #6d28d9',
+  border: '1px solid #7C5CBA',
   textDecoration: 'none' as const,
   display: 'inline-block' as const,
 };

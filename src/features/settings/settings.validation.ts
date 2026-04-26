@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isDisposableEmail } from '@/lib/email/disposable-email-checker';
 
 /**
  * Client-side settings form validation schemas.
@@ -32,7 +33,12 @@ export const workspaceUpdateSchema = z.object({
 export type WorkspaceFormValues = z.infer<typeof workspaceUpdateSchema>;
 
 export const addMemberSchema = z.object({
-  email: z.string().email({ message: 'validation.emailInvalid' }),
+  email: z
+    .string()
+    .email({ message: 'validation.emailInvalid' })
+    .refine((email) => !isDisposableEmail(email), {
+      message: 'validation.disposableEmailNotAllowed',
+    }),
   role: z.enum(['admin', 'member'], { message: 'validation.roleRequired' }),
 });
 

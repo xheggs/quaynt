@@ -34,7 +34,9 @@
       "trackerLabel": "Now tracking",
       "useDifferentEmail": "Use a different email",
       "magicLinkExpired": "This sign-in link has expired. Please request a new one.",
-      "magicLinkFailed": "Could not send sign-in link. Please try again."
+      "magicLinkFailed": "Could not send sign-in link. Please try again.",
+      "emailInvalid": "Enter a valid email address.",
+      "disposableEmail": "This email provider isn't allowed. Please use a permanent address."
     },
     "getStarted": "Get started",
     "learnMore": "Learn more",

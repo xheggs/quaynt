@@ -54,6 +54,7 @@ function ColumnsTestWrapper({
   onViewDetail: (c: CitationRecord) => void;
 }) {
   const columns = useCitationColumns({ onViewDetail });
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table's useReactTable returns non-memoizable functions; no alternative API.
   const table = useReactTable({
     data,
     columns,

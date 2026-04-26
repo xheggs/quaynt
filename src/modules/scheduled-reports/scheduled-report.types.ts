@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { InferSelectModel } from 'drizzle-orm';
+import { isDisposableEmail } from '@/lib/email/disposable-email-checker';
 import type { reportSchedule, scheduleRecipient, reportDelivery } from './scheduled-report.schema';
 
 // --- DB row types ---
@@ -101,7 +102,11 @@ const recipientSchema = z
       return false;
     },
     { message: 'Invalid recipient address for the given type' }
-  );
+  )
+  .refine((r) => r.type !== 'email' || !isDisposableEmail(r.address), {
+    message: 'Disposable email addresses are not allowed',
+    path: ['address'],
+  });
 
 const scheduleScopeSchema = z.object({
   promptSetId: z.string().min(1),

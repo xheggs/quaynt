@@ -24,6 +24,7 @@ import type enQueryFanout from '../../../locales/en/queryFanout.json';
 import type enGeoScore from '../../../locales/en/geoScore.json';
 import type enSeoScore from '../../../locales/en/seoScore.json';
 import type enDualScore from '../../../locales/en/dualScore.json';
+import type enOnboarding from '../../../locales/en/onboarding.json';
 
 type Messages = typeof en &
   typeof enErrors &
@@ -49,7 +50,8 @@ type Messages = typeof en &
   typeof enQueryFanout &
   typeof enGeoScore &
   typeof enSeoScore &
-  typeof enDualScore;
+  typeof enDualScore &
+  typeof enOnboarding;
 
 declare module 'next-intl' {
   interface AppConfig {

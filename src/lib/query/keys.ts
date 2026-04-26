@@ -55,4 +55,6 @@ export const queryKeys = {
   geoScore: createQueryKeys('geoScore'),
   seoScore: createQueryKeys('seoScore'),
   dualScore: createQueryKeys('dualScore'),
+  onboarding: createQueryKeys('onboarding'),
+  onboardingSuggestion: createQueryKeys('onboardingSuggestion'),
 } as const;

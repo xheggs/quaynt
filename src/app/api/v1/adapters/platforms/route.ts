@@ -12,7 +12,7 @@ export const GET = withRequestId(
         withScope(async () => {
           const registry = getAdapterRegistry();
           const platforms = registry.getRegisteredPlatforms();
-          return apiSuccess({ platforms });
+          return apiSuccess(platforms);
         }, 'read')
       )
     )

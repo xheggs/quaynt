@@ -124,15 +124,18 @@ export async function getModelRun(runId: string, workspaceId: string) {
 
   if (!record) return null;
 
-  // Get result summary counts
+  // Single SQL roll-up grouped by (adapterConfigId, status). The flat
+  // resultSummary is reduced from the same rows so we don't need a second
+  // round-trip; per-adapter rows feed the first-run page's adapter grid.
   const summaryRows = await db
     .select({
+      adapterConfigId: modelRunResult.adapterConfigId,
       status: modelRunResult.status,
       count: sql<number>`count(*)::int`,
     })
     .from(modelRunResult)
     .where(eq(modelRunResult.modelRunId, runId))
-    .groupBy(modelRunResult.status);
+    .groupBy(modelRunResult.adapterConfigId, modelRunResult.status);
 
   const resultSummary = {
     total: record.totalResults,
@@ -143,13 +146,43 @@ export async function getModelRun(runId: string, workspaceId: string) {
     skipped: 0,
   };
 
+  type AdapterCounts = {
+    adapterConfigId: string;
+    total: number;
+    completed: number;
+    failed: number;
+    pending: number;
+    running: number;
+    skipped: number;
+  };
+  const adapterMap = new Map<string, AdapterCounts>();
+
   for (const row of summaryRows) {
     if (row.status in resultSummary) {
-      resultSummary[row.status as keyof typeof resultSummary] = row.count;
+      resultSummary[row.status as keyof typeof resultSummary] += row.count;
     }
+    let bucket = adapterMap.get(row.adapterConfigId);
+    if (!bucket) {
+      bucket = {
+        adapterConfigId: row.adapterConfigId,
+        total: 0,
+        completed: 0,
+        failed: 0,
+        pending: 0,
+        running: 0,
+        skipped: 0,
+      };
+      adapterMap.set(row.adapterConfigId, bucket);
+    }
+    if (row.status in bucket) {
+      bucket[row.status as 'completed' | 'failed' | 'pending' | 'running' | 'skipped'] += row.count;
+    }
+    bucket.total += row.count;
   }
 
-  return { ...record, resultSummary };
+  const adapterSummary = Array.from(adapterMap.values());
+
+  return { ...record, resultSummary, adapterSummary };
 }
 
 export async function listModelRuns(

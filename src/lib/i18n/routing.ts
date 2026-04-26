@@ -35,6 +35,7 @@ export const NAMESPACES = [
   'geoScore',
   'seoScore',
   'dualScore',
+  'onboarding',
 ] as const;
 
 /**

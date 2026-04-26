@@ -6,14 +6,17 @@ import {
   Bot,
   Building2,
   Combine,
+  Compass,
   FileBarChart,
   FileText,
   Gauge,
   Globe,
+  HelpCircle,
   LayoutDashboard,
   LineChart,
   Lightbulb,
   Menu,
+  Play,
   Quote,
   Settings,
   Zap,
@@ -35,8 +38,15 @@ import {
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 import { ThemeToggle } from './theme-toggle';
+import { useOnboarding, useUpdateOnboarding } from '@/features/onboarding/hooks/use-onboarding';
 
 interface NavItem {
   labelKey: string;
@@ -99,6 +109,7 @@ const desktopDropdownGroups: NavGroup[] = [moreGroup, ...navGroups.slice(1)];
 
 export function TopNav() {
   const t = useTranslations('ui');
+  const tOnboarding = useTranslations('onboarding');
   const locale = useLocale();
   const pathname = usePathname();
 
@@ -153,23 +164,27 @@ export function TopNav() {
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[200px] gap-0.5 p-1.5">
-                      {group.items.map((item) => (
-                        <li key={item.href}>
-                          <NavigationMenuLink asChild>
-                            <Link
-                              href={`/${locale}${item.href}`}
-                              className={`flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted ${
-                                isActive(item.href)
-                                  ? 'bg-muted/50 font-medium text-foreground'
-                                  : 'text-muted-foreground'
-                              }`}
-                            >
-                              <item.icon className="size-4 shrink-0" />
-                              {t(item.labelKey as never)}
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      ))}
+                      {group.items.map((item) => {
+                        const tourAnchor = item.href === '/brands' ? 'nav-brands' : undefined;
+                        return (
+                          <li key={item.href}>
+                            <NavigationMenuLink asChild>
+                              <Link
+                                href={`/${locale}${item.href}`}
+                                data-tour={tourAnchor}
+                                className={`flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted ${
+                                  isActive(item.href)
+                                    ? 'bg-muted/50 font-medium text-foreground'
+                                    : 'text-muted-foreground'
+                                }`}
+                              >
+                                <item.icon className="size-4 shrink-0" />
+                                {t(item.labelKey as never)}
+                              </Link>
+                            </NavigationMenuLink>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
@@ -181,11 +196,32 @@ export function TopNav() {
         {/* Spacer */}
         <div className="flex-1" />
 
-        {/* Right side: theme toggle + settings */}
+        {/* Right side: theme toggle + help + settings */}
         <div className="hidden items-center gap-1 lg:flex">
           <ThemeToggle />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={tOnboarding('replay.menuLabel')}
+                data-tour="header-help"
+              >
+                <HelpCircle className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href={`/${locale}/onboarding/welcome`}>
+                  <Play className="size-4" aria-hidden="true" />
+                  {tOnboarding('replay.menuLabel')}
+                </Link>
+              </DropdownMenuItem>
+              <DashboardTourMenuItem />
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button variant="ghost" size="icon" asChild>
-            <Link href={`/${locale}/settings`}>
+            <Link href={`/${locale}/settings`} data-tour="nav-settings">
               <Settings className="size-4" />
               <span className="sr-only">{t('navigation.settings')}</span>
             </Link>
@@ -199,8 +235,58 @@ export function TopNav() {
   );
 }
 
+function DashboardTourMenuItem() {
+  const tTour = useTranslations('onboarding.tour');
+  const onboarding = useOnboarding();
+  const update = useUpdateOnboarding();
+  const completed = onboarding.data?.milestones.tourCompleted ?? false;
+
+  return (
+    <DropdownMenuItem
+      onSelect={(e) => {
+        e.preventDefault();
+        void launchDashboardTour({
+          tTour: tTour as unknown as Translator,
+          onComplete: () => update.mutate({ milestones: { tourCompleted: true } }),
+        });
+      }}
+    >
+      <Compass className="size-4" aria-hidden="true" />
+      {completed ? tTour('replayLabel') : tTour('menuLabel')}
+    </DropdownMenuItem>
+  );
+}
+
+type Translator = (key: string, values?: Record<string, unknown>) => string;
+
+async function launchDashboardTour(args: { tTour: Translator; onComplete: () => void }) {
+  try {
+    const { runDashboardTour, DASHBOARD_TOUR_STEPS } =
+      await import('@/features/onboarding/components/dashboard-tour');
+    const steps = DASHBOARD_TOUR_STEPS.map((s) => ({
+      selector: s.selector,
+      title: args.tTour(`steps.${s.slug}.title`),
+      body: args.tTour(`steps.${s.slug}.body`),
+    }));
+    await runDashboardTour({
+      steps,
+      controls: {
+        next: args.tTour('controls.next'),
+        prev: args.tTour('controls.prev'),
+        done: args.tTour('controls.done'),
+        close: args.tTour('controls.close'),
+      },
+      onComplete: args.onComplete,
+    });
+  } catch {
+    // Driver chunk fetch failure: fail silently so the dashboard remains
+    // usable. The menu item stays available for retry.
+  }
+}
+
 function MobileNav() {
   const t = useTranslations('ui');
+  const tOnboarding = useTranslations('onboarding');
   const locale = useLocale();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -262,6 +348,14 @@ function MobileNav() {
               >
                 <Settings className="size-4 shrink-0" />
                 {t('navigation.settings')}
+              </Link>
+              <Link
+                href={`/${locale}/onboarding/welcome`}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted"
+              >
+                <Play className="size-4 shrink-0" />
+                {tOnboarding('replay.menuLabel')}
               </Link>
               <div className="px-3 py-2">
                 <ThemeToggle />

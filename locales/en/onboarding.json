@@ -1,0 +1,359 @@
+{
+  "onboarding": {
+    "wizard": {
+      "skipStep": "Skip this step",
+      "skipOnboarding": "Skip onboarding",
+      "continue": "Continue",
+      "back": "Back",
+      "progressLabel": "Step {step, number} of 3: {label}",
+      "manualProgressLabel": "Manual setup: {label}",
+      "stepLabels": {
+        "domain": "Domain",
+        "confirm": "Confirm",
+        "results": "Results",
+        "manual": {
+          "brand": "Manual setup — Brand",
+          "competitors": "Manual setup — Competitors",
+          "promptSet": "Manual setup — Prompts"
+        }
+      }
+    },
+    "domain": {
+      "eyebrow": "Step 01 · Connect",
+      "hero": {
+        "title": "Where do you live online?",
+        "subtitle": "We'll read your homepage and set everything else up for you to confirm."
+      },
+      "field": {
+        "label": "Domain",
+        "placeholder": "example.com",
+        "help": "Your data stays in your workspace.",
+        "invalid": "Enter a valid domain (e.g. example.com)."
+      },
+      "promise": {
+        "label": "We'll find",
+        "items": ["Brand", "Competitors", "Prompts", "Citations"],
+        "aria": "We'll find your brand, competitors, prompts, and citations from your homepage."
+      },
+      "cta": {
+        "idle": "Continue",
+        "pending": "Looking up…"
+      },
+      "skipManual": "Skip and enter everything manually"
+    },
+    "review": {
+      "heroTitle": "Here's what we found.",
+      "heroSubtitle": "Pre-filled from <host>{hostName}</host>. Edit anything that looks off.",
+      "heroSubtitleNoHost": "Edit anything that looks off.",
+      "heroSubtitleNoEngine": "Pre-filled your brand from <host>{hostName}</host>. Add a few competitors and prompts and you're tracking.",
+      "heroSubtitleNoEngineNoHost": "We've pre-filled your brand. Add a few competitors and prompts and you're tracking.",
+      "regenerate": {
+        "cta": "Regenerate",
+        "tooltip": "Run a fresh suggestion for this domain",
+        "inflight": "Regenerating…",
+        "confirmTitle": "Replace your edits with a fresh suggestion?",
+        "confirmReplaceCta": "Replace",
+        "confirmCancelCta": "Cancel",
+        "rateLimited": "You've hit today's regeneration limit. Edit the fields below manually.",
+        "error": "Couldn't start a fresh suggestion. Please try again.",
+        "successToast": "Suggestions refreshed."
+      },
+      "brand": {
+        "title": "Your brand",
+        "description": "Edit the name and aliases if needed.",
+        "emptyManualCta": "Enter brand details manually",
+        "nameLabel": "Brand name",
+        "aliasesLabel": "Aliases",
+        "aliasesPlaceholder": "Acme, Acme Co"
+      },
+      "competitors": {
+        "title": "Suggested competitors",
+        "titleManual": "Competitors",
+        "description": "Uncheck any that don't fit. You can add more.",
+        "descriptionManual": "Brands you'd like to track alongside {brand}. Add 3–5 to start.",
+        "descriptionManualNoBrand": "Brands you'd like to track alongside your own. Add 3–5 to start.",
+        "emptyManualCta": "Add competitors manually",
+        "why": "Why suggested",
+        "addAnother": "Add another",
+        "fields": {
+          "nameLabel": "Competitor name",
+          "namePlaceholder": "Competitor",
+          "domainLabel": "Competitor domain",
+          "domainPlaceholder": "competitor.com",
+          "removeLabel": "Remove competitor"
+        }
+      },
+      "prompts": {
+        "title": "Suggested prompts",
+        "description": "We'll run these queries against AI engines to see who they mention.",
+        "usingSuggested": "Use these {count, number} suggested prompts",
+        "usingStarter": "Use the Quaynt starter set instead",
+        "skipManualCta": "Skip and add prompts later",
+        "promptSetName": "{brand} — Auto-suggested"
+      },
+      "cta": {
+        "run": "Start tracking",
+        "disabled": "Add a brand name to continue"
+      },
+      "fallback": {
+        "title": "Switch to manual entry",
+        "body": "Need to enter everything yourself? You can pick up from where we got to.",
+        "cta": "Switch to manual entry"
+      },
+      "errors": {
+        "fetchFailed": "We couldn't reach your site. Check the domain or enter your brand details manually.",
+        "robotsDisallow": "Your site's robots.txt asks bots not to fetch it. Enter your brand details manually.",
+        "engineUnavailable": "Our suggestion engine is temporarily unavailable. Add this section manually for now.",
+        "engineRateLimited": "Too many suggestion requests right now. Add this section manually for now.",
+        "engineResponseInvalid": "Suggestion engine returned an unusable response. Add this section manually.",
+        "timeout": "The lookup took too long. Try again or enter your brand details manually.",
+        "noEngine": {
+          "title": "Auto-suggestions aren't available on this server.",
+          "body": "Your operator hasn't configured a suggestion engine. Add competitors and prompts manually below.",
+          "cta": "Add manually"
+        }
+      }
+    },
+    "persona": {
+      "title": "Tailor your dashboard.",
+      "subtitle": "Optional — helps us recommend the right next steps.",
+      "roles": {
+        "marketing": "Marketing",
+        "seo": "SEO / GEO",
+        "founder": "Founder",
+        "agency": "Agency",
+        "other": "Other"
+      }
+    },
+    "brand": {
+      "hero": {
+        "title": "Confirm your brand.",
+        "subtitle": "We'll use this to track how AI engines mention you."
+      },
+      "fields": {
+        "name": {
+          "label": "Brand name",
+          "placeholder": "Acme Inc.",
+          "help": "How customers refer to your company."
+        },
+        "domain": {
+          "label": "Primary domain",
+          "placeholder": "example.com",
+          "help": "Optional, but improves citation matching."
+        },
+        "aliases": {
+          "label": "Aliases",
+          "placeholder": "Acme, Acme Co",
+          "help": "Comma-separated alternate names — up to 10."
+        }
+      },
+      "errors": {
+        "nameRequired": "Enter your brand name to continue.",
+        "domainInvalid": "Enter a valid domain (example.com).",
+        "tooManyAliases": "Up to 10 aliases allowed."
+      },
+      "alreadyExists": "We've found an existing brand for your workspace and pre-filled the form."
+    },
+    "competitors": {
+      "hero": {
+        "title": "Add a few competitors.",
+        "subtitle": "AI engines often recommend competitors alongside you. Tracking them shows where you're losing ground."
+      },
+      "addAnother": "Add another",
+      "remove": "Remove",
+      "maxReached": "You can add up to 5 competitors here. Add more from the brands page later.",
+      "fields": {
+        "name": {
+          "label": "Name",
+          "placeholder": "Competitor name"
+        },
+        "domain": {
+          "label": "Domain",
+          "placeholder": "competitor.com"
+        }
+      },
+      "skipNotice": "No problem — you can add competitors anytime from the brands page."
+    },
+    "promptSet": {
+      "hero": {
+        "title": "Run your first AI visibility check.",
+        "subtitle": "We've prepared a starter set of eight prompts. You can always edit them later."
+      },
+      "starterTitle": "Quaynt Starter set",
+      "starterDescription": "Eight prompts covering recommendation, comparison, and category questions.",
+      "starterRecommended": "Recommended",
+      "skipTitle": "I'll create my own later",
+      "skipDescription": "Skip the first run for now and build your own prompt set from scratch.",
+      "previewToggle": "Preview the eight prompts",
+      "previewHint": "Templates use {brand} as a placeholder for your brand name.",
+      "runCta": "Run my first check",
+      "runRunning": "Starting your check…",
+      "runConfirmToast": "Your first run is computing — we'll notify you when results are ready.",
+      "noAdapter": {
+        "title": "Connect an AI engine to run a check",
+        "body": "We need at least one configured adapter (ChatGPT, Perplexity, etc.) to run a check.",
+        "cta": "Configure adapters"
+      }
+    },
+    "checklist": {
+      "title": "Get set up",
+      "summary": "{done, number} of {total, number} done",
+      "dismiss": "Dismiss",
+      "celebration": "All set up — your AI visibility insights are ready.",
+      "items": {
+        "brand": {
+          "label": "Add your brand",
+          "description": "Confirm name, domain, and aliases.",
+          "cta": "Continue"
+        },
+        "competitors": {
+          "label": "Add competitors",
+          "description": "Track who AI recommends alongside you.",
+          "cta": "Continue"
+        },
+        "promptSet": {
+          "label": "Choose a prompt set",
+          "description": "Pick the starter set or build your own.",
+          "cta": "Continue"
+        },
+        "firstRun": {
+          "label": "Run your first check",
+          "description": "Trigger an AI visibility run across your engines.",
+          "cta": "Continue"
+        },
+        "results": {
+          "label": "View your first results",
+          "description": "Wait 2–5 minutes for your run to complete.",
+          "cta": "Open dashboard"
+        }
+      }
+    },
+    "replay": {
+      "menuLabel": "Replay onboarding"
+    },
+    "firstRun": {
+      "title": "Your first AI visibility report is computing",
+      "subtitle": "We're checking how the major AI engines see your brand right now.",
+      "eta": "Usually ready in 2–5 minutes.",
+      "progress": "{done, plural, one {# prompt complete} other {# prompts complete}} of {total}",
+      "adapterGridLabel": "Engines",
+      "adapterProgress": "{done} of {total}",
+      "kpis": {
+        "sectionLabel": "What you'll see",
+        "share": {
+          "title": "Recommendation share",
+          "description": "How often AI engines surface your brand for the prompts that matter.",
+          "computing": "Computing…",
+          "empty": "We didn't find any third-party citations in this first run."
+        },
+        "count": {
+          "title": "Earned citations",
+          "description": "Mentions on third-party sources cited by AI engines.",
+          "computing": "Computing…",
+          "empty": "No third-party citations yet."
+        },
+        "sentiment": {
+          "title": "Sentiment",
+          "description": "How positively the surrounding context describes your brand.",
+          "computing": "Computing…",
+          "empty": "Not enough data to score sentiment yet."
+        }
+      },
+      "citations": {
+        "title": "Citations as they land",
+        "emptyWaiting": "Waiting for citations…",
+        "streaming": "No citations from this run.",
+        "position": "Position {position, number}",
+        "typeLabel": "Citation type",
+        "type": {
+          "owned": "Owned",
+          "earned": "Earned"
+        }
+      },
+      "terminal": {
+        "completed": {
+          "title": "Your first run is ready",
+          "body": "Open your dashboard to see the full picture.",
+          "primaryCta": "View your full dashboard",
+          "secondaryCta": "View raw results"
+        },
+        "partial": {
+          "title": "Your first run finished partially",
+          "body": "Some engines didn't return results. You can still review what we found.",
+          "primaryCta": "View your full dashboard",
+          "secondaryCta": "View raw results"
+        },
+        "failed": {
+          "title": "Your first run didn't finish",
+          "body": "We couldn't complete the run. Check your engine credentials and try again.",
+          "primaryCta": "Start a new run",
+          "secondaryCta": "Check integrations"
+        },
+        "cancelled": {
+          "title": "This run was cancelled",
+          "body": "The run was cancelled before it could finish. Start a new one when you're ready.",
+          "primaryCta": "Start a new run",
+          "secondaryCta": "Open dashboard"
+        },
+        "noCitations": {
+          "title": "No third-party citations yet",
+          "body": "This first run didn't surface any earned citations. That's normal for newer brands — try expanding your prompt set or competitors and run again.",
+          "primaryCta": "View your full dashboard",
+          "secondaryCta": "View raw results"
+        }
+      }
+    },
+    "wow": {
+      "title": "You're cited in {platform}!",
+      "subtitle": "Here's the first time we caught an AI engine mentioning a third-party source about your brand.",
+      "cta": "View full results",
+      "dismiss": "Dismiss",
+      "expand": "Show full snippet",
+      "collapse": "Show less",
+      "noSnippet": "(No surrounding context returned by the engine.)",
+      "position": "Position {position, number}",
+      "unsafeSourceLabel": "Source URL hidden for safety"
+    },
+    "tour": {
+      "menuLabel": "Take a tour",
+      "replayLabel": "Replay tour",
+      "complete": "Done",
+      "controls": {
+        "next": "Next",
+        "prev": "Back",
+        "done": "Done",
+        "close": "Close"
+      },
+      "steps": {
+        "kpis": {
+          "title": "Your headline numbers",
+          "body": "Recommendation share, earned citations, and average sentiment — at a glance, with deltas."
+        },
+        "opportunities": {
+          "title": "Where to act next",
+          "body": "Specific gaps and wins ranked by impact."
+        },
+        "alerts": {
+          "title": "What's changed",
+          "body": "Notable shifts in your visibility, like a new competitor surging or a sudden sentiment drop."
+        },
+        "brands": {
+          "title": "Manage brands",
+          "body": "Add aliases, swap competitors, or branch into a sub-brand."
+        },
+        "settings": {
+          "title": "Engines and settings",
+          "body": "Connect engines, manage members, and tune your workspace."
+        },
+        "help": {
+          "title": "Replay this tour anytime",
+          "body": "The Help menu lives here — replay the tour, jump back into onboarding, or get support."
+        }
+      }
+    },
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "saveFailed": "Couldn't save your progress. Please try again."
+    }
+  }
+}

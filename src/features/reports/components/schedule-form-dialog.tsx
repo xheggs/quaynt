@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, useWatch, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, Trash2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
@@ -111,7 +111,7 @@ function ScheduleForm({ schedule, onOpenChange }: ScheduleFormProps) {
         },
   });
 
-  const watchedSchedule = form.watch('schedule');
+  const watchedSchedule = useWatch({ control: form.control, name: 'schedule' });
   const cronPreview = watchedSchedule ? describeCron(watchedSchedule) : '';
 
   const createMutation = useApiMutation<ReportSchedule, ReportScheduleCreate>({
@@ -136,7 +136,7 @@ function ScheduleForm({ schedule, onOpenChange }: ScheduleFormProps) {
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   // Manage recipients as a dynamic list
-  const recipients = form.watch('recipients');
+  const recipients = useWatch({ control: form.control, name: 'recipients' });
 
   const addRecipient = useCallback(() => {
     const current = form.getValues('recipients');

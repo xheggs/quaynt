@@ -18,7 +18,7 @@ vi.mock('../../prompt-set.api', () => ({
   reorderPrompts: vi.fn(),
 }));
 
-import { createPromptSet, updatePromptSet } from '../../prompt-set.api';
+import { createPromptSet } from '../../prompt-set.api';
 
 const mockPromptSet: PromptSet = {
   id: 'ps-1',

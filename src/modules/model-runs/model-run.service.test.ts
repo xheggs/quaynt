@@ -273,13 +273,14 @@ describe('model-run service', () => {
   });
 
   describe('getModelRun', () => {
-    it('returns run with result summary', async () => {
+    it('returns run with result summary aggregated across adapters', async () => {
       // First call: fetch run
       mockLimit.mockReturnValueOnce([sampleRun]);
-      // Second call: result summary groupBy
+      // Second call: per-adapter, per-status groupBy
       mockGroupBy.mockReturnValueOnce([
-        { status: 'completed', count: 3 },
-        { status: 'failed', count: 1 },
+        { adapterConfigId: 'ac-1', status: 'completed', count: 2 },
+        { adapterConfigId: 'ac-1', status: 'failed', count: 1 },
+        { adapterConfigId: 'ac-2', status: 'completed', count: 1 },
       ]);
 
       const { getModelRun } = await import('./model-run.service');
@@ -289,7 +290,28 @@ describe('model-run service', () => {
       expect(result!.id).toBe('run_test123');
       expect(result!.resultSummary.completed).toBe(3);
       expect(result!.resultSummary.failed).toBe(1);
-      expect(result!.resultSummary.total).toBe(4);
+    });
+
+    it('returns per-adapter summary buckets', async () => {
+      mockLimit.mockReturnValueOnce([sampleRun]);
+      mockGroupBy.mockReturnValueOnce([
+        { adapterConfigId: 'ac-1', status: 'completed', count: 2 },
+        { adapterConfigId: 'ac-1', status: 'pending', count: 1 },
+        { adapterConfigId: 'ac-2', status: 'completed', count: 1 },
+        { adapterConfigId: 'ac-2', status: 'running', count: 1 },
+        { adapterConfigId: 'ac-3', status: 'failed', count: 1 },
+      ]);
+
+      const { getModelRun } = await import('./model-run.service');
+      const result = await getModelRun('run_test123', 'ws_test');
+
+      expect(result!.adapterSummary).toHaveLength(3);
+      const ac1 = result!.adapterSummary.find((a) => a.adapterConfigId === 'ac-1');
+      expect(ac1).toMatchObject({ total: 3, completed: 2, pending: 1 });
+      const ac2 = result!.adapterSummary.find((a) => a.adapterConfigId === 'ac-2');
+      expect(ac2).toMatchObject({ total: 2, completed: 1, running: 1 });
+      const ac3 = result!.adapterSummary.find((a) => a.adapterConfigId === 'ac-3');
+      expect(ac3).toMatchObject({ total: 1, failed: 1 });
     });
 
     it('returns null for non-existent run', async () => {

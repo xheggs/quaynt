@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertTriangle, Check, Copy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -139,6 +139,7 @@ function GenerateKeyForm({ onGenerated }: GenerateKeyFormProps) {
   });
 
   const isSubmitting = mutation.isPending;
+  const scopeValue = useWatch({ control: form.control, name: 'scope' });
 
   function onSubmit(data: ApiKeyCreateFormValues) {
     setUnmappedErrors([]);
@@ -189,7 +190,7 @@ function GenerateKeyForm({ onGenerated }: GenerateKeyFormProps) {
           {(fieldProps) => (
             <>
               <Select
-                value={form.watch('scope')}
+                value={scopeValue}
                 onValueChange={(val) =>
                   form.setValue('scope', val as ApiKeyCreateFormValues['scope'])
                 }

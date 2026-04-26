@@ -23,6 +23,16 @@ export interface ResultSummary {
   skipped: number;
 }
 
+export interface AdapterSummary {
+  adapterConfigId: string;
+  total: number;
+  completed: number;
+  failed: number;
+  pending: number;
+  running: number;
+  skipped: number;
+}
+
 export interface ModelRun {
   id: string;
   workspaceId: string;
@@ -43,6 +53,7 @@ export interface ModelRun {
 
 export interface ModelRunDetail extends ModelRun {
   resultSummary: ResultSummary;
+  adapterSummary: AdapterSummary[];
 }
 
 export interface ModelRunResult {

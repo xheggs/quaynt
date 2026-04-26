@@ -1,0 +1,3 @@
+ALTER TABLE "workspace_onboarding" ALTER COLUMN "milestones" SET DEFAULT '{"brandAdded":false,"competitorsAdded":false,"promptSetSelected":false,"firstRunTriggered":false,"firstCitationSeen":false,"tourCompleted":false}'::jsonb;--> statement-breakpoint
+ALTER TABLE "workspace_onboarding" ADD COLUMN "last_seen_at" timestamp with time zone;--> statement-breakpoint
+ALTER TABLE "workspace_onboarding" ADD COLUMN "second_session_emitted_at" timestamp with time zone;

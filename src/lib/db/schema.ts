@@ -34,4 +34,5 @@ export * from '@/modules/integrations/gsc/gsc-connection.schema';
 export * from '@/modules/integrations/gsc-correlation/gsc-query-performance.schema';
 export * from '@/modules/query-fanout/query-fanout.schema';
 export * from '@/modules/query-fanout/query-fanout-simulation-cache.schema';
+export * from '@/modules/onboarding/onboarding.schema';
 export { timestamps } from './helpers';

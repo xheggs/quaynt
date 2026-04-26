@@ -301,6 +301,7 @@
       "nameRequired": "Name is required",
       "nameTooLong": "Name must be 255 characters or fewer",
       "emailInvalid": "Please enter a valid email address",
+      "disposableEmailNotAllowed": "This email provider isn't allowed. Please use a permanent address.",
       "roleRequired": "Please select a role",
       "platformRequired": "Please select a platform",
       "scopeRequired": "Please select a scope",

@@ -38,13 +38,18 @@
     "weekly": "week"
   },
   "magicLink": {
-    "subject": "Sign in to Quaynt",
-    "preview": "Your sign-in link for Quaynt",
-    "heading": "Sign in to Quaynt",
-    "body": "Click the button below to sign in to your account. This link expires in 10 minutes.",
-    "buttonText": "Sign in to Quaynt",
-    "expiry": "This link expires in 10 minutes.",
-    "ignoreNotice": "If you didn't request this email, you can safely ignore it."
+    "subject": "Your sign-in link for Quaynt",
+    "preview": "Your sign-in link expires in 10 minutes.",
+    "eyebrow": "Sign in",
+    "heading": "Welcome to Quaynt",
+    "body": "Click the button below to finish signing in. This link expires in 10 minutes and can only be used once.",
+    "buttonText": "Continue to Quaynt",
+    "fallbackIntro": "Button not working? Paste this link into your browser:",
+    "sentToNotice": "We sent this to {email}. If you didn't request it, you can safely ignore this message.",
+    "privacy": "Privacy"
+  },
+  "brand": {
+    "tagline": "See how AI sees your brand."
   },
   "scheduledReport": {
     "subject": "{scheduleName}: {periodStart} to {periodEnd}",

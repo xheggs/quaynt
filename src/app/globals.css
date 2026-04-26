@@ -27,12 +27,12 @@
   --accent-foreground: #111111;
   --border: #e5e5e5;
   --input: #e5e5e5;
-  --ring: #9b70bc;
+  --ring: #7c5cba;
 
   /* Primary (brand purple) */
-  --primary: #9b70bc;
+  --primary: #7c5cba;
   --primary-foreground: #ffffff;
-  --primary-hover: #b08fd0;
+  --primary-hover: #6b4ca8;
 
   /* Secondary */
   --secondary: #f5f5f5;
@@ -54,8 +54,8 @@
   --sidebar-border: #e5e5e5;
   --sidebar-accent: #f5f5f5;
   --sidebar-accent-foreground: #111111;
-  --sidebar-ring: #9b70bc;
-  --sidebar-primary: #9b70bc;
+  --sidebar-ring: #7c5cba;
+  --sidebar-primary: #7c5cba;
   --sidebar-primary-foreground: #1a1625;
 
   /* Elevation (light mode) */
@@ -86,7 +86,7 @@
   --type-kpi-size: 36px;
   --type-kpi-size-mobile: 28px;
   --type-kpi-weight: 700;
-  --type-kpi-leading: 1.0;
+  --type-kpi-leading: 1;
   --type-kpi-tracking: -0.03em;
 
   --type-page-size: 28px;
@@ -168,11 +168,11 @@
   --accent-foreground: #eaeae8;
   --border: rgba(255, 255, 255, 0.08);
   --input: rgba(255, 255, 255, 0.1);
-  --ring: #9b70bc;
+  --ring: #7c5cba;
 
-  --primary: #9b70bc;
+  --primary: #7c5cba;
   --primary-foreground: #ffffff;
-  --primary-hover: #8560a8;
+  --primary-hover: #9d7fce;
 
   --secondary: #222225;
   --secondary-foreground: #eaeae8;
@@ -191,8 +191,8 @@
   --sidebar-border: rgba(255, 255, 255, 0.08);
   --sidebar-accent: #222225;
   --sidebar-accent-foreground: #eaeae8;
-  --sidebar-ring: #9b70bc;
-  --sidebar-primary: #9b70bc;
+  --sidebar-ring: #7c5cba;
+  --sidebar-primary: #7c5cba;
   --sidebar-primary-foreground: #1a1625;
 
   /* No visible shadows in dark mode — use border-only elevation */
@@ -319,7 +319,9 @@ body {
 }
 
 /* Balanced headings — prevent orphaned words */
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   text-wrap: balance;
 }
 
@@ -329,7 +331,9 @@ h1, h2, h3 {
 }
 
 /* CJK letter-spacing override — ideographs must not be tracked tighter */
-:lang(zh), :lang(ja), :lang(ko) {
+:lang(zh),
+:lang(ja),
+:lang(ko) {
   letter-spacing: 0 !important;
 }
 
@@ -407,11 +411,7 @@ h1, h2, h3 {
     black 0%,
     transparent var(--glow-r)
   );
-  mask-image: radial-gradient(
-    circle at var(--mx) var(--my),
-    black 0%,
-    transparent var(--glow-r)
-  );
+  mask-image: radial-gradient(circle at var(--mx) var(--my), black 0%, transparent var(--glow-r));
   opacity: 0.55;
   transition: opacity 280ms ease;
 }
@@ -456,11 +456,21 @@ h1, h2, h3 {
  * the next engine takes over, giving a ~500ms overlap.
  */
 @keyframes engine-cycle {
-  0% { opacity: 0; }
-  3% { opacity: 1; }
-  20% { opacity: 1; }
-  23% { opacity: 0; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 1;
+  }
+  23% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .engine-cycle {
@@ -477,8 +487,13 @@ h1, h2, h3 {
  * all animations, so no per-keyframe reduced-motion guard is required here.
  */
 @keyframes live-pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* ── Reduced Motion ────────────────────────────────────────────── */

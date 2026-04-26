@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, useWatch, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
@@ -121,7 +121,7 @@ function NewRunForm({ onOpenChange, onSuccess }: NewRunFormProps) {
   });
 
   const isSubmitting = mutation.isPending;
-  const selectedAdapters = form.watch('adapterConfigIds');
+  const selectedAdapters = useWatch({ control: form.control, name: 'adapterConfigIds' });
 
   function onSubmit(data: CreateModelRunFormValues) {
     setUnmappedErrors([]);

@@ -45,9 +45,10 @@ PostgreSQL runs in Docker; the app runs on the host for fast Turbopack hot reloa
 
 ```bash
 docker compose up -d    # Start PostgreSQL
-npm run dev             # Start the app
-npm run worker          # Start the background worker (separate terminal)
+npm run dev             # Start the web server + background worker together
 ```
+
+`npm run dev` runs both processes via `concurrently` — the worker is required for onboarding suggestions, webhook delivery, and any other queued jobs. To run them separately for debugging, use `npm run dev:web` and `npm run dev:worker`.
 
 ### Full-Docker Development
 
@@ -109,7 +110,9 @@ Design tokens, color palette, and component patterns are documented in `docs/arc
 
 | Script                 | Description                          |
 | ---------------------- | ------------------------------------ |
-| `npm run dev`          | Start development server (Turbopack) |
+| `npm run dev`          | Start dev server + background worker |
+| `npm run dev:web`      | Start dev server only (Turbopack)    |
+| `npm run dev:worker`   | Start background worker only         |
 | `npm run build`        | Production build (standalone output) |
 | `npm start`            | Start production server              |
 | `npm run worker`       | Start background job worker          |

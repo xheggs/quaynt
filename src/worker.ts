@@ -1,5 +1,7 @@
 import { PgBoss } from 'pg-boss';
 import { registerHandlers } from './lib/jobs/handlers.js';
+import { applyQueueAutoCreate } from './lib/jobs/boss.js';
+import { getSuggestionEngine } from './modules/onboarding/suggestion-engine/index.js';
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -19,9 +21,17 @@ boss.on('error', (error: Error) => {
   console.error('pg-boss worker error:', error);
 });
 
+applyQueueAutoCreate(boss);
+
 async function start() {
   await boss.start();
   await registerHandlers(boss);
+  const engine = getSuggestionEngine();
+  console.log(
+    engine
+      ? `Suggestion engine: ${engine.providerId}`
+      : 'Suggestion engine: none (manual onboarding fallback)'
+  );
   console.log('Worker started');
 }
 

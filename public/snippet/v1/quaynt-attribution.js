@@ -25,13 +25,31 @@
     'meta.ai',
     'chat.mistral.ai',
     'phind.com',
-    'andisearch.com'
+    'andisearch.com',
   ];
   var AI_UTM_VALUES = [
-    'chatgpt.com', 'chatgpt', 'openai', 'perplexity',
-    'gemini', 'bard', 'claude', 'claude.ai', 'copilot', 'bing-copilot',
-    'you.com', 'you', 'brave', 'grok', 'deepseek',
-    'meta-ai', 'metaai', 'mistral', 'le-chat', 'phind', 'andi', 'andisearch'
+    'chatgpt.com',
+    'chatgpt',
+    'openai',
+    'perplexity',
+    'gemini',
+    'bard',
+    'claude',
+    'claude.ai',
+    'copilot',
+    'bing-copilot',
+    'you.com',
+    'you',
+    'brave',
+    'grok',
+    'deepseek',
+    'meta-ai',
+    'metaai',
+    'mistral',
+    'le-chat',
+    'phind',
+    'andi',
+    'andisearch',
   ];
 
   function currentScript() {
@@ -54,15 +72,22 @@
   }
 
   function hostOf(url) {
-    try { return new URL(url).hostname.toLowerCase(); }
-    catch (e) { return ''; }
+    try {
+      return new URL(url).hostname.toLowerCase();
+    } catch {
+      return '';
+    }
   }
 
   function matchesAi(referrer, utm) {
     if (referrer) {
       var h = hostOf(referrer);
       for (var i = 0; i < AI_HOSTS.length; i++) {
-        if (h === AI_HOSTS[i] || h.indexOf('.' + AI_HOSTS[i]) !== -1 || h.indexOf(AI_HOSTS[i]) !== -1) {
+        if (
+          h === AI_HOSTS[i] ||
+          h.indexOf('.' + AI_HOSTS[i]) !== -1 ||
+          h.indexOf(AI_HOSTS[i]) !== -1
+        ) {
           return true;
         }
       }
@@ -82,19 +107,24 @@
     if (window.QuayntAttribution && window.QuayntAttribution.optedOut === true) return true;
     try {
       if (window.localStorage && window.localStorage.getItem(OPT_OUT_KEY)) return true;
-    } catch (e) { /* storage disabled — ignore */ }
+    } catch {
+      /* storage disabled — ignore */
+    }
     return false;
   }
 
   function send(collectorUrl, siteKey, payload) {
-    var url = collectorUrl.replace(/\/$/, '') + '/api/v1/traffic/collect/' + encodeURIComponent(siteKey);
+    var url =
+      collectorUrl.replace(/\/$/, '') + '/api/v1/traffic/collect/' + encodeURIComponent(siteKey);
     var body = JSON.stringify(payload);
     try {
       if (navigator.sendBeacon) {
         var blob = new Blob([body], { type: 'application/json' });
         if (navigator.sendBeacon(url, blob)) return;
       }
-    } catch (e) { /* fall through to fetch */ }
+    } catch {
+      /* fall through to fetch */
+    }
     try {
       if (typeof fetch === 'function') {
         fetch(url, {
@@ -103,10 +133,14 @@
           headers: { 'Content-Type': 'application/json' },
           keepalive: true,
           mode: 'no-cors',
-          credentials: 'omit'
-        }).catch(function () { /* network errors ignored */ });
+          credentials: 'omit',
+        }).catch(function () {
+          /* network errors ignored */
+        });
       }
-    } catch (e) { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   function run() {
@@ -117,13 +151,16 @@
 
     var siteKey = script.getAttribute('data-site-key');
     if (!siteKey) return;
-    var collectorUrl = script.getAttribute('data-collector') || (location.protocol + '//' + location.host);
+    var collectorUrl =
+      script.getAttribute('data-collector') || location.protocol + '//' + location.host;
 
     var referrer = document.referrer || '';
     var utm = '';
     try {
       utm = new URL(location.href).searchParams.get('utm_source') || '';
-    } catch (e) { utm = ''; }
+    } catch {
+      utm = '';
+    }
 
     if (!referrer && !utm) return;
     if (!matchesAi(referrer, utm)) return;
@@ -131,7 +168,7 @@
     var payload = {
       referrer: referrer || null,
       landingPath: location.pathname + location.search,
-      userAgentFamily: detectUaFamily(navigator.userAgent || '')
+      userAgentFamily: detectUaFamily(navigator.userAgent || ''),
     };
 
     send(collectorUrl, siteKey, payload);
@@ -140,7 +177,11 @@
   // Public opt-out API.
   window.QuayntAttribution = window.QuayntAttribution || {};
   window.QuayntAttribution.optOut = function () {
-    try { window.localStorage.setItem(OPT_OUT_KEY, '1'); } catch (e) { /* ignore */ }
+    try {
+      window.localStorage.setItem(OPT_OUT_KEY, '1');
+    } catch {
+      /* ignore */
+    }
     window.QuayntAttribution.optedOut = true;
   };
 

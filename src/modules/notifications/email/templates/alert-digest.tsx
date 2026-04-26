@@ -24,6 +24,8 @@ export interface DigestBrandGroup {
 
 export interface AlertDigestEmailProps {
   locale: string;
+  appUrl: string;
+  tagline: string;
   translations: {
     preview: string;
     heading: string;
@@ -46,6 +48,8 @@ export interface AlertDigestEmailProps {
 
 export function AlertDigestEmail({
   locale,
+  appUrl,
+  tagline,
   translations: t,
   brands,
   viewUrl,
@@ -58,6 +62,8 @@ export function AlertDigestEmail({
     <EmailLayout
       locale={locale}
       preview={t.preview}
+      appUrl={appUrl}
+      tagline={tagline}
       footer={{
         ...footer,
         preferencesUrl,
@@ -197,11 +203,12 @@ const ctaSection = {
 };
 
 const ctaButton = {
-  backgroundColor: '#6d28d9',
+  backgroundColor: '#7C5CBA',
   color: '#ffffff',
-  fontSize: '16px',
-  fontWeight: '600' as const,
-  padding: '14px 32px',
+  fontSize: '14px',
+  fontWeight: 600,
+  letterSpacing: '-0.005em',
+  padding: '12px 22px',
   borderRadius: '6px',
   textDecoration: 'none' as const,
   display: 'inline-block' as const,

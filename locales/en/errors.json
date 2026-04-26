@@ -22,6 +22,7 @@
       "insufficientScope": "This API key does not have permission for this action",
       "magicLinkExpired": "This sign-in link has expired. Please request a new one.",
       "magicLinkFailed": "Could not send sign-in link. Please try again.",
+      "disposableEmail": "This email provider isn't allowed. Please use a permanent address.",
       "notWorkspaceMember": "You are not a member of this workspace",
       "sessionExpired": "Your session has expired, please sign in again",
       "workspaceRequired": "A workspace context is required for this request"

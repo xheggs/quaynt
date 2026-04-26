@@ -29,6 +29,7 @@ export async function renderScheduledReportEmail(params: RenderScheduledReportEm
   } = params;
 
   const emailT = await loadEmailTranslations(locale);
+  const brandT = (emailT.brand ?? {}) as Record<string, unknown>;
 
   const periodValue = `${periodFrom} — ${periodTo}`;
   const subject = t(emailT, 'scheduledReport.subject', {
@@ -39,6 +40,8 @@ export async function renderScheduledReportEmail(params: RenderScheduledReportEm
 
   const props = {
     locale,
+    appUrl: baseUrl,
+    tagline: t(brandT, 'tagline'),
     translations: {
       preview: subject,
       heading: t(emailT, 'scheduledReport.greeting'),

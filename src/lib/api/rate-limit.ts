@@ -43,6 +43,33 @@ function getLimiter(points: number, duration: number, keyPrefix: string): RateLi
   return limiter;
 }
 
+export type ConsumeResult =
+  | { ok: true; remainingPoints: number }
+  | { ok: false; retryAfter: number };
+
+/**
+ * Ad-hoc rate-limit consume for handlers that need to apply an additional
+ * limit conditionally (e.g. only when a specific request flag is set). Fails
+ * open on DB errors, like `withRateLimit`.
+ */
+export async function consumeRateLimit(opts: {
+  key: string;
+  points: number;
+  duration: number;
+  keyPrefix: string;
+}): Promise<ConsumeResult> {
+  const limiter = getLimiter(opts.points, opts.duration, opts.keyPrefix);
+  try {
+    const res = await limiter.consume(opts.key, 1);
+    return { ok: true, remainingPoints: res.remainingPoints };
+  } catch (error) {
+    if (error instanceof RateLimiterRes) {
+      return { ok: false, retryAfter: Math.ceil(error.msBeforeNext / 1000) };
+    }
+    return { ok: true, remainingPoints: -1 };
+  }
+}
+
 function defaultAuthenticatedKey(req: Request): string {
   const auth = getAuthContext(req);
   return auth.method === 'api-key' ? auth.apiKeyId : auth.userId;

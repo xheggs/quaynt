@@ -39,18 +39,28 @@ export async function getUserWorkspaces(userId: string) {
     .where(eq(workspaceMember.userId, userId));
 }
 
-export async function createWorkspaceForUser(userId: string, name: string, slug: string) {
-  return db.transaction(async (tx) => {
-    const [ws] = await tx.insert(workspace).values({ name, slug, ownerId: userId }).returning();
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
-    await tx.insert(workspaceMember).values({
-      workspaceId: ws.id,
-      userId,
-      role: 'owner',
-    });
+/**
+ * Insert a workspace + the owner workspace_member row using an externally
+ * supplied transaction handle. Used by the signup auth hook so that the
+ * workspace, starter prompt set, and onboarding row are all created
+ * atomically — any failure rolls back the whole signup.
+ */
+export async function createWorkspaceForUserTx(tx: Tx, userId: string, name: string, slug: string) {
+  const [ws] = await tx.insert(workspace).values({ name, slug, ownerId: userId }).returning();
 
-    return ws;
+  await tx.insert(workspaceMember).values({
+    workspaceId: ws.id,
+    userId,
+    role: 'owner',
   });
+
+  return ws;
+}
+
+export async function createWorkspaceForUser(userId: string, name: string, slug: string) {
+  return db.transaction((tx) => createWorkspaceForUserTx(tx, userId, name, slug));
 }
 
 export async function requireWorkspaceMembership(workspaceId: string, userId: string) {

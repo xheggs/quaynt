@@ -10,6 +10,8 @@ const SEVERITY_COLORS: Record<string, string> = {
 export interface AlertTriggeredEmailProps {
   locale: string;
   severity: string;
+  appUrl: string;
+  tagline: string;
   translations: {
     preview: string;
     greeting: string;
@@ -38,6 +40,8 @@ export interface AlertTriggeredEmailProps {
 export function AlertTriggeredEmail({
   locale,
   severity,
+  appUrl,
+  tagline,
   translations: t,
   viewUrl,
   unsubscribeUrl,
@@ -51,6 +55,8 @@ export function AlertTriggeredEmail({
     <EmailLayout
       locale={locale}
       preview={t.preview}
+      appUrl={appUrl}
+      tagline={tagline}
       footer={{
         ...footer,
         preferencesUrl,
@@ -155,11 +161,12 @@ const ctaSection = {
 };
 
 const ctaButton = {
-  backgroundColor: '#6d28d9',
+  backgroundColor: '#7C5CBA',
   color: '#ffffff',
-  fontSize: '16px',
-  fontWeight: '600' as const,
-  padding: '14px 32px',
+  fontSize: '14px',
+  fontWeight: 600,
+  letterSpacing: '-0.005em',
+  padding: '12px 22px',
   borderRadius: '6px',
   textDecoration: 'none' as const,
   display: 'inline-block' as const,

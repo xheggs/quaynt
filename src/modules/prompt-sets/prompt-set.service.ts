@@ -4,7 +4,10 @@ import { db } from '@/lib/db';
 import { paginationConfig, sortConfig, countTotal } from '@/lib/db/query-helpers';
 import { promptSet } from './prompt-set.schema';
 import { prompt } from './prompt.schema';
+import { STARTER_PROMPT_SET } from './seed/starter-prompt-set';
 import { dispatchWebhookEvent } from '@/modules/webhooks/webhook.service';
+
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 const SORT_COLUMNS = {
   createdAt: promptSet.createdAt,
@@ -222,6 +225,47 @@ export async function deletePromptSet(promptSetId: string, workspaceId: string, 
   }
 
   return true;
+}
+
+/**
+ * Idempotently seed the starter prompt set + its prompts for a workspace.
+ * Returns the (existing or newly created) prompt set id. Designed to run
+ * inside the auth-hook's signup transaction; the caller passes its `tx`.
+ */
+export async function seedStarter(tx: Tx, workspaceId: string): Promise<string> {
+  const [existing] = await tx
+    .select({ id: promptSet.id })
+    .from(promptSet)
+    .where(
+      and(
+        eq(promptSet.workspaceId, workspaceId),
+        eq(promptSet.name, STARTER_PROMPT_SET.name),
+        isNull(promptSet.deletedAt)
+      )
+    )
+    .limit(1);
+
+  if (existing) return existing.id;
+
+  const [created] = await tx
+    .insert(promptSet)
+    .values({
+      workspaceId,
+      name: STARTER_PROMPT_SET.name,
+      description: STARTER_PROMPT_SET.description,
+      tags: [],
+    })
+    .returning({ id: promptSet.id });
+
+  await tx.insert(prompt).values(
+    STARTER_PROMPT_SET.prompts.map((template, index) => ({
+      promptSetId: created.id,
+      template,
+      order: index,
+    }))
+  );
+
+  return created.id;
 }
 
 // --- Prompt sub-resource functions ---

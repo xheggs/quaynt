@@ -77,6 +77,17 @@ const mockRunDetail: ModelRunDetail = {
     running: 0,
     skipped: 1,
   },
+  adapterSummary: [
+    {
+      adapterConfigId: 'ac-1',
+      total: 10,
+      completed: 8,
+      failed: 1,
+      pending: 0,
+      running: 0,
+      skipped: 1,
+    },
+  ],
 };
 
 describe('ModelRunDetailView', () => {

@@ -4,18 +4,23 @@ import { Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { AlertCircle, ArrowLeft, Loader2, MailCheck } from 'lucide-react';
+import { ArrowLeft, Loader2, MailCheck } from 'lucide-react';
+import { z } from 'zod';
 
 import { authClient } from '@/modules/auth/auth.client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ErrorChip } from '@/components/ui/error-chip';
 import { Logo } from '@/components/brand/logo';
+import { Cycler } from '@/components/brand/cycler';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 
 type PageState = 'form' | 'sent';
 
 const ENGINES = ['ChatGPT', 'Perplexity', 'Gemini', 'Claude', 'Copilot'];
+
+const emailSchema = z.string().email();
 
 export default function SignInPage() {
   return (
@@ -36,8 +41,11 @@ function SignInContent() {
   const [email, setEmail] = useState(urlEmail ?? '');
   const [state, setState] = useState<PageState>('form');
   const [error, setError] = useState(urlError ? t('common.auth.magicLinkExpired') : '');
+  const [emailError, setEmailError] = useState('');
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+
+  const emailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -47,6 +55,14 @@ function SignInContent() {
 
   const sendMagicLink = useCallback(async () => {
     setError('');
+    setEmailError('');
+
+    if (!emailSchema.safeParse(email).success) {
+      setEmailError(t('common.auth.emailInvalid'));
+      emailInputRef.current?.focus();
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -56,12 +72,20 @@ function SignInContent() {
       });
 
       if (result.error) {
-        setError(result.error.message ?? t('common.auth.magicLinkFailed'));
+        // Better Auth's raw error message (e.g. "[body.email] …") is not
+        // user-facing — log for diagnostics, show a localized fallback.
+        console.warn('Magic link sign-in failed', result.error);
+        if (result.error.code === 'DISPOSABLE_EMAIL') {
+          setError(t('common.auth.disposableEmail'));
+        } else {
+          setError(t('common.auth.magicLinkFailed'));
+        }
       } else {
         setState('sent');
         setCooldown(60);
       }
-    } catch {
+    } catch (err) {
+      console.warn('Magic link sign-in threw', err);
       setError(t('common.auth.magicLinkFailed'));
     } finally {
       setLoading(false);
@@ -114,6 +138,9 @@ function SignInContent() {
         <div className="flex flex-1 items-center px-6 py-12 sm:px-10 md:px-16 md:py-16 lg:px-20">
           <div className="w-full max-w-[360px]">
             {state === 'form' ? (
+              // noValidate: native browser validation is replaced by explicit
+              // Zod-based client validation below so the error copy stays
+              // localized and matches what the Better Auth server enforces.
               <form key="form" onSubmit={handleSubmit} noValidate className="flex flex-col gap-7">
                 <header className="flex animate-in flex-col gap-2 fade-in slide-in-from-bottom-1 duration-500">
                   <span className="type-overline text-muted-foreground">
@@ -134,14 +161,25 @@ function SignInContent() {
                   </Label>
                   <Input
                     id="email"
+                    ref={emailInputRef}
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (emailError) setEmailError('');
+                    }}
                     required
                     autoComplete="email"
                     placeholder="you@example.com"
                     className="h-11"
+                    aria-invalid={Boolean(emailError)}
+                    aria-describedby={emailError ? 'email-error' : undefined}
                   />
+                  {emailError && (
+                    <p id="email-error" role="alert" className="text-sm text-destructive">
+                      {emailError}
+                    </p>
+                  )}
                 </div>
 
                 {error && <ErrorChip message={error} />}
@@ -240,18 +278,6 @@ function SignInContent() {
   );
 }
 
-function ErrorChip({ message }: { message: string }) {
-  return (
-    <div
-      role="alert"
-      className="flex animate-in items-start gap-2 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive fade-in slide-in-from-bottom-1 duration-300"
-    >
-      <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-      <span>{message}</span>
-    </div>
-  );
-}
-
 type BrandPanelProps = {
   tagline: string;
   trackerLabel: string;
@@ -313,7 +339,7 @@ function BrandPanel({ tagline, trackerLabel, osBadge }: BrandPanelProps) {
           <div className="flex items-baseline gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
             <span>{trackerLabel}</span>
             <span aria-hidden="true">·</span>
-            <EngineCycler />
+            <Cycler items={ENGINES} />
           </div>
         </div>
       </div>
@@ -322,31 +348,5 @@ function BrandPanel({ tagline, trackerLabel, osBadge }: BrandPanelProps) {
         {osBadge}
       </div>
     </aside>
-  );
-}
-
-function EngineCycler() {
-  const widest = ENGINES.reduce((a, b) => (b.length > a.length ? b : a), '');
-  const slotSeconds = 3.5;
-  const cycleSeconds = ENGINES.length * slotSeconds;
-  return (
-    <span className="relative inline-block text-foreground" aria-label={ENGINES.join(', ')}>
-      <span aria-hidden="true" className="invisible">
-        {widest}
-      </span>
-      {ENGINES.map((engine, i) => (
-        <span
-          key={engine}
-          aria-hidden="true"
-          className="engine-cycle absolute inset-0 opacity-0"
-          style={{
-            animationDelay: `${i * slotSeconds}s`,
-            animationDuration: `${cycleSeconds}s`,
-          }}
-        >
-          {engine}
-        </span>
-      ))}
-    </span>
   );
 }

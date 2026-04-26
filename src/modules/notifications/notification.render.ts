@@ -136,8 +136,12 @@ export async function renderAlertEmail(
     currentValue,
   });
 
+  const brandT = (emailT.brand ?? {}) as Record<string, unknown>;
+
   const templateProps = {
     locale,
+    appUrl: baseUrl,
+    tagline: t(brandT, 'tagline'),
     severity: alertEvent.severity,
     translations: {
       preview: t(emailT, 'alert.preview', { brandName, metricLabel, currentValue, previousValue }),
@@ -245,8 +249,12 @@ export async function renderDigestEmail(
 
   const subject = t(emailT, 'digest.subject', { count: alertEvents.length, period: periodLabel });
 
+  const brandT = (emailT.brand ?? {}) as Record<string, unknown>;
+
   const props = {
     locale,
+    appUrl: baseUrl,
+    tagline: t(brandT, 'tagline'),
     translations: {
       preview: t(emailT, 'digest.preview', { count: alertEvents.length }),
       heading: t(emailT, 'digest.heading', { period: periodLabel }),

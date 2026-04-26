@@ -1,8 +1,14 @@
+import path from 'node:path';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // Pin the workspace root to this package so Next.js does not infer it
+  // from a stray lockfile higher in the filesystem.
+  turbopack: {
+    root: path.resolve(__dirname),
+  },
   serverExternalPackages: ['pg-boss', 'pg', 'pino', 'pino-pretty'],
   headers: async () => [
     {
