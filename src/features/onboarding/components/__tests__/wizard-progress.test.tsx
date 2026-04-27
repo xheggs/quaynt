@@ -27,51 +27,50 @@ afterEach(() => {
   usePathnameMock.mockReset();
 });
 
+function activeStepText(container: HTMLElement): string | null {
+  const active = container.querySelector('[aria-current="step"]');
+  return active ? active.textContent : null;
+}
+
 describe('WizardProgress (path-derived)', () => {
-  it('renders 33 on /onboarding/welcome', () => {
+  it('marks Connect active on /onboarding/welcome', () => {
     const { container } = renderAt('/en/onboarding/welcome');
-    expect(container.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe(
-      '33'
-    );
+    expect(activeStepText(container)).toContain('Connect');
   });
 
-  it('renders 66 on /onboarding/review/<id>', () => {
+  it('marks Confirm active on /onboarding/review/<id>', () => {
     const { container } = renderAt('/en/onboarding/review/job_abc');
-    expect(container.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe(
-      '66'
-    );
+    expect(activeStepText(container)).toContain('Confirm');
   });
 
-  it('renders 100 on /onboarding/first-run/<id>', () => {
+  it('marks Watch active on /onboarding/first-run/<id>', () => {
     const { container } = renderAt('/en/onboarding/first-run/run_abc');
-    expect(container.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe(
-      '100'
-    );
+    expect(activeStepText(container)).toContain('Watch');
   });
 
-  it('renders 40 on the manual /onboarding/brand', () => {
-    const { container } = renderAt('/en/onboarding/brand');
-    expect(container.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe(
-      '40'
-    );
+  it('renders nothing for legacy manual-flow paths (no longer part of the flow)', () => {
+    expect(renderAt('/en/onboarding/brand').container.querySelector('nav')).toBeNull();
+    cleanup();
+    expect(renderAt('/en/onboarding/competitors').container.querySelector('nav')).toBeNull();
+    cleanup();
+    expect(renderAt('/en/onboarding/prompt-set').container.querySelector('nav')).toBeNull();
   });
 
-  it('renders 60 on the manual /onboarding/competitors', () => {
-    const { container } = renderAt('/en/onboarding/competitors');
-    expect(container.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe(
-      '60'
-    );
-  });
-
-  it('renders 80 on the manual /onboarding/prompt-set', () => {
-    const { container } = renderAt('/en/onboarding/prompt-set');
-    expect(container.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe(
-      '80'
-    );
+  it('does not render an "N of N" counter inside the chip rail', () => {
+    const { container } = renderAt('/en/onboarding/welcome');
+    expect(container.textContent ?? '').not.toMatch(/\d\s*of\s*\d/i);
   });
 
   it('renders nothing for unrecognised paths', () => {
     const { container } = renderAt('/en/dashboard');
-    expect(container.querySelector('[role="progressbar"]')).toBeNull();
+    expect(container.querySelector('nav')).toBeNull();
+  });
+
+  it('renders Connect/Confirm/Watch labels on every onboarding page', () => {
+    const { container } = renderAt('/en/onboarding/welcome');
+    const text = container.textContent ?? '';
+    expect(text).toContain('Connect');
+    expect(text).toContain('Confirm');
+    expect(text).toContain('Watch');
   });
 });

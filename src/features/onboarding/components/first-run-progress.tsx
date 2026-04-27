@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { queryKeys } from '@/lib/query/keys';
 import { fetchModelRun, fetchAdapterConfigs } from '@/features/model-runs/model-run.api';
 import { fetchCitations } from '@/features/citations/citation.api';
+import { fetchPrompts } from '@/features/prompt-sets';
 import { isTerminalStatus } from '@/features/model-runs/model-run.types';
 import { useOnboarding, useUpdateOnboarding } from '@/features/onboarding/hooks/use-onboarding';
 import type { OnboardingRoleHint } from '@/features/onboarding/types';
@@ -19,6 +21,7 @@ import { KpiPlaceholder } from './kpi-placeholder';
 import { WowCard } from './wow-card';
 import { CitationStreamItem } from './citation-stream-item';
 import { PersonaChipRow } from './persona-chip-row';
+import { OnboardingPageHeader } from './onboarding-page-header';
 
 interface Props {
   runId: string;
@@ -85,6 +88,14 @@ export function FirstRunProgress({ runId }: Props) {
     staleTime: 5 * 60 * 1000,
   });
 
+  const promptSetId = run?.promptSetId ?? null;
+  const { data: prompts } = useQuery({
+    queryKey: ['promptSets', 'prompts', promptSetId ?? ''],
+    queryFn: () => fetchPrompts(promptSetId!),
+    enabled: Boolean(promptSetId),
+    staleTime: 60_000,
+  });
+
   const adapterNames = useMemo(() => {
     const map = new Map<string, string>();
     for (const a of adapters?.data ?? []) map.set(a.id, a.displayName);
@@ -108,23 +119,17 @@ export function FirstRunProgress({ runId }: Props) {
   const totalCount = run?.resultSummary.total ?? 0;
 
   return (
-    <div className="flex flex-col gap-6">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-balance text-2xl font-semibold tracking-tight sm:text-3xl">
-          {t('title')}
-        </h1>
-        <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
-        <p
-          className="flex flex-wrap gap-x-3 text-xs text-muted-foreground"
-          aria-live="polite"
-          aria-atomic="true"
-          data-testid="first-run-progress-announcer"
-        >
-          <span>{t('progress', { done: completedCount, total: totalCount })}</span>
-          <span aria-hidden="true">·</span>
-          <span>{t('eta')}</span>
-        </p>
-      </header>
+    <div className="flex flex-col gap-10">
+      <OnboardingPageHeader
+        phase="watch"
+        title={t('title')}
+        subtitle={t('subtitle')}
+        secondary={
+          <span aria-live="polite" aria-atomic="true" data-testid="first-run-progress-announcer">
+            {t('progress', { done: completedCount, total: totalCount })} · {t('eta')}
+          </span>
+        }
+      />
 
       {heroCitation ? (
         <WowCard
@@ -135,6 +140,11 @@ export function FirstRunProgress({ runId }: Props) {
       ) : null}
 
       {firstCitationSeen ? <PersonaChipRow currentRole={currentRole} /> : null}
+
+      {/* Prompts being run — closes the cognitive thread from the review page */}
+      {prompts && prompts.length > 0 ? (
+        <PromptsBeingRun prompts={prompts} engineCount={run?.adapterSummary.length ?? 0} />
+      ) : null}
 
       {/* Per-adapter status grid */}
       <section aria-label={t('adapterGridLabel')}>
@@ -318,6 +328,59 @@ function CancelledPanel({ locale, onAcknowledge }: { locale: string; onAcknowled
         </Button>
       </CardContent>
     </Card>
+  );
+}
+
+function PromptsBeingRun({
+  prompts,
+  engineCount,
+}: {
+  prompts: { id: string; template: string }[];
+  engineCount: number;
+}) {
+  const t = useTranslations('onboarding.firstRun.prompts');
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <section aria-label={t('title')}>
+      <Card>
+        <CardHeader>
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+            aria-controls="first-run-prompts-list"
+            className="flex w-full items-center justify-between gap-3 text-left"
+          >
+            <div className="flex flex-col gap-1">
+              <CardTitle className="text-sm">{t('title')}</CardTitle>
+              <span className="text-xs text-muted-foreground">
+                {t('summary', { count: prompts.length, engines: engineCount })}
+              </span>
+            </div>
+            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+              {expanded ? t('collapse') : t('expand')}
+              {expanded ? (
+                <ChevronUp className="size-4" aria-hidden="true" />
+              ) : (
+                <ChevronDown className="size-4" aria-hidden="true" />
+              )}
+            </span>
+          </button>
+        </CardHeader>
+        {expanded ? (
+          <CardContent id="first-run-prompts-list">
+            <ol className="flex list-decimal flex-col gap-1.5 pl-5 text-xs">
+              {prompts.map((p) => (
+                <li key={p.id} className="font-mono">
+                  {p.template}
+                </li>
+              ))}
+            </ol>
+          </CardContent>
+        ) : null}
+      </Card>
+    </section>
   );
 }
 

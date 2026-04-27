@@ -142,8 +142,15 @@
         "ai-overviews": "AI Overviews",
         "copilot": "Copilot",
         "grok": "Grok",
-        "deepseek": "DeepSeek"
-      }
+        "deepseek": "DeepSeek",
+        "openrouter": "OpenRouter (shared credential)",
+        "openrouter-sonar-pro": "OpenRouter — Sonar Pro",
+        "openrouter-gpt4o-online": "OpenRouter — GPT-4o + Exa",
+        "openrouter-claude-online": "OpenRouter — Claude + Exa",
+        "openrouter-deepseek": "OpenRouter — DeepSeek",
+        "openrouter-free": "OpenRouter — Free auto-router"
+      },
+      "viaOpenRouter": "via OpenRouter"
     },
     "apiKeys": {
       "title": "API Keys",

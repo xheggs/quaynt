@@ -10,6 +10,23 @@ const nextConfig: NextConfig = {
     root: path.resolve(__dirname),
   },
   serverExternalPackages: ['pg-boss', 'pg', 'pino', 'pino-pretty'],
+  redirects: async () => [
+    {
+      source: '/:locale/onboarding/brand',
+      destination: '/:locale/onboarding/welcome',
+      permanent: true,
+    },
+    {
+      source: '/:locale/onboarding/competitors',
+      destination: '/:locale/onboarding/welcome',
+      permanent: true,
+    },
+    {
+      source: '/:locale/onboarding/prompt-set',
+      destination: '/:locale/onboarding/welcome',
+      permanent: true,
+    },
+  ],
   headers: async () => [
     {
       source: '/(.*)',

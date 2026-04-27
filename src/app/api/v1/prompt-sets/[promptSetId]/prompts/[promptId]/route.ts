@@ -10,7 +10,7 @@ import { updatePrompt, deletePrompt } from '@/modules/prompt-sets/prompt-set.ser
 
 const updatePromptSchema = z.object({
   template: z.string().min(1).max(5000).optional(),
-  order: z.number().int().positive().optional(),
+  order: z.number().int().nonnegative().optional(),
 });
 
 export const PATCH = withRequestId(

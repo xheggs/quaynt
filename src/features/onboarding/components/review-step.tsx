@@ -1,25 +1,32 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { RotateCcw } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ApiError } from '@/lib/query/types';
+import { translateApiError } from '@/lib/query/error-messages';
 import { queryKeys } from '@/lib/query/keys';
 import { createBrand } from '@/features/brands';
-import { createPromptSet, fetchPromptSets, fetchPrompts, addPrompt } from '@/features/prompt-sets';
+import {
+  createPromptSet,
+  fetchPromptSets,
+  fetchPrompts,
+  addPrompt,
+  deletePromptSet,
+} from '@/features/prompt-sets';
 import { createModelRun } from '@/features/model-runs';
 import { fetchAdapters } from '@/features/settings';
 import { useUpdateOnboarding } from '@/features/onboarding';
 import { useCreateSuggestion, useSuggestion } from '../hooks/use-suggestion';
+import { OnboardingPageHeader } from './onboarding-page-header';
 import { BrandCard } from './review/brand-card';
 import { CompetitorsCard } from './review/competitors-card';
-import { PromptsCard, type PromptChoice } from './review/prompts-card';
+import { PromptsCard, type PromptChoice, type PromptEntry } from './review/prompts-card';
+import { StageLoading } from './review/stage-loading';
 import { errorKeyFor } from './review/error-key';
 
 type Props = { jobId: string };
@@ -32,6 +39,7 @@ export function ReviewStep({ jobId }: Props) {
   const tErrors = useTranslations('onboarding.review.errors');
   const tRegen = useTranslations('onboarding.review.regenerate');
   const tGeneric = useTranslations('onboarding.errors');
+  const tApiErrors = useTranslations('errors.api');
   const locale = useLocale();
   const router = useRouter();
   const update = useUpdateOnboarding();
@@ -45,20 +53,42 @@ export function ReviewStep({ jobId }: Props) {
   const regenerateMutation = useCreateSuggestion();
 
   const [brandName, setBrandName] = useState('');
-  const [aliasesText, setAliasesText] = useState('');
+  const [aliases, setAliases] = useState<string[]>([]);
+  const [aliasesTouched, setAliasesTouched] = useState(false);
+  const [aliasSeed, setAliasSeed] = useState<{
+    source: 'extracted' | 'ai';
+    value: string[];
+  } | null>(null);
   const [selectedCompetitors, setSelectedCompetitors] = useState<Set<number>>(new Set());
   const [extraCompetitors, setExtraCompetitors] = useState<{ name: string; domain: string }[]>([]);
   const [promptChoice, setPromptChoice] = useState<PromptChoice>('suggested');
+  // Editable copy of the AI-suggested prompts. `null` means "not yet seeded from
+  // suggestion data"; once seeded, edits live here so the user can delete/add
+  // prompts before submitting. Reset to `null` on regenerate so fresh
+  // suggestions re-seed.
+  const [editedPrompts, setEditedPrompts] = useState<PromptEntry[] | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showConfirmReplace, setShowConfirmReplace] = useState(false);
 
   useEffect(() => {
     if (!data?.extracted) return;
     if (!brandName) setBrandName(data.extracted.brandName);
-    if (!aliasesText && data.extracted.aliases.length) {
-      setAliasesText(data.extracted.aliases.join(', '));
+    if (!aliasesTouched && aliases.length === 0) {
+      if (data.extracted.aliases.length) {
+        setAliases(data.extracted.aliases);
+        setAliasSeed({ source: 'extracted', value: data.extracted.aliases });
+      } else if (data.suggestedAliases && data.suggestedAliases.length) {
+        setAliases(data.suggestedAliases);
+        setAliasSeed({ source: 'ai', value: data.suggestedAliases });
+      }
     }
-  }, [data?.extracted, brandName, aliasesText]);
+  }, [data?.extracted, data?.suggestedAliases, brandName, aliases.length, aliasesTouched]);
+
+  useEffect(() => {
+    if (editedPrompts === null && data?.suggestedPrompts && data.suggestedPrompts.length > 0) {
+      setEditedPrompts(data.suggestedPrompts);
+    }
+  }, [data?.suggestedPrompts, editedPrompts]);
 
   useEffect(() => {
     if (data?.suggestedCompetitors) {
@@ -66,15 +96,19 @@ export function ReviewStep({ jobId }: Props) {
         prev.size === 0 ? new Set(data.suggestedCompetitors!.map((_, i) => i)) : prev
       );
     }
-    if (
-      !data?.suggestedPrompts &&
-      data?.suggestedCompetitors === null &&
-      data?.engineUsed === null &&
-      promptChoice === 'suggested'
-    ) {
+    const hasFinalised = data?.status === 'done' || data?.status === 'failed';
+    const lacksSuggestedPrompts =
+      !data?.suggestedPrompts || (data.status === 'done' && data.engineUsed === null);
+    if (hasFinalised && lacksSuggestedPrompts && promptChoice === 'suggested') {
       setPromptChoice('starter');
     }
-  }, [data?.suggestedCompetitors, data?.suggestedPrompts, data?.engineUsed, promptChoice]);
+  }, [
+    data?.status,
+    data?.suggestedCompetitors,
+    data?.suggestedPrompts,
+    data?.engineUsed,
+    promptChoice,
+  ]);
 
   const isFetching = !data || data.status === 'pending' || data.status === 'fetching';
   const isSuggesting = data?.status === 'suggesting';
@@ -82,14 +116,16 @@ export function ReviewStep({ jobId }: Props) {
   const isDone = data?.status === 'done';
   const noEngine = isDone && data?.engineUsed === null;
   const engineAvailable = isDone && data?.engineUsed !== null;
+  // Manual mode covers any state where suggestion data isn't usable: no engine
+  // configured, or the suggestion job failed outright. The cards behave the
+  // same in both: empty defaults, manual-entry affordances visible by default.
+  const manualMode = noEngine || isFailed;
 
-  // Pre-seed one empty competitor row in no-engine mode so the manual-entry
-  // affordance is visible immediately rather than gated behind "Add another".
   useEffect(() => {
-    if (noEngine && extraCompetitors.length === 0) {
+    if (manualMode && extraCompetitors.length === 0) {
       setExtraCompetitors([{ name: '', domain: '' }]);
     }
-  }, [noEngine, extraCompetitors.length]);
+  }, [manualMode, extraCompetitors.length]);
 
   const promptSets = useQuery({
     queryKey: queryKeys.promptSets.list({ page: 1, limit: 50 }),
@@ -122,15 +158,22 @@ export function ReviewStep({ jobId }: Props) {
   const hasUserEdits = useMemo(() => {
     if (!data?.extracted) return false;
     if (brandName.trim() !== data.extracted.brandName.trim()) return true;
-    const originalAliases = data.extracted.aliases.join(', ');
-    if (aliasesText.trim() !== originalAliases.trim()) return true;
+    const seedValues = aliasSeed?.value ?? [];
+    const seedKey = seedValues.map((a) => a.trim()).join('|');
+    const currentKey = aliases.map((a) => a.trim()).join('|');
+    if (seedKey !== currentKey) return true;
     if (extraCompetitors.length > 0) return true;
     if (data.suggestedCompetitors) {
       const defaultSelected = data.suggestedCompetitors.length;
       if (selectedCompetitors.size !== defaultSelected) return true;
     }
+    if (editedPrompts && data.suggestedPrompts) {
+      const seedPromptKey = data.suggestedPrompts.map((p) => p.text.trim()).join('|');
+      const currentPromptKey = editedPrompts.map((p) => p.text.trim()).join('|');
+      if (seedPromptKey !== currentPromptKey) return true;
+    }
     return false;
-  }, [data, brandName, aliasesText, extraCompetitors, selectedCompetitors]);
+  }, [data, brandName, aliases, aliasSeed, extraCompetitors, selectedCompetitors, editedPrompts]);
 
   async function runRegenerate() {
     if (!data?.domain) return;
@@ -143,16 +186,26 @@ export function ReviewStep({ jobId }: Props) {
       });
       // Reset local form state — new suggestions are about to land.
       setBrandName('');
-      setAliasesText('');
+      setAliases([]);
+      setAliasesTouched(false);
+      setAliasSeed(null);
       setSelectedCompetitors(new Set());
       setExtraCompetitors([]);
       setPromptChoice('suggested');
+      setEditedPrompts(null);
       setActiveJobId(fresh.id);
       toast.success(tRegen('successToast'));
     } catch (err) {
       if (err instanceof ApiError && err.status === 429) {
         toast.error(tRegen('rateLimited'));
         return;
+      }
+      if (err instanceof ApiError) {
+        console.error('Regenerate failed', {
+          status: err.status,
+          code: err.code,
+          message: err.message,
+        });
       }
       toast.error(tRegen('error'));
     }
@@ -167,22 +220,21 @@ export function ReviewStep({ jobId }: Props) {
   }
 
   async function handleSubmit() {
-    if (!data?.extracted || !brandReady) return;
+    if (!brandReady) return;
     setSubmitting(true);
     try {
-      const aliases = aliasesText
-        .split(',')
-        .map((s) => s.trim())
+      const cleanedAliases = aliases
+        .map((a) => a.trim())
         .filter(Boolean)
         .slice(0, 10);
       const brand = await createBrand({
         name: brandName.trim(),
-        domain: data.domain || undefined,
-        aliases,
-        description: data.extracted.description ?? undefined,
+        domain: data?.domain || undefined,
+        aliases: cleanedAliases,
+        description: data?.extracted?.description ?? undefined,
       });
 
-      const selected = (data.suggestedCompetitors ?? []).filter((_, i) =>
+      const selected = (data?.suggestedCompetitors ?? []).filter((_, i) =>
         selectedCompetitors.has(i)
       );
       const extras = extraCompetitors.filter((c) => c.name.trim());
@@ -200,22 +252,35 @@ export function ReviewStep({ jobId }: Props) {
           if (!(e instanceof ApiError && e.status === 409)) throw e;
         }
       }
-      const hasCompetitors = selected.length > 0 || extras.length > 0;
 
       let promptSetId: string | null = null;
-      if (
-        promptChoice === 'suggested' &&
-        data.suggestedPrompts &&
-        data.suggestedPrompts.length > 0
-      ) {
+      // Use the edited prompts if the user has touched them; otherwise fall
+      // back to the AI-suggested originals.
+      const promptsToSave = (editedPrompts ?? data?.suggestedPrompts ?? [])
+        .map((p) => ({ ...p, text: p.text.trim() }))
+        .filter((p) => p.text.length > 0);
+      if (promptChoice === 'suggested' && promptsToSave.length > 0) {
+        const expectedName = tPrompts('promptSetName', { brand: brand.name });
+        // Dedupe: a prior review submit (or regenerate after dashboard exit) may
+        // have left an auto-suggested set with this exact name. Best-effort
+        // delete before creating a fresh one so the prompt-sets list doesn't
+        // accumulate stale duplicates.
+        const stale = (promptSets.data?.data ?? []).filter(
+          (ps) => ps.tags.includes('auto-suggested') && ps.name === expectedName
+        );
+        for (const old of stale) {
+          try {
+            await deletePromptSet(old.id);
+          } catch (e) {
+            console.warn('Failed to delete stale auto-suggested prompt set', e);
+          }
+        }
         const created = await createPromptSet({
-          name: tPrompts('promptSetName', { brand: brand.name }),
+          name: expectedName,
           tags: ['auto-suggested'],
         });
         await Promise.all(
-          data.suggestedPrompts.map((p, idx) =>
-            addPrompt(created.id, { template: p.text, order: idx })
-          )
+          promptsToSave.map((p, idx) => addPrompt(created.id, { template: p.text, order: idx }))
         );
         promptSetId = created.id;
       } else if (promptChoice === 'starter' && starter) {
@@ -250,18 +315,21 @@ export function ReviewStep({ jobId }: Props) {
         {
           milestones: {
             brandAdded: true,
-            competitorsAdded: hasCompetitors,
+            competitorsAdded: true,
             promptSetSelected,
             firstRunTriggered,
           },
-          step: firstRunTriggered ? 'first_run' : promptSetSelected ? 'prompt_set' : 'competitors',
+          // Submitting the review always clears brand/competitors/prompt-set choices,
+          // so the next phase is the first run regardless of whether one was triggered.
+          step: 'first_run',
         },
         {
           onSuccess: () => router.push(destination),
         }
       );
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : tGeneric('generic');
+      const message =
+        err instanceof ApiError ? translateApiError(tApiErrors, err) : tGeneric('generic');
       toast.error(message);
       setSubmitting(false);
     }
@@ -269,7 +337,7 @@ export function ReviewStep({ jobId }: Props) {
 
   const errorCopy = isFailed ? tErrors(errorKeyFor(data?.error)) : null;
   const host = data?.domain ?? null;
-  const subtitleHostKey = noEngine
+  const subtitleHostKey = manualMode
     ? host
       ? 'heroSubtitleNoEngine'
       : 'heroSubtitleNoEngineNoHost'
@@ -281,85 +349,80 @@ export function ReviewStep({ jobId }: Props) {
   const regenerateDisabled =
     regenerating || isFetching || isSuggesting || submitting || update.isPending;
 
+  const subtitleNode = host
+    ? t.rich(subtitleHostKey, {
+        host: (chunks) => <code className="font-mono">{chunks}</code>,
+        hostName: host,
+      })
+    : t(subtitleHostKey);
+
   return (
     <div className="flex flex-col gap-10">
-      <header className="flex flex-col gap-3">
-        <h1 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-          {t('heroTitle')}
-        </h1>
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <p className="max-w-prose text-base text-muted-foreground">
-            {host
-              ? t.rich(subtitleHostKey, {
-                  host: (chunks) => <code className="font-mono">{chunks}</code>,
-                  hostName: host,
-                })
-              : t(subtitleHostKey)}
-          </p>
-          {showRegenerate ? (
+      <OnboardingPageHeader
+        phase="confirm"
+        title={t('heroTitle')}
+        subtitle={subtitleNode}
+        secondary={
+          showRegenerate ? (
+            <button
+              type="button"
+              onClick={handleRegenerateClick}
+              disabled={regenerateDisabled}
+              title={tRegen('tooltip')}
+              className="text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-foreground disabled:opacity-50"
+            >
+              {tRegen('topLink')}
+            </button>
+          ) : null
+        }
+      />
+      {showConfirmReplace ? (
+        <div className="-mt-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-muted/40 px-3 py-2 text-sm">
+          <span>{tRegen('confirmTitle')}</span>
+          <div className="flex gap-2">
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              onClick={handleRegenerateClick}
-              disabled={regenerateDisabled}
-              title={tRegen('tooltip')}
-              className="-mr-2 shrink-0 text-muted-foreground"
+              onClick={() => setShowConfirmReplace(false)}
             >
-              <RotateCcw
-                className={`mr-1.5 size-4 ${regenerating ? 'animate-spin' : ''}`}
-                aria-hidden="true"
-              />
-              {regenerating ? tRegen('inflight') : tRegen('cta')}
+              {tRegen('confirmCancelCta')}
             </Button>
-          ) : null}
-        </div>
-        {showConfirmReplace ? (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-muted/40 px-3 py-2 text-sm">
-            <span>{tRegen('confirmTitle')}</span>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowConfirmReplace(false)}
-              >
-                {tRegen('confirmCancelCta')}
-              </Button>
-              <Button type="button" size="sm" onClick={() => void runRegenerate()}>
-                {tRegen('confirmReplaceCta')}
-              </Button>
-            </div>
+            <Button type="button" size="sm" onClick={() => void runRegenerate()}>
+              {tRegen('confirmReplaceCta')}
+            </Button>
           </div>
-        ) : null}
-      </header>
+        </div>
+      ) : null}
 
-      {isFailed && errorCopy ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>{errorCopy}</CardTitle>
-            <CardDescription>{t('fallback.body')}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild variant="outline">
-              <Link href={`/${locale}/onboarding/brand`}>{t('fallback.cta')}</Link>
-            </Button>
-          </CardContent>
-        </Card>
+      {isFetching || isSuggesting ? (
+        <StageLoading status={data?.status ?? null} host={data?.domain ?? null} />
       ) : (
         <>
+          {isFailed && errorCopy ? (
+            <div
+              role="status"
+              className="rounded-md border border-yellow-500/40 bg-yellow-500/5 p-4 text-sm"
+            >
+              <p className="font-medium">{errorCopy}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t('failedNotice.body')}</p>
+            </div>
+          ) : null}
+
           <BrandCard
-            isLoading={isFetching}
             brandName={brandName}
-            aliasesText={aliasesText}
+            aliases={aliases}
+            aliasSource={aliasSeed?.source ?? 'empty'}
             onBrandNameChange={setBrandName}
-            onAliasesChange={setAliasesText}
+            onAliasesChange={(next) => {
+              setAliases(next);
+              setAliasesTouched(true);
+            }}
             host={data?.domain ?? null}
           />
 
           <CompetitorsCard
-            isLoading={isFetching || isSuggesting}
-            noEngine={Boolean(noEngine && !data?.suggestedCompetitors)}
+            noEngine={Boolean(manualMode && !data?.suggestedCompetitors)}
             partialError={
               data?.error?.stage === 'competitors' ? tErrors(errorKeyFor(data?.error)) : null
             }
@@ -384,24 +447,48 @@ export function ReviewStep({ jobId }: Props) {
             locale={locale}
             revealDelay="motion-safe:delay-150"
             brandName={brandName.trim() || undefined}
+            initiallyExpanded={
+              Boolean(manualMode && !data?.suggestedCompetitors) ||
+              data?.error?.stage === 'competitors'
+            }
+            defaultSelectedCount={data?.suggestedCompetitors?.length ?? 0}
           />
 
           <PromptsCard
-            isLoading={isFetching || isSuggesting}
-            noEngine={Boolean(noEngine && !data?.suggestedPrompts)}
+            noEngine={Boolean(manualMode && !data?.suggestedPrompts)}
             partialError={
               data?.error?.stage === 'prompts' ? tErrors(errorKeyFor(data?.error)) : null
             }
-            prompts={data?.suggestedPrompts ?? []}
+            prompts={editedPrompts ?? data?.suggestedPrompts ?? []}
+            onPromptsChange={setEditedPrompts}
             choice={promptChoice}
             onChoiceChange={setPromptChoice}
             starterAvailable={Boolean(starter)}
             starterPromptCount={starterPrompts.data?.length ?? 0}
-            locale={locale}
             revealDelay="motion-safe:delay-300"
+            initiallyExpanded={
+              Boolean(manualMode && !data?.suggestedPrompts) || data?.error?.stage === 'prompts'
+            }
           />
 
-          <div className="flex flex-col items-end gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-6">
+            {showRegenerate ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleRegenerateClick}
+                disabled={regenerateDisabled}
+                title={tRegen('tooltip')}
+                className="text-muted-foreground"
+              >
+                <RotateCcw
+                  className={`mr-1.5 size-4 ${regenerating ? 'animate-spin' : ''}`}
+                  aria-hidden="true"
+                />
+                {regenerating ? tRegen('inflight') : tRegen('cta')}
+              </Button>
+            ) : null}
             <Button
               type="button"
               size="lg"

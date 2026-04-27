@@ -8,6 +8,7 @@ export type OnboardingSuggestionDto = {
   extracted: OnboardingSuggestionRecord['extracted'];
   suggestedCompetitors: OnboardingSuggestionRecord['suggestedCompetitors'];
   suggestedPrompts: OnboardingSuggestionRecord['suggestedPrompts'];
+  suggestedAliases: OnboardingSuggestionRecord['suggestedAliases'];
   engineUsed: string | null;
   completedAt: string | null;
   createdAt: string;
@@ -23,6 +24,7 @@ export function toSuggestionResponse(row: OnboardingSuggestionRecord): Onboardin
     extracted: row.extracted,
     suggestedCompetitors: row.suggestedCompetitors,
     suggestedPrompts: row.suggestedPrompts,
+    suggestedAliases: row.suggestedAliases,
     engineUsed: row.engineUsed,
     completedAt: row.completedAt?.toISOString() ?? null,
     createdAt: row.createdAt.toISOString(),

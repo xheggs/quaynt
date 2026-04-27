@@ -12,6 +12,7 @@ import { ErrorChip } from '@/components/ui/error-chip';
 import { Cycler } from '@/components/brand/cycler';
 import { useCreateSuggestion } from '@/features/onboarding/hooks/use-suggestion';
 import { ApiError } from '@/lib/query/types';
+import { OnboardingPageHeader } from './onboarding-page-header';
 
 export function WelcomeStep() {
   const t = useTranslations('onboarding');
@@ -55,24 +56,18 @@ export function WelcomeStep() {
     }
   }
 
-  function handleSkipManual() {
-    router.push(`/${locale}/onboarding/brand`);
-  }
-
   return (
-    <div className="relative flex flex-col items-stretch gap-8 pt-10 sm:pt-16">
+    <div className="relative flex flex-col items-stretch gap-10 pt-6 sm:pt-10">
       <div
         aria-hidden="true"
         className="dot-grid-band pointer-events-none absolute inset-x-0 top-0 -z-10 h-48 [mask-image:linear-gradient(to_bottom,black,transparent)]"
       />
 
-      <header className="flex animate-in flex-col gap-3 text-balance fade-in slide-in-from-bottom-1 duration-500">
-        <span className="type-overline text-muted-foreground">{t('domain.eyebrow')}</span>
-        <h1 className="type-display text-balance text-foreground">{t('domain.hero.title')}</h1>
-        <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
-          {t('domain.hero.subtitle')}
-        </p>
-      </header>
+      <OnboardingPageHeader
+        phase="connect"
+        title={t('domain.hero.title')}
+        subtitle={t('domain.hero.subtitle')}
+      />
 
       <form
         onSubmit={(e) => {
@@ -130,17 +125,6 @@ export function WelcomeStep() {
               t('domain.cta.idle')
             )}
           </Button>
-
-          <div className="flex justify-center border-t border-border/60 pt-4">
-            <button
-              type="button"
-              onClick={handleSkipManual}
-              disabled={isPending}
-              className="text-xs text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
-            >
-              {t('domain.skipManual')}
-            </button>
-          </div>
         </div>
       </form>
     </div>

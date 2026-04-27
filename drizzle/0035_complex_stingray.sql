@@ -1,0 +1,1 @@
+ALTER TABLE "onboarding_suggestion" ADD COLUMN "suggested_aliases" jsonb;

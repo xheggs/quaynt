@@ -2,62 +2,90 @@
 
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
-import { Progress } from '@/components/ui/progress';
+import { Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-type WizardStep =
-  | { kind: 'auto'; key: 'domain' | 'confirm' | 'results'; value: 33 | 66 | 100 }
-  | {
-      kind: 'manual';
-      key: 'brand' | 'competitors' | 'promptSet';
-      value: 40 | 60 | 80;
-    };
+type Phase = 'connect' | 'confirm' | 'watch';
 
-function deriveStep(pathname: string | null): WizardStep | null {
+const PHASES: Phase[] = ['connect', 'confirm', 'watch'];
+
+function derivePhase(pathname: string | null): Phase | null {
   if (!pathname) return null;
-  // Strip locale prefix; match the trailing onboarding path.
   const match = pathname.match(/\/onboarding\/(.+)$/);
   if (!match) return null;
   const tail = match[1];
-  if (tail.startsWith('welcome')) return { kind: 'auto', key: 'domain', value: 33 };
-  if (tail.startsWith('review/')) return { kind: 'auto', key: 'confirm', value: 66 };
-  if (tail.startsWith('first-run/')) return { kind: 'auto', key: 'results', value: 100 };
-  if (tail.startsWith('brand')) return { kind: 'manual', key: 'brand', value: 40 };
-  if (tail.startsWith('competitors')) return { kind: 'manual', key: 'competitors', value: 60 };
-  if (tail.startsWith('prompt-set')) return { kind: 'manual', key: 'promptSet', value: 80 };
+  if (tail.startsWith('welcome')) return 'connect';
+  if (tail.startsWith('review/')) return 'confirm';
+  if (tail.startsWith('first-run/')) return 'watch';
   return null;
 }
 
 export function WizardProgress() {
   const t = useTranslations('onboarding.wizard');
   const pathname = usePathname();
-  const step = deriveStep(pathname);
+  const phase = derivePhase(pathname);
 
-  if (!step) return null;
+  if (!phase) return null;
 
-  const label =
-    step.kind === 'auto' ? t(`stepLabels.${step.key}`) : t(`stepLabels.manual.${step.key}`);
+  const activeIndex = PHASES.indexOf(phase);
 
-  const valuetext =
-    step.kind === 'auto'
-      ? t('progressLabel', { step: stepNumber(step.key), label })
-      : t('manualProgressLabel', { label });
+  const ariaLabel = t('progressLabel', {
+    step: activeIndex + 1,
+    label: t(`phaseLabels.${phase}`),
+  });
 
   return (
-    <Progress
-      value={step.value}
-      className="h-0.5 rounded-none bg-transparent"
-      role="progressbar"
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={step.value}
-      aria-valuetext={valuetext}
-      aria-label={valuetext}
-    />
+    <nav aria-label={ariaLabel}>
+      <ol className="mx-auto flex w-full max-w-3xl items-center gap-2 px-6 pb-2 pt-1 sm:gap-3 sm:px-10">
+        {PHASES.map((p, index) => {
+          const status: 'complete' | 'active' | 'pending' =
+            index < activeIndex ? 'complete' : index === activeIndex ? 'active' : 'pending';
+          const phaseLabel = t(`phaseLabels.${p}`);
+          return (
+            <li
+              key={p}
+              className={cn(
+                'flex flex-1 items-center gap-2 sm:gap-3',
+                index < PHASES.length - 1 && 'after:hidden sm:after:block'
+              )}
+              aria-current={status === 'active' ? 'step' : undefined}
+            >
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'inline-flex size-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-semibold tabular-nums transition-colors',
+                  status === 'complete' && 'border-primary bg-primary text-primary-foreground',
+                  status === 'active' && 'border-primary text-primary',
+                  status === 'pending' && 'border-border text-muted-foreground'
+                )}
+              >
+                {status === 'complete' ? (
+                  <Check className="size-3.5" aria-hidden="true" />
+                ) : (
+                  index + 1
+                )}
+              </span>
+              <span
+                className={cn(
+                  'truncate text-xs font-medium uppercase tracking-[0.08em] sm:text-[11px]',
+                  status === 'pending' ? 'text-muted-foreground' : 'text-foreground'
+                )}
+              >
+                {phaseLabel}
+              </span>
+              {index < PHASES.length - 1 ? (
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    'mx-1 hidden h-px flex-1 sm:block',
+                    index < activeIndex ? 'bg-primary' : 'bg-border'
+                  )}
+                />
+              ) : null}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
   );
-}
-
-function stepNumber(key: 'domain' | 'confirm' | 'results'): number {
-  if (key === 'domain') return 1;
-  if (key === 'confirm') return 2;
-  return 3;
 }

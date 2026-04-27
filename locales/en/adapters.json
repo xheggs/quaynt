@@ -173,6 +173,30 @@
         "serpProvider": "SERP Provider",
         "noCache": "Bypass Cache"
       }
+    },
+    "openrouter": {
+      "name": "OpenRouter",
+      "description": "Shared API key for OpenRouter-backed signal sources. This adapter only stores the credential — enable individual OpenRouter platforms (Sonar Pro, GPT-4o + Exa, etc.) to query."
+    },
+    "openrouter-sonar-pro": {
+      "name": "OpenRouter — Sonar Pro",
+      "description": "Perplexity Sonar Pro proxied via OpenRouter. Same grounding as the native Perplexity adapter — distinct from native Perplexity only in billing/account."
+    },
+    "openrouter-gpt4o-online": {
+      "name": "OpenRouter — GPT-4o + Exa",
+      "description": "OpenAI GPT-4o grounded via Exa search through OpenRouter. Distinct signal from native ChatGPT — citations come from Exa, not OpenAI's web_search tool."
+    },
+    "openrouter-claude-online": {
+      "name": "OpenRouter — Claude + Exa",
+      "description": "Anthropic Claude grounded via Exa search through OpenRouter. Distinct signal from native Claude — citations come from Exa, not Anthropic's web_search tool."
+    },
+    "openrouter-deepseek": {
+      "name": "OpenRouter — DeepSeek",
+      "description": "DeepSeek Chat via OpenRouter. No web grounding; measures parametric brand knowledge only."
+    },
+    "openrouter-free": {
+      "name": "OpenRouter — Free auto-router",
+      "description": "OpenRouter routes each request to whatever free-tier model is currently available. Free-pool composition rotates frequently — override `orModel` per row to pin a specific :free slug. No web grounding by default."
     }
   }
 }

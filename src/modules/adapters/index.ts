@@ -14,6 +14,7 @@ import { registerCopilotAdapter } from './copilot';
 import { registerDeepSeekAdapter } from './deepseek';
 import { registerGeminiAdapter } from './gemini';
 import { registerGrokAdapter } from './grok';
+import { registerOpenRouterPlatforms } from './openrouter';
 import { registerPerplexityAdapter } from './perplexity';
 
 let registry: AdapterRegistry | null = null;
@@ -29,6 +30,7 @@ export function getAdapterRegistry(): AdapterRegistry {
     registerCopilotAdapter(registry);
     registerDeepSeekAdapter(registry);
     registerGrokAdapter(registry);
+    registerOpenRouterPlatforms(registry);
   }
   return registry;
 }

@@ -23,7 +23,7 @@ export type SuggestionPrompt = {
 export type SuggestionError = {
   code: string;
   message: string;
-  stage: 'fetch' | 'competitors' | 'prompts';
+  stage: 'fetch' | 'aliases' | 'competitors' | 'prompts';
 };
 
 export type SuggestionDto = {
@@ -34,6 +34,7 @@ export type SuggestionDto = {
   extracted: SuggestionExtracted | null;
   suggestedCompetitors: SuggestionCompetitor[] | null;
   suggestedPrompts: SuggestionPrompt[] | null;
+  suggestedAliases: string[] | null;
   engineUsed: string | null;
   completedAt: string | null;
   createdAt: string;

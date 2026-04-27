@@ -1,20 +1,24 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Trash2 } from 'lucide-react';
+import { ChevronDown, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-import { PartialErrorNotice, Skeleton } from './notices';
+import { PartialErrorNotice } from './notices';
+
+const MAX_SUMMARY_NAMES = 3;
+
+type Competitor = { name: string; domain: string | null; reason: string | null };
 
 type Props = {
-  isLoading: boolean;
   noEngine: boolean;
   partialError: string | null;
-  competitors: { name: string; domain: string | null; reason: string | null }[];
+  competitors: Competitor[];
   selected: Set<number>;
   extras: { name: string; domain: string }[];
   onToggle: (idx: number) => void;
@@ -24,10 +28,16 @@ type Props = {
   locale: string;
   revealDelay?: string;
   brandName?: string;
+  /** Open the editor by default (used for noEngine / partial-error). */
+  initiallyExpanded?: boolean;
+  /**
+   * Number of competitors selected by default after suggestions land.
+   * Used to compute an "edited" count for the collapsed summary.
+   */
+  defaultSelectedCount: number;
 };
 
 export function CompetitorsCard({
-  isLoading,
   noEngine,
   partialError,
   competitors,
@@ -40,19 +50,44 @@ export function CompetitorsCard({
   locale,
   revealDelay,
   brandName,
+  initiallyExpanded,
+  defaultSelectedCount,
 }: Props) {
   const t = useTranslations('onboarding.review.competitors');
   const tCompetitorFields = useTranslations('onboarding.review.competitors.fields');
+  const [expanded, setExpanded] = useState(Boolean(initiallyExpanded));
+
   const title = noEngine ? t('titleManual') : t('title');
   const description = noEngine
     ? brandName
       ? t('descriptionManual', { brand: brandName })
       : t('descriptionManualNoBrand')
     : t('description');
+
+  const filledExtras = extras.filter((c) => c.name.trim());
+  const selectedCount = selected.size + filledExtras.length;
+
+  const selectedNames: string[] = [];
+  competitors.forEach((c, idx) => {
+    if (selected.has(idx)) selectedNames.push(c.name);
+  });
+  filledExtras.forEach((c) => selectedNames.push(c.name.trim()));
+
+  const previewNames = selectedNames.slice(0, MAX_SUMMARY_NAMES);
+  const moreCount = Math.max(0, selectedNames.length - previewNames.length);
+  const namesText =
+    previewNames.length > 0
+      ? new Intl.ListFormat(locale, { type: 'unit', style: 'short' }).format(previewNames)
+      : '';
+
+  const selectionDiff = Math.abs(selected.size - defaultSelectedCount);
+  const editedCount = selectionDiff + filledExtras.length;
+  const showEmpty = selectedCount === 0 && competitors.length === 0;
+
   return (
     <Card
       className={cn(
-        'border-border/60 motion-safe:transition-opacity motion-safe:duration-200',
+        'border-border/60 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500',
         revealDelay
       )}
     >
@@ -61,16 +96,42 @@ export function CompetitorsCard({
         <CardDescription className="line-clamp-1">{description}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        {isLoading ? (
-          <Skeleton lines={4} testId="review-skeleton-competitors" />
-        ) : partialError ? (
-          <PartialErrorNotice
-            href={`/${locale}/onboarding/competitors`}
-            message={partialError}
-            cta={t('emptyManualCta')}
-          />
+        {partialError ? (
+          <PartialErrorNotice message={partialError} />
+        ) : !expanded ? (
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-muted-foreground">
+              {showEmpty ? (
+                <span>{t('summaryNoneSelected')}</span>
+              ) : (
+                <>
+                  <span className="font-medium text-foreground">
+                    {t('summary', { count: selectedCount })}
+                  </span>
+                  {namesText ? <span>{t('summaryNames', { names: namesText })}</span> : null}
+                  {moreCount > 0 ? <span>{t('summaryMore', { count: moreCount })}</span> : null}
+                  {editedCount > 0 ? (
+                    <span data-testid="competitors-edited-suffix">
+                      {t('summaryEdited', { count: editedCount })}
+                    </span>
+                  ) : null}
+                </>
+              )}
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setExpanded(true)}
+              aria-expanded={false}
+              aria-controls="review-competitors-editor"
+            >
+              {t('editCta')}
+              <ChevronDown className="ml-1.5 size-4" aria-hidden="true" />
+            </Button>
+          </div>
         ) : (
-          <>
+          <div id="review-competitors-editor" className="flex flex-col gap-3">
             <ul className="flex flex-col gap-2">
               {competitors.map((c, idx) => (
                 <li
@@ -124,10 +185,24 @@ export function CompetitorsCard({
                 </li>
               ))}
             </ul>
-            <Button type="button" variant="outline" size="sm" onClick={onAddExtra}>
-              {t('addAnother')}
-            </Button>
-          </>
+            <div className="flex items-center justify-between">
+              <Button type="button" variant="outline" size="sm" onClick={onAddExtra}>
+                {t('addAnother')}
+              </Button>
+              {!initiallyExpanded ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setExpanded(false)}
+                  aria-expanded={true}
+                  aria-controls="review-competitors-editor"
+                >
+                  {t('collapseCta')}
+                </Button>
+              ) : null}
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>

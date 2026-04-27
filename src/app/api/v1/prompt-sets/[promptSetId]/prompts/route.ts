@@ -10,7 +10,7 @@ import { listPrompts, addPrompt } from '@/modules/prompt-sets/prompt-set.service
 
 const createPromptSchema = z.object({
   template: z.string().min(1).max(5000),
-  order: z.number().int().positive().optional(),
+  order: z.number().int().nonnegative().optional(),
 });
 
 export const GET = withRequestId(

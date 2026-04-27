@@ -26,7 +26,6 @@ export default async function OnboardingLayout({ children, params }: Props) {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <WizardProgress />
       <header className="flex items-center justify-between px-6 py-5 sm:px-10">
         <Link href={`/${locale}`} aria-label="Quaynt" className="inline-flex items-center">
           <Logo width={96} height={24} />
@@ -36,6 +35,7 @@ export default async function OnboardingLayout({ children, params }: Props) {
           <ThemeToggle />
         </div>
       </header>
+      <WizardProgress />
       <OnboardingMain>
         <Suspense>{children}</Suspense>
       </OnboardingMain>

@@ -37,6 +37,7 @@ import type { ModelRun } from '../model-run.types';
 import { SUPPORTED_LOCALES } from '../model-run.types';
 import { fetchBrands } from '@/features/brands/brand.api';
 import { fetchPromptSets } from '@/features/prompt-sets/prompt-set.api';
+import { fetchPlatforms } from '@/features/settings/integrations.api';
 import { createModelRun, fetchAdapterConfigs } from '../model-run.api';
 import { createModelRunFormSchema, type CreateModelRunFormValues } from '../model-run.validation';
 
@@ -99,9 +100,22 @@ function NewRunForm({ onOpenChange, onSuccess }: NewRunFormProps) {
     queryFn: () => fetchAdapterConfigs({ limit: 50, sort: 'displayName', order: 'asc' }),
   });
 
+  const { data: platformsData } = useQuery({
+    queryKey: queryKeys.platforms.all,
+    queryFn: () => fetchPlatforms(),
+    staleTime: 30 * 60 * 1000,
+  });
+
   const brands = brandsData?.data ?? [];
   const promptSets = promptSetsData?.data ?? [];
-  const adapters = adaptersData?.data ?? [];
+  // Hide credential-only platforms (e.g. shared OpenRouter credential holder)
+  // from the run-creation picker — they're configurable but never queryable.
+  const credentialOnlyPlatformIds = new Set(
+    (platformsData ?? []).filter((p) => p.kind === 'credential-only').map((p) => p.platformId)
+  );
+  const adapters = (adaptersData?.data ?? []).filter(
+    (a) => !credentialOnlyPlatformIds.has(a.platformId)
+  );
 
   const mutation = useApiMutation<ModelRun, CreateModelRunFormValues>({
     mutationFn: (data) =>

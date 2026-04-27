@@ -34,6 +34,12 @@ export interface PlatformInfo {
   platformName: string;
   credentialSchema: CredentialField[];
   configSchema: ConfigField[];
+  /** 'queryable' (default) or 'credential-only' (shared credential holders
+   * like OpenRouter that should not appear in run-creation pickers). */
+  kind?: 'queryable' | 'credential-only';
+  /** When set, this platform reuses credentials from another platform's row
+   * in the same workspace (e.g. OpenRouter-backed virtual platforms). */
+  credentialSource?: string;
 }
 
 // Source: @/modules/adapters/adapter.schema

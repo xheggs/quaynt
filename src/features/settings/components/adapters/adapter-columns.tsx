@@ -45,12 +45,23 @@ export function useAdapterColumns({
         cell: ({ row }) => {
           const adapter = row.original;
           const platformName = t(`adapters.platformNames.${adapter.platformId}` as never);
+          // OR-backed virtual platforms share a single OpenRouter credential
+          // — surface the relationship so operators can tell at a glance.
+          const isOpenRouterBacked =
+            adapter.platformId.startsWith('openrouter-') && adapter.platformId !== 'openrouter';
           return (
             <div className="flex items-center gap-3">
               <PlatformIcon platform={adapter.platformId} size={24} />
               <div>
                 <p className="font-medium text-foreground">{adapter.displayName}</p>
-                <p className="text-xs text-muted-foreground">{platformName}</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-xs text-muted-foreground">{platformName}</p>
+                  {isOpenRouterBacked && (
+                    <Badge variant="outline" className="text-[0.5625rem] uppercase">
+                      {t('adapters.viaOpenRouter')}
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
           );

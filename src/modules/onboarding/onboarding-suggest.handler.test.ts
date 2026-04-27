@@ -32,6 +32,13 @@ const goodExtraction: ExtractSiteResult = {
   categories: ['Product analytics'],
 };
 
+const noAliasExtraction: ExtractSiteResult = {
+  brandName: 'Acme Analytics',
+  aliases: [],
+  description: 'Real-time analytics for product teams',
+  categories: ['Product analytics'],
+};
+
 function makeEngine(overrides: Partial<SuggestionEngine> = {}): SuggestionEngine {
   return {
     providerId: 'openai',
@@ -39,6 +46,7 @@ function makeEngine(overrides: Partial<SuggestionEngine> = {}): SuggestionEngine
       schema.parse({
         competitors: [{ name: 'Beta Co', domain: 'beta.example', reason: 'similar buyer' }],
         prompts: [{ text: 'best product analytics tool', tag: 'discovery' }],
+        aliases: ['Acme Inc', 'Acme Co'],
       }),
     ...overrides,
   };
@@ -139,6 +147,78 @@ describe('runOnboardingSuggest', () => {
 
     const final = lastUpdateMatching('status', 'done');
     expect(final?.error).toMatchObject({ code: 'engine_response_invalid' });
+  });
+
+  it('extracted aliases present → LLM alias step is skipped', async () => {
+    await runOnboardingSuggest(baseJob, {
+      extractSite: async () => goodExtraction,
+      resolveEngine: () => makeEngine(),
+    });
+
+    // No update should set suggestedAliases when extracted.aliases is non-empty.
+    expect(updates.find((u) => 'suggestedAliases' in u)).toBeUndefined();
+  });
+
+  it('extracted aliases empty + engine present → suggestedAliases is set and de-duped', async () => {
+    const engine: SuggestionEngine = {
+      providerId: 'openai',
+      suggest: async (_p, schema) =>
+        schema.parse({
+          // The aliases response includes a casing duplicate and the canonical
+          // brand name — the handler must drop both.
+          aliases: ['Acme Inc', 'acme inc', 'Acme Analytics', 'Acme Co'],
+          competitors: [{ name: 'Beta Co', domain: 'beta.example', reason: 'similar buyer' }],
+          prompts: [{ text: 'best product analytics tool', tag: 'discovery' }],
+        }),
+    };
+
+    await runOnboardingSuggest(baseJob, {
+      extractSite: async () => noAliasExtraction,
+      resolveEngine: () => engine,
+    });
+
+    const aliasUpdate = lastUpdateWithKey('suggestedAliases');
+    expect(aliasUpdate?.suggestedAliases).toEqual(['Acme Inc', 'Acme Co']);
+
+    // Subsequent steps must still run.
+    const final = lastUpdateMatching('status', 'done');
+    expect(final?.error).toBeNull();
+    expect(lastUpdateWithKey('suggestedCompetitors')?.suggestedCompetitors).toMatchObject([
+      { name: 'Beta Co' },
+    ]);
+  });
+
+  it('alias engine call fails → suggestedAliases null, job continues, error stored', async () => {
+    let call = 0;
+    const engine: SuggestionEngine = {
+      providerId: 'openai',
+      suggest: async (_p, schema) => {
+        call++;
+        if (call === 1) {
+          throw new SuggestionEngineError('engine_rate_limited', 'rate-limited');
+        }
+        return schema.parse({
+          competitors: [{ name: 'Beta Co', domain: 'beta.example', reason: 'similar buyer' }],
+          prompts: [{ text: 'best product analytics tool', tag: 'discovery' }],
+        });
+      },
+    };
+
+    await runOnboardingSuggest(baseJob, {
+      extractSite: async () => noAliasExtraction,
+      resolveEngine: () => engine,
+    });
+
+    const aliasUpdate = lastUpdateWithKey('suggestedAliases');
+    expect(aliasUpdate?.suggestedAliases).toBeNull();
+
+    const final = lastUpdateMatching('status', 'done');
+    // Competitor + prompt errors take precedence; here both succeed, so the
+    // alias-stage error surfaces.
+    expect(final?.error).toMatchObject({ code: 'engine_rate_limited', stage: 'aliases' });
+    expect(lastUpdateWithKey('suggestedCompetitors')?.suggestedCompetitors).toMatchObject([
+      { name: 'Beta Co' },
+    ]);
   });
 
   it('privacy: no recorded update field exceeds 4 KB', async () => {

@@ -13,32 +13,28 @@ import { useOnboarding, useUpdateOnboarding } from '@/features/onboarding';
 import type { OnboardingResponse } from '@/features/onboarding';
 
 type Item = {
-  key: 'brand' | 'competitors' | 'promptSet' | 'firstRun' | 'results';
+  key: 'setup' | 'firstRun' | 'results';
   done: boolean;
   href: string;
 };
 
 function buildItems(state: OnboardingResponse, locale: string): Item[] {
+  const setupDone =
+    state.milestones.brandAdded &&
+    state.milestones.competitorsAdded &&
+    state.milestones.promptSetSelected;
   return [
     {
-      key: 'brand',
-      done: state.milestones.brandAdded,
-      href: `/${locale}/onboarding/brand`,
-    },
-    {
-      key: 'competitors',
-      done: state.milestones.competitorsAdded,
-      href: `/${locale}/onboarding/competitors`,
-    },
-    {
-      key: 'promptSet',
-      done: state.milestones.promptSetSelected,
-      href: `/${locale}/onboarding/prompt-set`,
+      key: 'setup',
+      done: setupDone,
+      href: `/${locale}/onboarding/welcome`,
     },
     {
       key: 'firstRun',
       done: state.milestones.firstRunTriggered,
-      href: `/${locale}/onboarding/prompt-set`,
+      href: state.activeRunId
+        ? `/${locale}/onboarding/first-run/${state.activeRunId}`
+        : `/${locale}/onboarding/welcome`,
     },
     {
       key: 'results',

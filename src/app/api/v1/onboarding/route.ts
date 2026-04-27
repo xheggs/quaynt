@@ -20,6 +20,7 @@ function toResponse(state: OnboardingState): OnboardingResponse {
       ...state.milestones,
       resultsViewed: state.resultsViewed,
     },
+    activeRunId: state.activeRunId,
     completedAt: state.completedAt?.toISOString() ?? null,
     dismissedAt: state.dismissedAt?.toISOString() ?? null,
     createdAt: state.createdAt.toISOString(),

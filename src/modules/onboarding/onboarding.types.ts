@@ -50,6 +50,8 @@ export type OnboardingResponse = {
     /** Server-derived. Read-only. */
     resultsViewed: boolean;
   };
+  /** Server-derived. Read-only. Latest non-terminal model_run id, if any. */
+  activeRunId: string | null;
   completedAt: string | null;
   dismissedAt: string | null;
   createdAt: string;

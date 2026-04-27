@@ -23,6 +23,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx scripts/seed.ts",
+    "seed:openrouter": "tsx --env-file-if-exists=.env scripts/seed-openrouter.ts",
     "db:studio": "drizzle-kit studio",
     "prepare": "husky"
   },

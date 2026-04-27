@@ -8,26 +8,19 @@ import { getBrand } from '@/modules/brands/brand.service';
 import { interpolateTemplate } from '@/modules/prompt-sets/template';
 import { getAdapterRegistry } from '@/modules/adapters';
 import { platformAdapter } from '@/modules/adapters/adapter.schema';
-import { decryptCredential } from '@/modules/adapters/adapter.crypto';
+import { resolveCredentialsForAdapter } from '@/modules/adapters/adapter.service';
 import { dispatchWebhookEvent } from '@/modules/webhooks/webhook.service';
 import {
   PermanentAdapterError,
   TransientAdapterError,
   RateLimitAdapterError,
 } from '@/modules/adapters/adapter.types';
-import type { EncryptedValue } from '@/modules/adapters/adapter.types';
 import type { WebhookEventType } from '@/modules/webhooks/webhook.events';
 import { logger } from '@/lib/logger';
 import type pino from 'pino';
 import { isNull } from 'drizzle-orm';
 
 // -- Helpers ----------------------------------------------------------------
-
-function hasCredentials(credentials: unknown): boolean {
-  if (!credentials || typeof credentials !== 'object') return false;
-  const obj = credentials as Record<string, unknown>;
-  return 'ciphertext' in obj && 'iv' in obj && 'tag' in obj;
-}
 
 async function loadAdapterConfig(adapterConfigId: string) {
   const [record] = await db
@@ -38,9 +31,8 @@ async function loadAdapterConfig(adapterConfigId: string) {
 
   if (!record) return null;
 
-  const decryptedCredentials = hasCredentials(record.credentials)
-    ? JSON.parse(decryptCredential(record.credentials as EncryptedValue))
-    : {};
+  const registry = getAdapterRegistry();
+  const decryptedCredentials = await resolveCredentialsForAdapter(record, registry);
 
   return {
     id: record.id,
@@ -252,6 +244,13 @@ export async function executeModelRunQuery(
 
     // Create adapter instance and query
     const registry = getAdapterRegistry();
+    const platformMetadata = registry.getMetadata(config.platformId);
+    if (platformMetadata?.kind === 'credential-only') {
+      throw new PermanentAdapterError(
+        `Platform "${config.platformId}" is credential-only and cannot be queried directly`,
+        config.platformId
+      );
+    }
     const adapter = registry.createInstance(config.platformId, config);
 
     const response = await adapter.query(interpolatedPrompt, {

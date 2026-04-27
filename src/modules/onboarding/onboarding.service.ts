@@ -1,4 +1,4 @@
-import { and, eq, isNotNull, sql } from 'drizzle-orm';
+import { and, desc, eq, isNotNull, isNull, sql } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import {
   workspaceOnboarding,
@@ -7,7 +7,6 @@ import {
   DEFAULT_ONBOARDING_MILESTONES,
 } from './onboarding.schema';
 import { modelRun } from '@/modules/model-runs/model-run.schema';
-import { citation } from '@/modules/citations/citation.schema';
 import { OnboardingEvent, emitOnboardingEvent } from '@/modules/telemetry/onboarding-events';
 import { ONBOARDING_ROLE_HINTS } from './onboarding.types';
 import { shouldEmitPersonaCapturedPostAha } from './persona-capture-gate';
@@ -22,6 +21,8 @@ export type OnboardingState = {
   milestones: OnboardingMilestones;
   /** Server-derived: not stored in `milestones` jsonb. */
   resultsViewed: boolean;
+  /** Server-derived: latest non-terminal model_run id for the workspace, if any. */
+  activeRunId: string | null;
   completedAt: Date | null;
   dismissedAt: Date | null;
   createdAt: Date;
@@ -44,20 +45,39 @@ export async function initialize(tx: Tx, workspaceId: string): Promise<void> {
     .onConflictDoNothing({ target: workspaceOnboarding.workspaceId });
 }
 
+// `resultsViewed` is true once the workspace's first run has reached a terminal
+// state — including completed-with-zero-citations, cancelled, or failed. We do
+// not require a `citation` row here because a successful but quiet run still
+// satisfies the JTBD (we ran on the user's behalf), and gating completion on
+// citations would strand any user whose first run produced none.
 async function hasResultsViewed(workspaceId: string): Promise<boolean> {
   const [row] = await db
     .select({ exists: sql<number>`1` })
     .from(modelRun)
-    .innerJoin(citation, eq(citation.modelRunId, modelRun.id))
     .where(and(eq(modelRun.workspaceId, workspaceId), isNotNull(modelRun.completedAt)))
     .limit(1);
 
   return Boolean(row);
 }
 
+// Latest non-terminal run for the workspace. Used by callers (the layout
+// redirect, the prompt-set launcher, the checklist) to route the user back to
+// the run they already started instead of re-asking them to start a new one.
+async function getActiveRunId(workspaceId: string): Promise<string | null> {
+  const [row] = await db
+    .select({ id: modelRun.id })
+    .from(modelRun)
+    .where(and(eq(modelRun.workspaceId, workspaceId), isNull(modelRun.completedAt)))
+    .orderBy(desc(modelRun.createdAt))
+    .limit(1);
+
+  return row?.id ?? null;
+}
+
 function rowToState(
   row: typeof workspaceOnboarding.$inferSelect,
-  resultsViewed: boolean
+  resultsViewed: boolean,
+  activeRunId: string | null
 ): OnboardingState {
   return {
     id: row.id,
@@ -68,6 +88,7 @@ function rowToState(
     // not auto-backfilled) read as `false` instead of `undefined`.
     milestones: { ...DEFAULT_ONBOARDING_MILESTONES, ...row.milestones },
     resultsViewed,
+    activeRunId,
     completedAt: row.completedAt,
     dismissedAt: row.dismissedAt,
     createdAt: row.createdAt,
@@ -118,7 +139,10 @@ export async function getByWorkspace(workspaceId: string): Promise<OnboardingSta
     }
   }
 
-  const resultsViewed = await hasResultsViewed(workspaceId);
+  const [resultsViewed, activeRunId] = await Promise.all([
+    hasResultsViewed(workspaceId),
+    getActiveRunId(workspaceId),
+  ]);
 
   if (!row.completedAt && !row.dismissedAt && allMilestonesDone(row.milestones, resultsViewed)) {
     const [updated] = await db
@@ -129,7 +153,7 @@ export async function getByWorkspace(workspaceId: string): Promise<OnboardingSta
     if (updated) row = updated;
   }
 
-  return rowToState(row, resultsViewed);
+  return rowToState(row, resultsViewed, activeRunId);
 }
 
 export type UpdateOnboardingPatch = {

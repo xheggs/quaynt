@@ -8,8 +8,16 @@ import type {
   OnboardingSuggestionExtracted,
   OnboardingSuggestionPrompt,
 } from './onboarding.schema';
-import { buildCompetitorPrompt, buildPromptGenerationPrompt } from './suggestion-engine/prompts';
-import { suggestedCompetitorsSchema, suggestedPromptsSchema } from './suggestion-engine/schemas';
+import {
+  buildAliasSuggestionPrompt,
+  buildCompetitorPrompt,
+  buildPromptGenerationPrompt,
+} from './suggestion-engine/prompts';
+import {
+  suggestedAliasesSchema,
+  suggestedCompetitorsSchema,
+  suggestedPromptsSchema,
+} from './suggestion-engine/schemas';
 import {
   getSuggestionEngine,
   SuggestionEngineError,
@@ -96,8 +104,49 @@ export async function runOnboardingSuggest(
     return;
   }
 
-  // 3. Competitor inference (per-step error isolation).
   await updateSuggestion(data.suggestionId, { status: 'suggesting' });
+
+  // 3. Alias suggestion fallback. Only run when structured-data extraction
+  // returned no aliases — otherwise we trust JSON-LD over LLM speculation.
+  let suggestedAliases: string[] | null = null;
+  let aliasError: OnboardingSuggestionError | null = null;
+  if (extracted.aliases.length === 0) {
+    try {
+      const result = await engine.suggest(
+        buildAliasSuggestionPrompt({
+          brandName: extracted.brandName,
+          description: extracted.description,
+          categories: extracted.categories,
+          domain: data.domain,
+        }),
+        suggestedAliasesSchema,
+        { locale: data.locale ?? undefined }
+      );
+      // Defensive: drop empty / canonical-name duplicates the model may emit.
+      const canonical = extracted.brandName.trim().toLowerCase();
+      const seen = new Set<string>();
+      const cleaned: string[] = [];
+      for (const raw of result.aliases) {
+        const trimmed = raw.trim();
+        if (!trimmed) continue;
+        const lower = trimmed.toLowerCase();
+        if (lower === canonical) continue;
+        if (seen.has(lower)) continue;
+        seen.add(lower);
+        cleaned.push(trimmed);
+      }
+      suggestedAliases = cleaned;
+    } catch (e) {
+      aliasError = engineErrorToRecord(e, 'aliases');
+      log.warn(
+        { suggestionId: data.suggestionId, code: aliasError.code },
+        'Alias suggestion failed'
+      );
+    }
+    await updateSuggestion(data.suggestionId, { suggestedAliases });
+  }
+
+  // 4. Competitor inference (per-step error isolation).
   let competitors: OnboardingSuggestionCompetitor[] | null = null;
   let competitorError: OnboardingSuggestionError | null = null;
   try {
@@ -128,7 +177,7 @@ export async function runOnboardingSuggest(
     suggestedCompetitors: competitors,
   });
 
-  // 4. Prompt generation (per-step error isolation).
+  // 5. Prompt generation (per-step error isolation).
   let prompts: OnboardingSuggestionPrompt[] | null = null;
   let promptError: OnboardingSuggestionError | null = null;
   try {
@@ -152,9 +201,9 @@ export async function runOnboardingSuggest(
     );
   }
 
-  // 5. Finalize. We keep partial success: the UI shows manual fallback only
+  // 6. Finalize. We keep partial success: the UI shows manual fallback only
   // for the section that failed.
-  const finalError = competitorError ?? promptError;
+  const finalError = competitorError ?? promptError ?? aliasError;
   await updateSuggestion(data.suggestionId, {
     status: 'done',
     suggestedPrompts: prompts,

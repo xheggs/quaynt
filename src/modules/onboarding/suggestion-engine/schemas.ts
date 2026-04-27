@@ -28,6 +28,12 @@ export const suggestedPromptsSchema = z.object({
 
 export type SuggestedPromptsResponse = z.infer<typeof suggestedPromptsSchema>;
 
+export const suggestedAliasesSchema = z.object({
+  aliases: z.array(z.string().min(1).max(120)).max(5),
+});
+
+export type SuggestedAliasesResponse = z.infer<typeof suggestedAliasesSchema>;
+
 /**
  * Hand-written JSON Schemas mirroring the Zod definitions above.
  * Providers that support strict structured output (OpenAI Responses API,
@@ -53,6 +59,19 @@ export const suggestedCompetitorsJsonSchema = {
     },
   },
   required: ['competitors'],
+} as const;
+
+export const suggestedAliasesJsonSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    aliases: {
+      type: 'array',
+      maxItems: 5,
+      items: { type: 'string', minLength: 1, maxLength: 120 },
+    },
+  },
+  required: ['aliases'],
 } as const;
 
 export const suggestedPromptsJsonSchema = {

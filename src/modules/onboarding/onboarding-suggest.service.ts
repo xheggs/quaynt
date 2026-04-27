@@ -18,6 +18,7 @@ export type OnboardingSuggestionRecord = {
   extracted: OnboardingSuggestionExtracted | null;
   suggestedCompetitors: OnboardingSuggestionCompetitor[] | null;
   suggestedPrompts: OnboardingSuggestionPrompt[] | null;
+  suggestedAliases: string[] | null;
   engineUsed: string | null;
   completedAt: Date | null;
   createdAt: Date;
@@ -37,6 +38,7 @@ function rowToRecord(row: typeof onboardingSuggestion.$inferSelect): OnboardingS
     extracted: row.extracted ?? null,
     suggestedCompetitors: row.suggestedCompetitors ?? null,
     suggestedPrompts: row.suggestedPrompts ?? null,
+    suggestedAliases: row.suggestedAliases ?? null,
     engineUsed: row.engineUsed,
     completedAt: row.completedAt,
     createdAt: row.createdAt,
@@ -116,6 +118,7 @@ export type SuggestionUpdate = Partial<{
   extracted: OnboardingSuggestionExtracted | null;
   suggestedCompetitors: OnboardingSuggestionCompetitor[] | null;
   suggestedPrompts: OnboardingSuggestionPrompt[] | null;
+  suggestedAliases: string[] | null;
   engineUsed: string | null;
   completedAt: Date | null;
 }>;

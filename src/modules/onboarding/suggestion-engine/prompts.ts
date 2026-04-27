@@ -1,4 +1,8 @@
-import { suggestedCompetitorsJsonSchema, suggestedPromptsJsonSchema } from './schemas';
+import {
+  suggestedAliasesJsonSchema,
+  suggestedCompetitorsJsonSchema,
+  suggestedPromptsJsonSchema,
+} from './schemas';
 import type { SuggestionPrompt } from './types';
 
 export type CompetitorPromptInput = {
@@ -11,6 +15,13 @@ export type CompetitorPromptInput = {
 };
 
 export type PromptGenerationInput = CompetitorPromptInput;
+
+export type AliasSuggestionInput = {
+  brandName: string;
+  description: string | null;
+  categories: string[];
+  domain: string;
+};
 
 const SYSTEM_PRELUDE = `You are an analyst helping a marketing/SEO operator set up a brand
 visibility tracker. Your suggestions populate a setup wizard — they are
@@ -49,6 +60,43 @@ export function buildCompetitorPrompt(input: CompetitorPromptInput): SuggestionP
     schemaName: 'SuggestedCompetitors',
     schemaDescription: 'A short list of plausible competitor brands.',
     jsonSchema: suggestedCompetitorsJsonSchema as unknown as Record<string, unknown>,
+  };
+}
+
+export function buildAliasSuggestionPrompt(input: AliasSuggestionInput): SuggestionPrompt {
+  return {
+    system: SYSTEM_PRELUDE,
+    user: [
+      `Brand name: ${input.brandName}`,
+      `Brand domain: ${input.domain}`,
+      `Brand description: ${input.description ?? '(none provided)'}`,
+      `Inferred categories: ${input.categories.join(', ') || '(unknown)'}`,
+      '',
+      'Task: list up to 5 alternative names that real users might use to refer to',
+      'this brand when searching or asking AI engines.',
+      '',
+      'Acceptable alias kinds:',
+      '- Legal entity forms (e.g. "Acme Inc", "Acme GmbH", "Acme Holdings").',
+      '- Common short forms or abbreviations real users actually type.',
+      '- Well-known former names (only if the brand is widely still called that).',
+      '- Common misspellings only if frequent enough to matter for search.',
+      '',
+      'Rules:',
+      '- DO NOT include the canonical brand name itself.',
+      '- DO NOT include taglines, slogans, marketing phrases, or product names.',
+      '- DO NOT invent legal suffixes if you are not confident the entity uses one.',
+      '- If you are not confident in any aliases, return an empty array.',
+      '- Each alias must be a clean name only — no punctuation noise, no quotes.',
+      '',
+      'Respond with EXACTLY this JSON shape (an object whose only key is',
+      '"aliases", containing an array of strings). No prose, no markdown fences.',
+      '{',
+      '  "aliases": ["Acme Inc", "Acme Co"]',
+      '}',
+    ].join('\n'),
+    schemaName: 'SuggestedAliases',
+    schemaDescription: 'Up to 5 alternative names users might call the brand.',
+    jsonSchema: suggestedAliasesJsonSchema as unknown as Record<string, unknown>,
   };
 }
 

@@ -93,9 +93,11 @@ vi.mock('@/modules/prompt-sets/template', () => ({
 }));
 
 const mockCreateInstance = vi.fn();
+const mockGetMetadata = vi.fn().mockReturnValue(undefined);
 vi.mock('@/modules/adapters', () => ({
   getAdapterRegistry: vi.fn(() => ({
     createInstance: mockCreateInstance,
+    getMetadata: mockGetMetadata,
   })),
 }));
 

@@ -246,6 +246,13 @@
       "when": 1777209236328,
       "tag": "0034_onboarding_telemetry_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1777296301169,
+      "tag": "0035_complex_stingray",
+      "breakpoints": true
     }
   ]
 }

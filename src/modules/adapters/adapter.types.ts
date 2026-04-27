@@ -73,6 +73,8 @@ export interface CredentialFieldSchema {
 
 export type AdapterCredentialSchema = CredentialFieldSchema[];
 
+export type AdapterKind = 'queryable' | 'credential-only';
+
 export interface AdapterMetadata {
   platformId: string;
   displayName: string;
@@ -83,6 +85,19 @@ export interface AdapterMetadata {
   healthCheckStrategy: HealthCheckStrategy;
   supportedLocales?: string[];
   dataJurisdiction?: string;
+  /**
+   * Whether this platform is queryable (the default — appears in run pickers,
+   * results carry its platformId) or credential-only (a shared credential
+   * holder like `openrouter` that is configured but never directly queried).
+   */
+  kind?: AdapterKind;
+  /**
+   * When set, this adapter loads its credentials from the workspace's
+   * platform_adapter row whose platformId equals this value, instead of
+   * its own row. Used for shared-credential setups (e.g. multiple
+   * OpenRouter-backed virtual platforms reusing one OpenRouter API key).
+   */
+  credentialSource?: string;
 }
 
 // -- Adapter configuration (matches DB record shape) ------------------------

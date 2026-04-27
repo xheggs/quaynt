@@ -13,9 +13,20 @@ interface AliasInputProps {
   onChange: (aliases: string[]) => void;
   maxItems?: number;
   disabled?: boolean;
+  /** Override the default helper line below the input. */
+  helperText?: string;
+  /** Hide the built-in helper line entirely (e.g. when the parent renders its own). */
+  hideHelper?: boolean;
 }
 
-export function AliasInput({ value, onChange, maxItems = 50, disabled = false }: AliasInputProps) {
+export function AliasInput({
+  value,
+  onChange,
+  maxItems = 50,
+  disabled = false,
+  helperText,
+  hideHelper = false,
+}: AliasInputProps) {
   const t = useTranslations('brands');
   const inputRef = useRef<HTMLInputElement>(null);
   const isMaxReached = value.length >= maxItems;
@@ -74,13 +85,15 @@ export function AliasInput({ value, onChange, maxItems = 50, disabled = false }:
         disabled={disabled || isMaxReached}
         placeholder={t('aliasInput.placeholder')}
         aria-label={t('fields.aliases')}
-        aria-describedby={helperId}
+        aria-describedby={hideHelper ? undefined : helperId}
         className="h-8 text-sm"
         data-testid="alias-input"
       />
-      <p id={helperId} className="type-caption text-muted-foreground">
-        {isMaxReached ? t('aliasInput.maxReached') : t('aliasInput.placeholder')}
-      </p>
+      {!hideHelper && (
+        <p id={helperId} className="type-caption text-muted-foreground">
+          {isMaxReached ? t('aliasInput.maxReached') : (helperText ?? t('aliasInput.placeholder'))}
+        </p>
+      )}
     </div>
   );
 }

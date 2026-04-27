@@ -24,6 +24,54 @@ function hasCredentials(credentials: unknown): boolean {
   return 'ciphertext' in obj && 'iv' in obj && 'tag' in obj;
 }
 
+/**
+ * Resolve decrypted credentials for an adapter record. When the platform's
+ * metadata has `credentialSource`, looks up that platform's row in the same
+ * workspace and uses its credentials instead — used for shared-credential
+ * setups (e.g. several OpenRouter-backed virtual platforms reusing one
+ * OpenRouter key). Returns `{}` when no credentials are configured.
+ *
+ * Throws when `credentialSource` is declared but no row exists for the
+ * source platform — operators must configure the credential holder first.
+ */
+export async function resolveCredentialsForAdapter(
+  record: {
+    workspaceId: string;
+    platformId: string;
+    credentials: unknown;
+  },
+  registry: AdapterRegistry
+): Promise<Record<string, unknown>> {
+  const metadata = registry.getMetadata(record.platformId);
+  const source = metadata?.credentialSource;
+
+  if (source) {
+    const [sourceRow] = await db
+      .select({ credentials: platformAdapter.credentials })
+      .from(platformAdapter)
+      .where(
+        and(
+          eq(platformAdapter.workspaceId, record.workspaceId),
+          eq(platformAdapter.platformId, source),
+          isNull(platformAdapter.deletedAt)
+        )
+      )
+      .limit(1);
+
+    if (!sourceRow || !hasCredentials(sourceRow.credentials)) {
+      throw new Error(
+        `Adapter "${record.platformId}" requires shared credentials from "${source}" but none are configured in this workspace`
+      );
+    }
+
+    return JSON.parse(decryptCredential(sourceRow.credentials as EncryptedValue));
+  }
+
+  return hasCredentials(record.credentials)
+    ? JSON.parse(decryptCredential(record.credentials as EncryptedValue))
+    : {};
+}
+
 function adapterConfigFields() {
   return {
     id: platformAdapter.id,
@@ -348,10 +396,8 @@ export async function getAdapterHealth(
 
   if (!record) return null;
 
-  // Decrypt credentials
-  const decryptedCredentials = hasCredentials(record.credentials)
-    ? JSON.parse(decryptCredential(record.credentials as EncryptedValue))
-    : {};
+  // Decrypt credentials (follows credentialSource indirection when set)
+  const decryptedCredentials = await resolveCredentialsForAdapter(record, registry);
 
   // Create adapter instance
   const adapter = registry.createInstance(record.platformId, {

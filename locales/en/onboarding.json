@@ -1,21 +1,12 @@
 {
   "onboarding": {
     "wizard": {
-      "skipStep": "Skip this step",
-      "skipOnboarding": "Skip onboarding",
-      "continue": "Continue",
-      "back": "Back",
       "progressLabel": "Step {step, number} of 3: {label}",
-      "manualProgressLabel": "Manual setup: {label}",
-      "stepLabels": {
-        "domain": "Domain",
+      "skipOnboarding": "Skip onboarding",
+      "phaseLabels": {
+        "connect": "Connect",
         "confirm": "Confirm",
-        "results": "Results",
-        "manual": {
-          "brand": "Manual setup — Brand",
-          "competitors": "Manual setup — Competitors",
-          "promptSet": "Manual setup — Prompts"
-        }
+        "watch": "Watch"
       }
     },
     "domain": {
@@ -38,8 +29,7 @@
       "cta": {
         "idle": "Continue",
         "pending": "Looking up…"
-      },
-      "skipManual": "Skip and enter everything manually"
+      }
     },
     "review": {
       "heroTitle": "Here's what we found.",
@@ -47,6 +37,9 @@
       "heroSubtitleNoHost": "Edit anything that looks off.",
       "heroSubtitleNoEngine": "Pre-filled your brand from <host>{hostName}</host>. Add a few competitors and prompts and you're tracking.",
       "heroSubtitleNoEngineNoHost": "We've pre-filled your brand. Add a few competitors and prompts and you're tracking.",
+      "failedNotice": {
+        "body": "Fill in your brand, competitors, and prompts below — we'll start tracking once you confirm."
+      },
       "regenerate": {
         "cta": "Regenerate",
         "tooltip": "Run a fresh suggestion for this domain",
@@ -56,15 +49,18 @@
         "confirmCancelCta": "Cancel",
         "rateLimited": "You've hit today's regeneration limit. Edit the fields below manually.",
         "error": "Couldn't start a fresh suggestion. Please try again.",
-        "successToast": "Suggestions refreshed."
+        "successToast": "Suggestions refreshed.",
+        "topLink": "Wrong site? Start over"
       },
       "brand": {
         "title": "Your brand",
         "description": "Edit the name and aliases if needed.",
-        "emptyManualCta": "Enter brand details manually",
         "nameLabel": "Brand name",
         "aliasesLabel": "Aliases",
-        "aliasesPlaceholder": "Acme, Acme Co"
+        "aliasesHelperEmpty": "Other names people use for {brand} — e.g. legal name or short form. Optional.",
+        "aliasesHelperEmptyNoBrand": "Other names people use for your brand. Optional.",
+        "aliasesHelperFromExtraction": "We pulled these from the site. Edit or add more.",
+        "aliasesHelperFromAi": "Suggestions from AI — confirm or edit before continuing."
       },
       "competitors": {
         "title": "Suggested competitors",
@@ -72,9 +68,15 @@
         "description": "Uncheck any that don't fit. You can add more.",
         "descriptionManual": "Brands you'd like to track alongside {brand}. Add 3–5 to start.",
         "descriptionManualNoBrand": "Brands you'd like to track alongside your own. Add 3–5 to start.",
-        "emptyManualCta": "Add competitors manually",
         "why": "Why suggested",
         "addAnother": "Add another",
+        "summary": "{count, plural, one {# competitor found} other {# competitors found}}",
+        "summaryNames": ": {names}",
+        "summaryMore": " +{count, number} more",
+        "summaryEdited": " · {count, plural, one {# edit} other {# edits}}",
+        "summaryNoneSelected": "None selected",
+        "editCta": "Edit competitors",
+        "collapseCta": "Collapse",
         "fields": {
           "nameLabel": "Competitor name",
           "namePlaceholder": "Competitor",
@@ -89,29 +91,39 @@
         "usingSuggested": "Use these {count, number} suggested prompts",
         "usingStarter": "Use the Quaynt starter set instead",
         "skipManualCta": "Skip and add prompts later",
-        "promptSetName": "{brand} — Auto-suggested"
+        "promptSetName": "{brand} — Auto-suggested",
+        "summary": "{count, plural, one {# prompt drafted} other {# prompts drafted}}",
+        "summaryStarter": "Quaynt starter set selected",
+        "summarySkipped": "Skipping — you'll add prompts later",
+        "summaryFirstPromptLabel": "First prompt",
+        "moreSuffix": "+{count, number} more prompts",
+        "editCta": "Edit prompts",
+        "collapseCta": "Collapse",
+        "promptInputLabel": "Prompt {position, number}",
+        "removePrompt": "Remove prompt",
+        "addPrompt": "Add prompt",
+        "newPromptPlaceholder": "Type a prompt and press Enter",
+        "limitReached": "Maximum {max, number} prompts.",
+        "emptyState": "No prompts yet — add one below."
+      },
+      "loading": {
+        "fetching": "Reading <host>{hostName}</host>…",
+        "fetchingNoHost": "Reading your site…",
+        "suggesting": "Analysing your brand and drafting prompts…",
+        "elapsedHint": "Still working — analysis takes a few seconds for complex sites.",
+        "ariaLabel": "Generating suggestions"
       },
       "cta": {
         "run": "Start tracking",
         "disabled": "Add a brand name to continue"
       },
-      "fallback": {
-        "title": "Switch to manual entry",
-        "body": "Need to enter everything yourself? You can pick up from where we got to.",
-        "cta": "Switch to manual entry"
-      },
       "errors": {
-        "fetchFailed": "We couldn't reach your site. Check the domain or enter your brand details manually.",
-        "robotsDisallow": "Your site's robots.txt asks bots not to fetch it. Enter your brand details manually.",
-        "engineUnavailable": "Our suggestion engine is temporarily unavailable. Add this section manually for now.",
-        "engineRateLimited": "Too many suggestion requests right now. Add this section manually for now.",
-        "engineResponseInvalid": "Suggestion engine returned an unusable response. Add this section manually.",
-        "timeout": "The lookup took too long. Try again or enter your brand details manually.",
-        "noEngine": {
-          "title": "Auto-suggestions aren't available on this server.",
-          "body": "Your operator hasn't configured a suggestion engine. Add competitors and prompts manually below.",
-          "cta": "Add manually"
-        }
+        "fetchFailed": "We couldn't reach your site. Check the domain or fill in your brand details below.",
+        "robotsDisallow": "Your site's robots.txt asks bots not to fetch it. Fill in your brand details below.",
+        "engineUnavailable": "Our suggestion engine is temporarily unavailable. Fill in the details below.",
+        "engineRateLimited": "Too many suggestion requests right now. Fill in the details below.",
+        "engineResponseInvalid": "Suggestion engine returned an unusable response. Fill in the details below.",
+        "timeout": "The lookup took too long. Try again or fill in the details below."
       }
     },
     "persona": {
@@ -125,95 +137,15 @@
         "other": "Other"
       }
     },
-    "brand": {
-      "hero": {
-        "title": "Confirm your brand.",
-        "subtitle": "We'll use this to track how AI engines mention you."
-      },
-      "fields": {
-        "name": {
-          "label": "Brand name",
-          "placeholder": "Acme Inc.",
-          "help": "How customers refer to your company."
-        },
-        "domain": {
-          "label": "Primary domain",
-          "placeholder": "example.com",
-          "help": "Optional, but improves citation matching."
-        },
-        "aliases": {
-          "label": "Aliases",
-          "placeholder": "Acme, Acme Co",
-          "help": "Comma-separated alternate names — up to 10."
-        }
-      },
-      "errors": {
-        "nameRequired": "Enter your brand name to continue.",
-        "domainInvalid": "Enter a valid domain (example.com).",
-        "tooManyAliases": "Up to 10 aliases allowed."
-      },
-      "alreadyExists": "We've found an existing brand for your workspace and pre-filled the form."
-    },
-    "competitors": {
-      "hero": {
-        "title": "Add a few competitors.",
-        "subtitle": "AI engines often recommend competitors alongside you. Tracking them shows where you're losing ground."
-      },
-      "addAnother": "Add another",
-      "remove": "Remove",
-      "maxReached": "You can add up to 5 competitors here. Add more from the brands page later.",
-      "fields": {
-        "name": {
-          "label": "Name",
-          "placeholder": "Competitor name"
-        },
-        "domain": {
-          "label": "Domain",
-          "placeholder": "competitor.com"
-        }
-      },
-      "skipNotice": "No problem — you can add competitors anytime from the brands page."
-    },
-    "promptSet": {
-      "hero": {
-        "title": "Run your first AI visibility check.",
-        "subtitle": "We've prepared a starter set of eight prompts. You can always edit them later."
-      },
-      "starterTitle": "Quaynt Starter set",
-      "starterDescription": "Eight prompts covering recommendation, comparison, and category questions.",
-      "starterRecommended": "Recommended",
-      "skipTitle": "I'll create my own later",
-      "skipDescription": "Skip the first run for now and build your own prompt set from scratch.",
-      "previewToggle": "Preview the eight prompts",
-      "previewHint": "Templates use {brand} as a placeholder for your brand name.",
-      "runCta": "Run my first check",
-      "runRunning": "Starting your check…",
-      "runConfirmToast": "Your first run is computing — we'll notify you when results are ready.",
-      "noAdapter": {
-        "title": "Connect an AI engine to run a check",
-        "body": "We need at least one configured adapter (ChatGPT, Perplexity, etc.) to run a check.",
-        "cta": "Configure adapters"
-      }
-    },
     "checklist": {
       "title": "Get set up",
       "summary": "{done, number} of {total, number} done",
       "dismiss": "Dismiss",
       "celebration": "All set up — your AI visibility insights are ready.",
       "items": {
-        "brand": {
-          "label": "Add your brand",
-          "description": "Confirm name, domain, and aliases.",
-          "cta": "Continue"
-        },
-        "competitors": {
-          "label": "Add competitors",
-          "description": "Track who AI recommends alongside you.",
-          "cta": "Continue"
-        },
-        "promptSet": {
-          "label": "Choose a prompt set",
-          "description": "Pick the starter set or build your own.",
+        "setup": {
+          "label": "Confirm your setup",
+          "description": "Brand, competitors, and prompts in one screen.",
           "cta": "Continue"
         },
         "firstRun": {
@@ -258,6 +190,13 @@
           "computing": "Computing…",
           "empty": "Not enough data to score sentiment yet."
         }
+      },
+      "prompts": {
+        "title": "Prompts we're asking",
+        "summary": "{count, plural, one {# prompt} other {# prompts}} running across {engines, plural, one {# engine} other {# engines}}",
+        "expand": "Show prompts",
+        "collapse": "Hide prompts",
+        "empty": "No prompts to display."
       },
       "citations": {
         "title": "Citations as they land",

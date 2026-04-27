@@ -58,19 +58,12 @@ describe('WelcomeStep (editorial domain hero)', () => {
     expect(container.querySelector('[aria-live]')).toBeNull();
   });
 
-  it('renders a single primary CTA and a ghost skip-manual link', () => {
+  it('renders only a single primary CTA — no manual-fallback link', () => {
     renderWithOnboardingProviders(<WelcomeStep />);
     expect(screen.getByRole('button', { name: 'Continue' })).toBeDefined();
     expect(
-      screen.getByRole('button', { name: /skip and enter everything manually/i })
-    ).toBeDefined();
-  });
-
-  it('navigates to /onboarding/brand on skip click without calling update', () => {
-    renderWithOnboardingProviders(<WelcomeStep />);
-    fireEvent.click(screen.getByRole('button', { name: /skip and enter everything manually/i }));
-    expect(pushMock).toHaveBeenCalledWith('/en/onboarding/brand');
-    expect(updateMutateSpy).not.toHaveBeenCalled();
+      screen.queryByRole('button', { name: /skip and enter everything manually/i })
+    ).toBeNull();
   });
 
   it('on submit, calls only createSuggestion (regression guard: never persists roleHint)', async () => {

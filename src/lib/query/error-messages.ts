@@ -28,12 +28,21 @@ const CODE_TO_KEY: Record<string, string> = {
  * next-intl translator.
  */
 export function translateApiError(t: ErrorsApiTranslator, error: ApiError): string {
+  // Validation failures carry per-field messages in `details`. Surface the
+  // first one — it's actionable (e.g. "Number must be greater than 0") —
+  // rather than the generic "The request could not be processed".
+  if (error.code === 'UNPROCESSABLE_ENTITY' && error.details && error.details.length > 0) {
+    return error.details[0].message;
+  }
+  // If the server supplied a specific human message distinct from the machine
+  // code (e.g. "Brand name already exists in this workspace"), prefer it. It
+  // is more actionable than the generic localized template.
+  if (error.message && error.message !== error.code) {
+    return error.message;
+  }
   const key = CODE_TO_KEY[error.code];
   if (key) {
     return t(key);
-  }
-  if (error.message && error.message !== error.code) {
-    return error.message;
   }
   return t('unknown');
 }

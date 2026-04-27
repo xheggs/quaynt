@@ -90,7 +90,7 @@ export type OnboardingSuggestionPrompt = {
 export type OnboardingSuggestionError = {
   code: string;
   message: string;
-  stage: 'fetch' | 'competitors' | 'prompts';
+  stage: 'fetch' | 'aliases' | 'competitors' | 'prompts';
 };
 
 export const onboardingSuggestion = pgTable(
@@ -108,6 +108,7 @@ export const onboardingSuggestion = pgTable(
     extracted: jsonb().$type<OnboardingSuggestionExtracted | null>(),
     suggestedCompetitors: jsonb().$type<OnboardingSuggestionCompetitor[] | null>(),
     suggestedPrompts: jsonb().$type<OnboardingSuggestionPrompt[] | null>(),
+    suggestedAliases: jsonb().$type<string[] | null>(),
     engineUsed: text(),
     completedAt: timestamp({ withTimezone: true, mode: 'date' }),
     ...timestamps,

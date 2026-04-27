@@ -7,25 +7,30 @@ import { routing } from '@/lib/i18n/routing';
 import { AppShell } from '@/components/layout/app-shell';
 import { getAuth } from '@/modules/auth/auth.config';
 import { resolveWorkspace } from '@/modules/workspace/workspace.service';
-import { getByWorkspace, recordVisit } from '@/modules/onboarding/onboarding.service';
-import type { OnboardingStep } from '@/modules/onboarding/onboarding.schema';
+import {
+  getByWorkspace,
+  recordVisit,
+  type OnboardingState,
+} from '@/modules/onboarding/onboarding.service';
 
 type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 };
 
-function stepToPath(step: OnboardingStep): string {
-  switch (step) {
-    case 'welcome':
-      return 'welcome';
-    case 'brand':
-      return 'brand';
-    case 'competitors':
-      return 'competitors';
-    case 'prompt_set':
+// Resolves an onboarding state to the URL path the layout should redirect to.
+// The flow has three real steps: welcome → review → first-run. Legacy step
+// values (`brand`, `competitors`, `prompt_set`) are kept in the persisted enum
+// for backwards compatibility but route the user back to `welcome` so they
+// re-enter the canonical flow.
+function stepToPath(state: OnboardingState): string {
+  switch (state.step) {
     case 'first_run':
-      return 'prompt-set';
+      return state.activeRunId ? `first-run/${state.activeRunId}` : 'welcome';
+    case 'welcome':
+    case 'brand':
+    case 'competitors':
+    case 'prompt_set':
     case 'done':
       return 'welcome';
   }
@@ -47,7 +52,7 @@ export default async function AppLayout({ children, params }: Props) {
     if (ws) {
       const state = await getByWorkspace(ws.id);
       if (!state.completedAt && !state.dismissedAt) {
-        redirect(`/${locale}/onboarding/${stepToPath(state.step)}`);
+        redirect(`/${locale}/onboarding/${stepToPath(state)}`);
       }
 
       // Telemetry-only: tracks last-seen timestamp + emits `second_session`

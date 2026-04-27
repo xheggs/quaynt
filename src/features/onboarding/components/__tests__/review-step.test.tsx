@@ -55,12 +55,22 @@ afterEach(() => {
 });
 
 describe('ReviewStep (editorial confirm)', () => {
-  it('renders a skeleton when the suggestion is still pending', () => {
+  it('renders the loading status block while the suggestion job is pending', () => {
     useSuggestionMock.mockReturnValue({
       data: { status: 'pending', domain: 'example.com' },
     });
     renderWithOnboardingProviders(<ReviewStep jobId="job_1" />);
-    expect(screen.getAllByTestId(/^review-skeleton-/).length).toBeGreaterThan(0);
+    const status = screen.getByRole('status', { name: /Generating suggestions/i });
+    expect(status).toBeTruthy();
+    expect(status.textContent).toMatch(/Reading/i);
+  });
+
+  it('renders the suggesting copy once the job is in suggesting state', () => {
+    useSuggestionMock.mockReturnValue({
+      data: { status: 'suggesting', domain: 'example.com' },
+    });
+    renderWithOnboardingProviders(<ReviewStep jobId="job_1" />);
+    expect(screen.getByText(/Analysing your brand and drafting prompts/i)).toBeTruthy();
   });
 
   it('renders the editorial heading without any step-of-N copy', () => {
@@ -77,9 +87,9 @@ describe('ReviewStep (editorial confirm)', () => {
       data: { status: 'pending', domain: 'example.com' },
     });
     const { container } = renderWithOnboardingProviders(<ReviewStep jobId="job_1" />);
-    const code = container.querySelector('code.font-mono');
-    expect(code).not.toBeNull();
-    expect(code?.textContent).toBe('example.com');
+    const codes = container.querySelectorAll('code.font-mono');
+    const hostCode = Array.from(codes).find((el) => el.textContent === 'example.com');
+    expect(hostCode).toBeTruthy();
   });
 
   it('renders the single primary CTA when the suggestion is done', () => {
