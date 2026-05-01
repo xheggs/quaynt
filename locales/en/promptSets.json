@@ -79,10 +79,10 @@
     "prompts": {
       "empty": {
         "title": "No prompts yet",
-        "description": "Add your first prompt template to this set. Use '{'{'brand'}'}', '{'{'locale'}'}', and '{'{'market'}'}' as variable placeholders."
+        "description": "Add your first prompt template to this set. Use '{{brand}}', '{{locale}}', and '{{market}}' as variable placeholders."
       },
       "add": {
-        "placeholder": "Enter a prompt template... Use '{'{'brand'}'}', '{'{'locale'}'}', '{'{'market'}'}' for variables",
+        "placeholder": "Enter a prompt template... Use '{{brand}}', '{{locale}}', '{{market}}' for variables",
         "button": "Add Prompt",
         "success": "Prompt added successfully"
       },

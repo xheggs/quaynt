@@ -8,10 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { PartialErrorNotice } from './notices';
 
-const MAX_SUMMARY_NAMES = 3;
+const MAX_SUMMARY_CHIPS = 8;
 
 type Competitor = { name: string; domain: string | null; reason: string | null };
 
@@ -47,7 +48,6 @@ export function CompetitorsCard({
   onAddExtra,
   onUpdateExtra,
   onRemoveExtra,
-  locale,
   revealDelay,
   brandName,
   initiallyExpanded,
@@ -73,12 +73,8 @@ export function CompetitorsCard({
   });
   filledExtras.forEach((c) => selectedNames.push(c.name.trim()));
 
-  const previewNames = selectedNames.slice(0, MAX_SUMMARY_NAMES);
-  const moreCount = Math.max(0, selectedNames.length - previewNames.length);
-  const namesText =
-    previewNames.length > 0
-      ? new Intl.ListFormat(locale, { type: 'unit', style: 'short' }).format(previewNames)
-      : '';
+  const previewNames = selectedNames.slice(0, MAX_SUMMARY_CHIPS);
+  const overflowCount = Math.max(0, selectedNames.length - previewNames.length);
 
   const selectionDiff = Math.abs(selected.size - defaultSelectedCount);
   const editedCount = selectionDiff + filledExtras.length;
@@ -99,36 +95,54 @@ export function CompetitorsCard({
         {partialError ? (
           <PartialErrorNotice message={partialError} />
         ) : !expanded ? (
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground">
-              {showEmpty ? (
-                <span>{t('summaryNoneSelected')}</span>
-              ) : (
-                <>
-                  <span className="font-medium text-foreground">
-                    {t('summary', { count: selectedCount })}
-                  </span>
-                  {namesText ? <span>{t('summaryNames', { names: namesText })}</span> : null}
-                  {moreCount > 0 ? <span>{t('summaryMore', { count: moreCount })}</span> : null}
-                  {editedCount > 0 ? (
-                    <span data-testid="competitors-edited-suffix">
-                      {t('summaryEdited', { count: editedCount })}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-muted-foreground">
+                {showEmpty ? (
+                  <span>{t('summaryNoneSelected')}</span>
+                ) : (
+                  <>
+                    <span className="font-medium text-foreground">
+                      {t('summary', { count: selectedCount })}
                     </span>
-                  ) : null}
-                </>
-              )}
-            </p>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setExpanded(true)}
-              aria-expanded={false}
-              aria-controls="review-competitors-editor"
-            >
-              {t('editCta')}
-              <ChevronDown className="ml-1.5 size-4" aria-hidden="true" />
-            </Button>
+                    {editedCount > 0 ? (
+                      <span data-testid="competitors-edited-suffix">
+                        {t('summaryEdited', { count: editedCount })}
+                      </span>
+                    ) : null}
+                  </>
+                )}
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setExpanded(true)}
+                aria-expanded={false}
+                aria-controls="review-competitors-editor"
+              >
+                {t('editCta')}
+                <ChevronDown className="ml-1.5 size-4" aria-hidden="true" />
+              </Button>
+            </div>
+            {previewNames.length > 0 ? (
+              <ul className="flex flex-wrap gap-1.5">
+                {previewNames.map((name, idx) => (
+                  <li key={`${name}-${idx}`}>
+                    <Badge variant="secondary" className="h-6 px-2 text-xs">
+                      {name}
+                    </Badge>
+                  </li>
+                ))}
+                {overflowCount > 0 ? (
+                  <li>
+                    <Badge variant="outline" className="h-6 px-2 text-xs">
+                      {t('summaryMoreChip', { count: overflowCount })}
+                    </Badge>
+                  </li>
+                ) : null}
+              </ul>
+            ) : null}
           </div>
         ) : (
           <div id="review-competitors-editor" className="flex flex-col gap-3">

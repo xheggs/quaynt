@@ -22,7 +22,7 @@
       "totalVisits": "Total Bot Visits",
       "uniqueBots": "Active Bots",
       "uniquePages": "Pages Crawled",
-      "searchBots": "Search Bots"
+      "activeBots": "Active Bots"
     },
     "filters": {
       "dateRange": "Date Range",

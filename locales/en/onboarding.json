@@ -6,7 +6,7 @@
       "phaseLabels": {
         "connect": "Connect",
         "confirm": "Confirm",
-        "watch": "Watch"
+        "watch": "Compare"
       }
     },
     "domain": {
@@ -73,6 +73,7 @@
         "summary": "{count, plural, one {# competitor found} other {# competitors found}}",
         "summaryNames": ": {names}",
         "summaryMore": " +{count, number} more",
+        "summaryMoreChip": "+{count, number} more",
         "summaryEdited": " · {count, plural, one {# edit} other {# edits}}",
         "summaryNoneSelected": "None selected",
         "editCta": "Edit competitors",
@@ -96,6 +97,7 @@
         "summaryStarter": "Quaynt starter set selected",
         "summarySkipped": "Skipping — you'll add prompts later",
         "summaryFirstPromptLabel": "First prompt",
+        "summaryPromptsLabel": "Suggested prompts preview",
         "moreSuffix": "+{count, number} more prompts",
         "editCta": "Edit prompts",
         "collapseCta": "Collapse",
@@ -123,7 +125,9 @@
         "engineUnavailable": "Our suggestion engine is temporarily unavailable. Fill in the details below.",
         "engineRateLimited": "Too many suggestion requests right now. Fill in the details below.",
         "engineResponseInvalid": "Suggestion engine returned an unusable response. Fill in the details below.",
-        "timeout": "The lookup took too long. Try again or fill in the details below."
+        "timeout": "The lookup took too long. Try again or fill in the details below.",
+        "noAdapter": "Connect a model adapter to start tracking your brand.",
+        "runFailed": "We couldn't start your first run. Open the model runs page to retry."
       }
     },
     "persona": {

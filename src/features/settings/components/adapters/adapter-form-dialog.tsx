@@ -327,7 +327,7 @@ function DynamicCredentialField({ field, form, isSubmitting }: DynamicCredential
   return (
     <FormField
       name={`cred-${field.key}`}
-      label={field.description}
+      label={t(field.description as never)}
       error={error ? t(error.message as never) : undefined}
       required={field.required}
     >
@@ -379,7 +379,7 @@ function DynamicConfigField({ field, form, isSubmitting }: DynamicConfigFieldPro
     return (
       <FormField
         name={`config-${field.key}`}
-        label={field.description}
+        label={t(field.description as never)}
         error={error ? t(error.message as never) : undefined}
         required={field.required}
       >
@@ -408,7 +408,7 @@ function DynamicConfigField({ field, form, isSubmitting }: DynamicConfigFieldPro
   return (
     <FormField
       name={`config-${field.key}`}
-      label={field.description}
+      label={t(field.description as never)}
       error={error ? t(error.message as never) : undefined}
       required={field.required}
     >

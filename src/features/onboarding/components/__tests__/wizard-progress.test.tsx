@@ -43,9 +43,9 @@ describe('WizardProgress (path-derived)', () => {
     expect(activeStepText(container)).toContain('Confirm');
   });
 
-  it('marks Watch active on /onboarding/first-run/<id>', () => {
+  it('marks Compare active on /onboarding/first-run/<id>', () => {
     const { container } = renderAt('/en/onboarding/first-run/run_abc');
-    expect(activeStepText(container)).toContain('Watch');
+    expect(activeStepText(container)).toContain('Compare');
   });
 
   it('renders nothing for legacy manual-flow paths (no longer part of the flow)', () => {
@@ -66,11 +66,11 @@ describe('WizardProgress (path-derived)', () => {
     expect(container.querySelector('nav')).toBeNull();
   });
 
-  it('renders Connect/Confirm/Watch labels on every onboarding page', () => {
+  it('renders Connect/Confirm/Compare labels on every onboarding page', () => {
     const { container } = renderAt('/en/onboarding/welcome');
     const text = container.textContent ?? '';
     expect(text).toContain('Connect');
     expect(text).toContain('Confirm');
-    expect(text).toContain('Watch');
+    expect(text).toContain('Compare');
   });
 });

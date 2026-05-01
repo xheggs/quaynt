@@ -240,7 +240,7 @@ describe('GET /api/v1/reports/pdf/:jobId', () => {
         status: 'pending',
         createdAt: new Date('2026-04-01'),
         startedAt: null,
-        expiresAt: new Date('2026-05-01'),
+        expiresAt: new Date('2099-01-01'),
       },
     ]);
 
@@ -263,7 +263,7 @@ describe('GET /api/v1/reports/pdf/:jobId', () => {
         fileSizeBytes: 50000,
         pageCount: 5,
         completedAt: new Date('2026-04-01T12:00:00Z'),
-        expiresAt: new Date('2026-05-01'),
+        expiresAt: new Date('2099-01-01'),
       },
     ]);
 
@@ -314,7 +314,7 @@ describe('GET /api/v1/reports/pdf/:jobId', () => {
         id: 'rpt_123',
         status: 'failed',
         errorMessage: 'Generation timed out',
-        expiresAt: new Date('2026-05-01'),
+        expiresAt: new Date('2099-01-01'),
       },
     ]);
 
@@ -349,7 +349,7 @@ describe('GET /api/v1/reports/pdf/:jobId/download', () => {
         id: 'rpt_123',
         status: 'completed',
         filePath: '/tmp/reports/rpt_123.pdf',
-        expiresAt: new Date('2026-05-01'),
+        expiresAt: new Date('2099-01-01'),
       },
     ]);
 
@@ -370,7 +370,7 @@ describe('GET /api/v1/reports/pdf/:jobId/download', () => {
       {
         id: 'rpt_123',
         status: 'processing',
-        expiresAt: new Date('2026-05-01'),
+        expiresAt: new Date('2099-01-01'),
       },
     ]);
 

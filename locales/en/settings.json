@@ -134,12 +134,17 @@
       "credentialsNotSet": "Not configured",
       "createSuccess": "Adapter created",
       "updateSuccess": "Adapter updated",
+      "credentials": {
+        "apiKey": "API Key",
+        "username": "Username",
+        "password": "Password"
+      },
       "platformNames": {
         "chatgpt": "ChatGPT",
         "perplexity": "Perplexity",
         "gemini": "Gemini",
         "claude": "Claude",
-        "ai-overviews": "AI Overviews",
+        "aio": "AI Overviews",
         "copilot": "Copilot",
         "grok": "Grok",
         "deepseek": "DeepSeek",

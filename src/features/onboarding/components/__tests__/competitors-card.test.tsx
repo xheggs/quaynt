@@ -30,14 +30,40 @@ afterEach(() => {
 });
 
 describe('CompetitorsCard', () => {
-  it('renders a collapsed summary with first names and a "+N more" indicator', () => {
+  it('renders a collapsed summary with the count and a chip for every selected name', () => {
     renderWithOnboardingProviders(<CompetitorsCard {...baseProps} />);
     expect(screen.getByText(/4 competitors found/i)).toBeTruthy();
-    // First 3 names included, 4th rolled into "+1 more".
-    expect(screen.getByText(/Adyen, Square, Checkout\.com/i)).toBeTruthy();
-    expect(screen.getByText(/\+1 more/i)).toBeTruthy();
+    // All 4 selected names render as their own chip — no "+N more" overflow at this size.
+    expect(screen.getByText('Adyen')).toBeTruthy();
+    expect(screen.getByText('Square')).toBeTruthy();
+    expect(screen.getByText('Checkout.com')).toBeTruthy();
+    expect(screen.getByText('Braintree')).toBeTruthy();
+    expect(screen.queryByText(/\+\d+ more/i)).toBeNull();
     // Editor not in DOM until expanded.
     expect(screen.queryByLabelText('Competitor name')).toBeNull();
+  });
+
+  it('renders a "+N more" chip when selected names exceed the chip cap', () => {
+    const many = Array.from({ length: 10 }, (_, i) => ({
+      name: `Brand ${i + 1}`,
+      domain: `brand${i + 1}.com`,
+      reason: null,
+    }));
+    renderWithOnboardingProviders(
+      <CompetitorsCard
+        {...baseProps}
+        competitors={many}
+        selected={new Set(many.map((_, i) => i))}
+        defaultSelectedCount={many.length}
+      />
+    );
+    expect(screen.getByText(/10 competitors found/i)).toBeTruthy();
+    expect(screen.getByText('Brand 1')).toBeTruthy();
+    expect(screen.getByText('Brand 8')).toBeTruthy();
+    // Cap is 8 — names 9 and 10 are rolled into the overflow chip.
+    expect(screen.queryByText('Brand 9')).toBeNull();
+    expect(screen.queryByText('Brand 10')).toBeNull();
+    expect(screen.getByText(/\+2 more/i)).toBeTruthy();
   });
 
   it('expands to show the editor when "Edit competitors" is clicked', () => {

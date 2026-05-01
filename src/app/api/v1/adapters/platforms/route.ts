@@ -4,6 +4,7 @@ import { withRequestId } from '@/lib/api/request-id';
 import { withRequestLog } from '@/lib/api/request-log';
 import { apiSuccess } from '@/lib/api/response';
 import { getAdapterRegistry } from '@/modules/adapters';
+import { serializePlatform } from './serialize';
 
 export const GET = withRequestId(
   withRequestLog(
@@ -11,7 +12,7 @@ export const GET = withRequestId(
       withRateLimit(
         withScope(async () => {
           const registry = getAdapterRegistry();
-          const platforms = registry.getRegisteredPlatforms();
+          const platforms = registry.getRegisteredPlatforms().map(serializePlatform);
           return apiSuccess(platforms);
         }, 'read')
       )

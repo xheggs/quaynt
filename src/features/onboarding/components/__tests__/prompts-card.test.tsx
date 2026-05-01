@@ -30,12 +30,16 @@ afterEach(() => {
 });
 
 describe('PromptsCard', () => {
-  it('renders a collapsed summary with the prompt count and the first prompt', () => {
+  it('renders a collapsed summary with the count and a preview of the first prompts', () => {
     renderWithOnboardingProviders(<PromptsCard {...baseProps} />);
     expect(screen.getByText(/5 prompts drafted/i)).toBeTruthy();
+    // First three prompts are previewed inline.
     expect(screen.getByText(/Best payment processor for SaaS\?/i)).toBeTruthy();
-    // Full list NOT visible until expanded.
+    expect(screen.getByText(/Stripe vs Adyen for online commerce/i)).toBeTruthy();
+    expect(screen.getByText(/Cheapest checkout for European startups/i)).toBeTruthy();
+    // Prompts beyond the preview cap are NOT visible until expanded.
     expect(screen.queryByText(/Top 5 payment APIs for developers/i)).toBeNull();
+    expect(screen.getByText(/\+2 more prompts/i)).toBeTruthy();
   });
 
   it('renders the choice toggle inside the collapsed summary', () => {

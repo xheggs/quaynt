@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { PartialErrorNotice } from './notices';
 
 const MAX_PROMPTS = 25;
+const MAX_SUMMARY_PROMPT_PREVIEW = 3;
 
 export type PromptChoice = 'suggested' | 'starter' | 'skip';
 
@@ -43,7 +44,8 @@ export function PromptsCard({
   const [expanded, setExpanded] = useState(Boolean(initiallyExpanded));
   const [draft, setDraft] = useState('');
 
-  const firstPrompt = prompts[0]?.text ?? '';
+  const previewPrompts = prompts.slice(0, MAX_SUMMARY_PROMPT_PREVIEW);
+  const promptOverflowCount = Math.max(0, prompts.length - previewPrompts.length);
   const limitReached = prompts.length >= MAX_PROMPTS;
 
   function updatePromptAt(index: number, text: string) {
@@ -86,11 +88,24 @@ export function PromptsCard({
                       ? t('summarySkipped')
                       : t('summary', { count: prompts.length })}
                 </p>
-                {choice === 'suggested' && firstPrompt ? (
-                  <p className="line-clamp-1 font-mono text-xs text-muted-foreground">
-                    <span className="sr-only">{t('summaryFirstPromptLabel')}: </span>
-                    {firstPrompt}
-                  </p>
+                {choice === 'suggested' && previewPrompts.length > 0 ? (
+                  <>
+                    <ul className="flex flex-col gap-0.5" aria-label={t('summaryPromptsLabel')}>
+                      {previewPrompts.map((p, idx) => (
+                        <li
+                          key={idx}
+                          className="line-clamp-1 font-mono text-xs text-muted-foreground"
+                        >
+                          {p.text}
+                        </li>
+                      ))}
+                    </ul>
+                    {promptOverflowCount > 0 ? (
+                      <p className="text-xs text-muted-foreground">
+                        {t('moreSuffix', { count: promptOverflowCount })}
+                      </p>
+                    ) : null}
+                  </>
                 ) : null}
               </div>
               <Button

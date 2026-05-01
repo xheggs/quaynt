@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { ApiError } from '@/lib/query/types';
 import { translateApiError } from '@/lib/query/error-messages';
 import { queryKeys } from '@/lib/query/keys';
-import { createBrand } from '@/features/brands';
+import { createBrand, fetchBrands, type Brand, type CreateBrandInput } from '@/features/brands';
 import {
   createPromptSet,
   fetchPromptSets,
@@ -219,6 +219,50 @@ export function ReviewStep({ jobId }: Props) {
     void runRegenerate();
   }
 
+  // On 409 from createBrand, look up the existing brand by exact name in this
+  // workspace and reuse it. Onboarding submit is a multi-step pipeline that may
+  // partially fail after the brand row is committed; without this, the user is
+  // stuck because the second submit attempt hits the unique-name constraint.
+  async function ensureBrand(input: CreateBrandInput): Promise<Brand> {
+    try {
+      return await createBrand(input);
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 409) {
+        const page = await fetchBrands({ page: 1, limit: 50, search: input.name });
+        const match = page.data.find((b) => b.name === input.name);
+        if (match) return match;
+      }
+      throw err;
+    }
+  }
+
+  // Same idempotency story as ensureBrand: on 409, the prior submit left an
+  // auto-suggested set with this name. If it was ours (auto-suggested tag),
+  // delete and retry so prompts stay in sync with the user's current edits.
+  // If a user-owned set already has this name, reuse it without overwriting.
+  async function ensureAutoSuggestedPromptSet(
+    name: string
+  ): Promise<{ id: string; reused: boolean }> {
+    try {
+      const created = await createPromptSet({ name, tags: ['auto-suggested'] });
+      return { id: created.id, reused: false };
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 409) {
+        const page = await fetchPromptSets({ page: 1, limit: 50, search: name });
+        const exact = page.data.find((ps) => ps.name === name);
+        if (exact && exact.tags.includes('auto-suggested')) {
+          await deletePromptSet(exact.id);
+          const created = await createPromptSet({ name, tags: ['auto-suggested'] });
+          return { id: created.id, reused: false };
+        }
+        if (exact) {
+          return { id: exact.id, reused: true };
+        }
+      }
+      throw err;
+    }
+  }
+
   async function handleSubmit() {
     if (!brandReady) return;
     setSubmitting(true);
@@ -227,7 +271,7 @@ export function ReviewStep({ jobId }: Props) {
         .map((a) => a.trim())
         .filter(Boolean)
         .slice(0, 10);
-      const brand = await createBrand({
+      const brand = await ensureBrand({
         name: brandName.trim(),
         domain: data?.domain || undefined,
         aliases: cleanedAliases,
@@ -264,7 +308,8 @@ export function ReviewStep({ jobId }: Props) {
         // Dedupe: a prior review submit (or regenerate after dashboard exit) may
         // have left an auto-suggested set with this exact name. Best-effort
         // delete before creating a fresh one so the prompt-sets list doesn't
-        // accumulate stale duplicates.
+        // accumulate stale duplicates. The local cache may be stale (staleTime
+        // 60s), so the 409 fallback below covers the case where it missed one.
         const stale = (promptSets.data?.data ?? []).filter(
           (ps) => ps.tags.includes('auto-suggested') && ps.name === expectedName
         );
@@ -275,14 +320,13 @@ export function ReviewStep({ jobId }: Props) {
             console.warn('Failed to delete stale auto-suggested prompt set', e);
           }
         }
-        const created = await createPromptSet({
-          name: expectedName,
-          tags: ['auto-suggested'],
-        });
-        await Promise.all(
-          promptsToSave.map((p, idx) => addPrompt(created.id, { template: p.text, order: idx }))
-        );
-        promptSetId = created.id;
+        const ensured = await ensureAutoSuggestedPromptSet(expectedName);
+        if (!ensured.reused) {
+          await Promise.all(
+            promptsToSave.map((p, idx) => addPrompt(ensured.id, { template: p.text, order: idx }))
+          );
+        }
+        promptSetId = ensured.id;
       } else if (promptChoice === 'starter' && starter) {
         promptSetId = starter.id;
       }
@@ -306,27 +350,46 @@ export function ReviewStep({ jobId }: Props) {
         }
       }
 
-      const destination =
-        firstRunTriggered && runId
-          ? `/${locale}/onboarding/first-run/${runId}`
-          : `/${locale}/dashboard`;
-
-      update.mutate(
-        {
-          milestones: {
-            brandAdded: true,
-            competitorsAdded: true,
-            promptSetSelected,
-            firstRunTriggered,
+      // If we triggered a run, advance the step machine and route to the run
+      // progress screen. If we couldn't (no enabled adapter, or createModelRun
+      // threw silently above), DO NOT set step:'first_run' — the (app) layout
+      // redirects that state with no activeRunId back to /welcome, trapping the
+      // user. Dismiss instead so they can navigate freely, surface a toast
+      // explaining why, and route to the most actionable next screen.
+      if (firstRunTriggered && runId) {
+        update.mutate(
+          {
+            milestones: {
+              brandAdded: true,
+              competitorsAdded: true,
+              promptSetSelected,
+              firstRunTriggered: true,
+            },
+            step: 'first_run',
           },
-          // Submitting the review always clears brand/competitors/prompt-set choices,
-          // so the next phase is the first run regardless of whether one was triggered.
-          step: 'first_run',
-        },
-        {
-          onSuccess: () => router.push(destination),
-        }
-      );
+          {
+            onSuccess: () => router.push(`/${locale}/onboarding/first-run/${runId}`),
+          }
+        );
+      } else {
+        const noAdapter = enabledAdapters.length === 0;
+        toast.message(noAdapter ? tErrors('noAdapter') : tErrors('runFailed'));
+        update.mutate(
+          {
+            milestones: {
+              brandAdded: true,
+              competitorsAdded: true,
+              promptSetSelected,
+              firstRunTriggered: false,
+            },
+            dismissedAt: new Date().toISOString(),
+          },
+          {
+            onSuccess: () =>
+              router.push(noAdapter ? `/${locale}/settings/adapters` : `/${locale}/model-runs`),
+          }
+        );
+      }
     } catch (err) {
       const message =
         err instanceof ApiError ? translateApiError(tApiErrors, err) : tGeneric('generic');
